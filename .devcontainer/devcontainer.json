@@ -21,17 +21,9 @@
     }
   },
   "forwardPorts": [
-    4000,
-    8080,
     9100
   ],
   "portsAttributes": {
-    "4000": {
-      "label": "Flutter web"
-    },
-    "8080": {
-      "label": "Development server"
-    },
     "9100": {
       "label": "Dart DevTools"
     }

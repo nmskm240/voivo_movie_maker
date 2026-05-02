@@ -1,6 +1,6 @@
 # voivo_movie_maker
 
-Flutter development environment using Docker and Dev Containers.
+Flutter development environment for mobile and desktop targets using Docker and Dev Containers.
 
 ## Requirements
 
@@ -21,8 +21,34 @@ If `pubspec.yaml` does not exist, the container creates a Flutter project in thi
 ```bash
 flutter doctor
 flutter pub get
-flutter run -d chrome --web-hostname 0.0.0.0 --web-port 8080
+flutter run -d linux
+flutter build linux --debug
 flutter test
 ```
 
-Android SDK 36 build tools are installed for Android builds. Emulator/device forwarding depends on the host setup, so web development is the default path inside the container.
+Android SDK 36 build tools are installed for Android builds. Web is intentionally disabled because video export uses native FFmpegKit.
+
+## Linux Desktop Debugging
+
+The Dev Container is configured to pass the NVIDIA GPU and host X11 socket into the container. This allows `flutter run -d linux` to open a normal host desktop window while still supporting VS Code breakpoints and hot reload.
+
+Before reopening the container, make sure Docker is using the local Engine context and X11 local clients are allowed:
+
+```bash
+docker context use default
+xhost +local:
+```
+
+NVIDIA Container Toolkit must also be working:
+
+```bash
+docker run --rm --gpus all nvidia/cuda:13.0.0-base-ubuntu24.04 nvidia-smi
+```
+
+Then rebuild or reopen the Dev Container and run from VS Code:
+
+```bash
+flutter run -d linux
+```
+
+The app window should appear as a normal desktop window on the host, and VS Code debugging should work normally.

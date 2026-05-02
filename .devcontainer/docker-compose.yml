@@ -3,20 +3,25 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-    volumes:
-      - ..:/workspace:cached
-      - flutter-pub-cache:/home/vscode/.pub-cache
-      - flutter-gradle-cache:/home/vscode/.gradle
-      - flutter-android-cache:/home/vscode/.android
     environment:
       ANDROID_SDK_ROOT: /opt/android-sdk
       ANDROID_HOME: /opt/android-sdk
-      CHROME_EXECUTABLE: /usr/bin/google-chrome
       PUB_CACHE: /home/vscode/.pub-cache
+      DISPLAY: ${DISPLAY:-:0}
+      GDK_BACKEND: x11
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
+      NO_AT_BRIDGE: "1"
+      QT_X11_NO_MITSHM: "1"
+    gpus: all
     ports:
-      - "4000:4000"
-      - "8080:8080"
       - "9100:9100"
+    volumes:
+      - ..:/workspace:cached
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - flutter-pub-cache:/home/vscode/.pub-cache
+      - flutter-gradle-cache:/home/vscode/.gradle
+      - flutter-android-cache:/home/vscode/.android
     command: sleep infinity
 
 volumes:

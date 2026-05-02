@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT} \
     ANDROID_HOME=${ANDROID_SDK_ROOT} \
     FLUTTER_HOME=/opt/flutter \
-    CHROME_EXECUTABLE=/usr/bin/google-chrome \
+    NO_AT_BRIDGE=1 \
     PATH=/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -21,25 +21,33 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     curl \
     file \
+    fonts-noto-cjk \
     git \
     gnupg \
     jq \
+    libcanberra-gtk-module \
+    libcanberra-gtk3-module \
     libgtk-3-dev \
     liblzma-dev \
     libstdc++-12-dev \
+    lld \
     lldb \
+    llvm-18 \
     make \
+    mesa-utils \
     ninja-build \
     openjdk-17-jdk \
     pkg-config \
     sudo \
     unzip \
     wget \
+    x11-apps \
+    x11-xserver-utils \
+    x11-utils \
+    wmctrl \
+    xdotool \
     xz-utils \
     zip \
-    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-linux.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y --no-install-recommends google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
 RUN if getent group ${USER_GID} >/dev/null; then \
@@ -77,7 +85,7 @@ USER ${USERNAME}
 WORKDIR /workspace
 
 RUN flutter config --android-sdk ${ANDROID_SDK_ROOT} \
-    && flutter config --enable-web --enable-linux-desktop \
-    && flutter precache --web --linux --android \
+    && flutter config --no-enable-web --enable-linux-desktop \
+    && flutter precache --linux --android \
     && dart --disable-analytics \
     && flutter --disable-analytics
