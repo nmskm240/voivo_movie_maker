@@ -28,11 +28,13 @@ class FfmpegCommandBuilder {
       _quote('ass=${_escapeAssFilterPath(assPath)}'),
       '-an',
       '-c:v',
-      'mpeg4',
-      '-q:v',
-      '4',
+      'libopenh264',
+      '-b:v',
+      '5M',
       '-pix_fmt',
       'yuv420p',
+      '-movflags',
+      '+faststart',
       _quote(outputPath),
     ].join(' ');
   }

@@ -25,7 +25,9 @@ void main() {
     expect(command, contains('-f lavfi'));
     expect(command, contains('color=c=0x20262B:s=1920x1080:r=30:d=40.000'));
     expect(command, contains("-vf 'ass=/tmp/voivo/timeline.ass'"));
-    expect(command, contains('-c:v mpeg4'));
+    expect(command, contains('-c:v libopenh264'));
+    expect(command, contains('-b:v 5M'));
+    expect(command, contains('-movflags +faststart'));
     expect(command, contains("'/tmp/voivo/output.mp4'"));
   });
 }
