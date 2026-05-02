@@ -1,0 +1,79 @@
+@startuml
+left to right direction
+
+actor "ユーザー" as User
+actor "ファイルシステム" as FS
+actor "VOICEVOX" as Voicevox
+
+rectangle "voivo_movie_maker" {
+  usecase "素材を読み込む" as UC_IMPORT
+  usecase "PSD立ち絵を読み込む" as UC_IMPORT_PSD
+  usecase "タイムラインに配置する" as UC_PLACE
+  usecase "クリップを編集する" as UC_EDIT
+  usecase "クリップを移動する" as UC_MOVE
+  usecase "クリップをカットする" as UC_CUT
+  usecase "クリップを分割する" as UC_SPLIT
+  usecase "クリップをトリミングする" as UC_TRIM
+  usecase "クリップを削除する" as UC_DELETE
+  usecase "テキストを追加する" as UC_ADD_TEXT
+  usecase "テキストを編集する" as UC_EDIT_TEXT
+  usecase "効果音を追加する" as UC_ADD_SE
+  usecase "音量を調整する" as UC_VOLUME
+  usecase "セリフを作成する" as UC_CREATE_LINE
+  usecase "VOICEVOX音声を生成する" as UC_GENERATE_VOICE
+  usecase "話者を選択する" as UC_SELECT_SPEAKER
+  usecase "読み上げ設定を調整する" as UC_ADJUST_VOICE
+  usecase "セリフ字幕を配置する" as UC_PLACE_SUBTITLE
+  usecase "立ち絵を調整する" as UC_ADJUST_STAND
+  usecase "表情を切り替える" as UC_CHANGE_FACE
+  usecase "PSDパーツを表示切替する" as UC_TOGGLE_PARTS
+  usecase "立ち絵の位置とサイズを調整する" as UC_ADJUST_POSE
+  usecase "アニメーションを設定する" as UC_ANIMATION
+  usecase "フェードインを設定する" as UC_FADE_IN
+  usecase "フェードアウトを設定する" as UC_FADE_OUT
+  usecase "プレビューする" as UC_PREVIEW
+  usecase "プロジェクトを保存する" as UC_SAVE
+  usecase "プロジェクトを読み込む" as UC_LOAD
+  usecase "動画を書き出す" as UC_EXPORT
+}
+
+User --> UC_IMPORT
+User --> UC_PLACE
+User --> UC_EDIT
+User --> UC_PREVIEW
+User --> UC_SAVE
+User --> UC_LOAD
+User --> UC_EXPORT
+
+UC_IMPORT ..> UC_IMPORT_PSD : <<include>>
+UC_EDIT ..> UC_MOVE : <<include>>
+UC_EDIT ..> UC_CUT : <<include>>
+UC_EDIT ..> UC_DELETE : <<include>>
+UC_EDIT ..> UC_EDIT_TEXT : <<include>>
+UC_EDIT ..> UC_VOLUME : <<include>>
+UC_EDIT ..> UC_ADJUST_STAND : <<include>>
+UC_CUT ..> UC_SPLIT : <<include>>
+UC_CUT ..> UC_TRIM : <<include>>
+
+UC_PLACE ..> UC_ADD_TEXT : <<include>>
+UC_PLACE ..> UC_ADD_SE : <<include>>
+UC_PLACE ..> UC_PLACE_SUBTITLE : <<include>>
+UC_PLACE ..> UC_CREATE_LINE : <<include>>
+UC_CREATE_LINE ..> UC_GENERATE_VOICE : <<include>>
+UC_CREATE_LINE ..> UC_SELECT_SPEAKER : <<include>>
+UC_CREATE_LINE ..> UC_ADJUST_VOICE : <<include>>
+UC_CREATE_LINE ..> UC_PLACE_SUBTITLE : <<include>>
+UC_ADJUST_STAND ..> UC_CHANGE_FACE : <<include>>
+UC_ADJUST_STAND ..> UC_TOGGLE_PARTS : <<include>>
+UC_ADJUST_STAND ..> UC_ADJUST_POSE : <<include>>
+UC_ANIMATION ..> UC_FADE_IN : <<include>>
+UC_ANIMATION ..> UC_FADE_OUT : <<include>>
+UC_EDIT ..> UC_ANIMATION : <<include>>
+
+FS --> UC_IMPORT
+FS --> UC_LOAD
+UC_SAVE --> FS
+UC_EXPORT --> FS
+UC_GENERATE_VOICE --> Voicevox
+
+@enduml
