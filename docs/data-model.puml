@@ -1,0 +1,188 @@
+@startuml
+title タイムライン編集データモデル案
+
+skinparam classAttributeIconSize 0
+hide circle
+
+class Project {
+  +String id
+  +String name
+  +String filePath
+  +ProjectSettings settings
+  +MediaLibrary mediaLibrary
+  +Timeline timeline
+  +DateTime createdAt
+  +DateTime updatedAt
+}
+
+class ProjectSettings {
+  +int width
+  +int height
+  +int fps
+  +int sampleRate
+  +String backgroundColor
+}
+
+class MediaLibrary {
+  +List<MediaAsset> assets
+}
+
+abstract class MediaAsset {
+  +String id
+  +String name
+  +String sourcePath
+  +MediaType type
+  +int durationFrames
+}
+
+class VideoAsset
+class ImageAsset
+class AudioAsset {
+  +String waveformCachePath
+}
+class PsdAsset {
+  +List<PsdPart> parts
+}
+
+class PsdPart {
+  +String id
+  +String name
+  +bool visible
+}
+
+enum MediaType {
+  video
+  image
+  audio
+  psd
+}
+
+class Timeline {
+  +int durationFrames
+  +List<TimelineTrack> tracks
+}
+
+class TimelineTrack {
+  +String id
+  +String name
+  +TrackType type
+  +bool muted
+  +bool locked
+  +List<TimelineClip> clips
+}
+
+enum TrackType {
+  video
+  text
+  voice
+  se
+  stand
+}
+
+abstract class TimelineClip {
+  +String id
+  +String name
+  +int startFrame
+  +int durationFrames
+  +ClipTransform transform
+  +List<ClipEffect> effects
+}
+
+class MediaClip {
+  +String assetId
+  +int sourceStartFrame
+  +int sourceDurationFrames
+}
+
+class TextClip {
+  +String text
+  +String fontFamily
+  +double fontSize
+  +String textColor
+}
+
+class VoiceClip {
+  +String assetId
+  +String lineId
+}
+
+class StandClip {
+  +String assetId
+  +Map<String, bool> partVisibility
+  +String expressionName
+}
+
+class ClipTransform {
+  +double x
+  +double y
+  +double scale
+  +double rotation
+  +double opacity
+}
+
+abstract class ClipEffect {
+  +String id
+  +EffectType type
+}
+
+class FadeEffect {
+  +int startOffsetFrames
+  +int durationFrames
+  +FadeDirection direction
+}
+
+enum EffectType {
+  fade
+  keyframe
+}
+
+enum FadeDirection {
+  in
+  out
+}
+
+class VoiceLine {
+  +String id
+  +String text
+  +String speakerId
+  +VoiceParameters parameters
+  +String generatedAssetId
+}
+
+class VoiceParameters {
+  +double speed
+  +double pitch
+  +double intonation
+  +double volume
+}
+
+Project *-- ProjectSettings
+Project *-- MediaLibrary
+Project *-- Timeline
+
+MediaLibrary *-- MediaAsset
+MediaAsset <|-- VideoAsset
+MediaAsset <|-- ImageAsset
+MediaAsset <|-- AudioAsset
+MediaAsset <|-- PsdAsset
+PsdAsset *-- PsdPart
+
+Timeline *-- TimelineTrack
+TimelineTrack *-- TimelineClip
+TimelineClip <|-- MediaClip
+TimelineClip <|-- TextClip
+TimelineClip <|-- VoiceClip
+TimelineClip <|-- StandClip
+TimelineClip *-- ClipTransform
+TimelineClip *-- ClipEffect
+ClipEffect <|-- FadeEffect
+
+MediaClip --> MediaAsset : assetId
+VoiceClip --> AudioAsset : assetId
+VoiceClip --> VoiceLine : lineId
+StandClip --> PsdAsset : assetId
+
+VoiceLine *-- VoiceParameters
+VoiceLine --> AudioAsset : generatedAssetId
+
+@enduml

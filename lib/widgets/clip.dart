@@ -10,7 +10,7 @@ class TimelineClipView extends StatelessWidget {
     required this.onTap,
   });
 
-  final TimelineClip clip;
+  final TextClip clip;
   final bool selected;
   final VoidCallback onTap;
 
@@ -23,7 +23,7 @@ class TimelineClipView extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            color: clip.color,
+            color: clip.textColor,
             border: Border.all(
               color: selected ? Colors.white : Colors.black26,
               width: selected ? 2 : 1,
@@ -31,7 +31,7 @@ class TimelineClipView extends StatelessWidget {
           ),
           alignment: Alignment.centerLeft,
           child: Text(
-            clip.title,
+            clip.name,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Color(0xff111416),

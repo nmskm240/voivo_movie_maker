@@ -5,7 +5,7 @@ import '../models/timeline.dart';
 class InspectorPane extends StatelessWidget {
   const InspectorPane({super.key, required this.clip});
 
-  final TimelineClip clip;
+  final TextClip clip;
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,14 @@ class InspectorPane extends StatelessWidget {
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 18),
-          _PropertyRow(label: '選択中', value: clip.title),
+          _PropertyRow(label: '選択中', value: clip.name),
+          const SizedBox(height: 12),
+          _PropertyRow(label: 'テキスト', value: clip.text),
           const SizedBox(height: 16),
-          const _SliderProperty(label: '位置 X', value: 0.48),
-          const _SliderProperty(label: '位置 Y', value: 0.72),
-          const _SliderProperty(label: '拡大率', value: 0.64),
-          const _SliderProperty(label: '不透明度', value: 1),
+          _SliderProperty(label: '位置 X', value: clip.transform.x),
+          _SliderProperty(label: '位置 Y', value: clip.transform.y),
+          _SliderProperty(label: '拡大率', value: clip.transform.scale),
+          _SliderProperty(label: '不透明度', value: clip.transform.opacity),
           const SizedBox(height: 14),
           const Divider(color: Color(0xff2b3136)),
           const SizedBox(height: 12),

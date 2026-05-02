@@ -19,12 +19,13 @@ void main() {
   ) async {
     await tester.pumpWidget(const VoivoMovieMakerApp());
 
+    expect(find.text('タイトル'), findsOneWidget);
     expect(find.text('字幕: こんにちは'), findsWidgets);
-    expect(find.text('ずんだもん_001.wav'), findsOneWidget);
 
-    await tester.tap(find.text('ずんだもん_001.wav'));
+    await tester.tap(find.text('タイトル'));
     await tester.pump();
 
-    expect(find.text('ずんだもん_001.wav'), findsNWidgets(2));
+    expect(find.text('タイトル'), findsNWidgets(2));
+    expect(find.text('Voivo Movie Maker'), findsWidgets);
   });
 }

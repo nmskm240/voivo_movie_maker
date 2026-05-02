@@ -6,13 +6,13 @@ import 'clip.dart';
 class TimelinePane extends StatelessWidget {
   const TimelinePane({
     super.key,
-    required this.tracks,
+    required this.timeline,
     required this.selectedTrackIndex,
     required this.selectedClipIndex,
     required this.onSelectClip,
   });
 
-  final List<TimelineTrack> tracks;
+  final Timeline timeline;
   final int selectedTrackIndex;
   final int selectedClipIndex;
   final void Function(int trackIndex, int clipIndex) onSelectClip;
@@ -29,12 +29,13 @@ class TimelinePane extends StatelessWidget {
           const _TimelineHeader(),
           Expanded(
             child: ListView.builder(
-              itemCount: tracks.length,
+              itemCount: timeline.tracks.length,
               itemBuilder: (context, trackIndex) {
-                final track = tracks[trackIndex];
+                final track = timeline.tracks[trackIndex];
 
                 return _TimelineTrackRow(
                   track: track,
+                  timelineDurationFrames: timeline.durationFrames,
                   trackIndex: trackIndex,
                   selectedClipIndex:
                       trackIndex == selectedTrackIndex ? selectedClipIndex : -1,
@@ -92,12 +93,14 @@ class _TimelineHeader extends StatelessWidget {
 class _TimelineTrackRow extends StatelessWidget {
   const _TimelineTrackRow({
     required this.track,
+    required this.timelineDurationFrames,
     required this.trackIndex,
     required this.selectedClipIndex,
     required this.onSelectClip,
   });
 
   final TimelineTrack track;
+  final int timelineDurationFrames;
   final int trackIndex;
   final int selectedClipIndex;
   final void Function(int trackIndex, int clipIndex) onSelectClip;
@@ -146,9 +149,15 @@ class _TimelineTrackRow extends StatelessWidget {
                       ),
                       for (var i = 0; i < track.clips.length; i++)
                         Positioned(
-                          left: constraints.maxWidth * track.clips[i].start,
+                          left: constraints.maxWidth *
+                              track.clips[i].startRatio(
+                                timelineDurationFrames,
+                              ),
                           top: 9,
-                          width: constraints.maxWidth * track.clips[i].width,
+                          width: constraints.maxWidth *
+                              track.clips[i].widthRatio(
+                                timelineDurationFrames,
+                              ),
                           height: 36,
                           child: TimelineClipView(
                             clip: track.clips[i],

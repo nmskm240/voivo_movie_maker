@@ -5,10 +5,14 @@ class EditorMenuBar extends StatelessWidget {
     super.key,
     required this.isPlaying,
     required this.onTogglePlay,
+    required this.onExport,
+    this.isExporting = false,
   });
 
   final bool isPlaying;
   final VoidCallback onTogglePlay;
+  final VoidCallback onExport;
+  final bool isExporting;
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +47,14 @@ class EditorMenuBar extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           OutlinedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.ios_share_outlined),
-            label: const Text('書き出し'),
+            onPressed: isExporting ? null : onExport,
+            icon: isExporting
+                ? const SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.ios_share_outlined),
+            label: Text(isExporting ? '書き出し中' : '書き出し'),
           ),
         ],
       ),

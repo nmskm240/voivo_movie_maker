@@ -11,19 +11,17 @@ class VoivoMovieMakerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const baseColor = Color(0xff8fd6c8);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Voivo Movie Maker',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: baseColor,
+          seedColor: Colors.lightGreen,
           brightness: Brightness.dark,
         ),
-        scaffoldBackgroundColor: const Color(0xff111416),
-        fontFamily: 'Noto Sans JP',
+        scaffoldBackgroundColor: Colors.black87,
+        fontFamily: 'Noto Sans CJK JP',
       ),
       home: const EditorMockScreen(),
     );
