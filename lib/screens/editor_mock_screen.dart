@@ -20,7 +20,7 @@ class EditorMockScreen extends StatefulWidget {
 }
 
 class _EditorMockScreenState extends State<EditorMockScreen> {
-  final Project project = mockProject;
+  Project project = mockProject;
 
   int selectedTrackIndex = 0;
   int selectedClipIndex = 1;
@@ -45,6 +45,34 @@ class _EditorMockScreenState extends State<EditorMockScreen> {
     });
   }
 
+  void scrubToFrame(int frame) {
+    setState(() {
+      currentFrame = frame.clamp(0, timeline.durationFrames - 1);
+    });
+  }
+
+  void moveClip(int trackIndex, int clipIndex, int startFrame) {
+    final track = timeline.tracks[trackIndex];
+    final clip = track.clips[clipIndex];
+    final maxStartFrame = timeline.durationFrames - clip.durationFrames;
+    final resolvedStartFrame = startFrame.clamp(0, maxStartFrame);
+    final updatedClips = List<TextClip>.of(track.clips);
+    updatedClips[clipIndex] = clip.copyWith(startFrame: resolvedStartFrame);
+
+    final updatedTracks = List<TimelineTrack>.of(timeline.tracks);
+    updatedTracks[trackIndex] = track.copyWith(clips: updatedClips);
+
+    setState(() {
+      project = project.copyWith(
+        timeline: timeline.copyWith(tracks: updatedTracks),
+        updatedAt: DateTime.now(),
+      );
+      selectedTrackIndex = trackIndex;
+      selectedClipIndex = clipIndex;
+      currentFrame = resolvedStartFrame;
+    });
+  }
+
   void togglePlayback() {
     if (isPlaying) {
       stopPlayback();
@@ -54,7 +82,8 @@ class _EditorMockScreenState extends State<EditorMockScreen> {
     setState(() => isPlaying = true);
     playbackTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       setState(() {
-        currentFrame = (currentFrame + project.settings.fps ~/ 10) %
+        currentFrame =
+            (currentFrame + project.settings.fps ~/ 10) %
             timeline.durationFrames;
       });
     });
@@ -84,17 +113,17 @@ class _EditorMockScreenState extends State<EditorMockScreen> {
       final message = result.success
           ? '動画を書き出しました: ${result.outputPath}'
           : '書き出しに失敗しました: ${result.returnCode}';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     } catch (error) {
       if (!mounted) {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('書き出しに失敗しました: $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('書き出しに失敗しました: $error')));
     } finally {
       if (mounted) {
         setState(() => isExporting = false);
@@ -164,9 +193,12 @@ class _EditorMockScreenState extends State<EditorMockScreen> {
               height: 280,
               child: TimelinePane(
                 timeline: timeline,
+                currentFrame: currentFrame,
                 selectedTrackIndex: selectedTrackIndex,
                 selectedClipIndex: selectedClipIndex,
                 onSelectClip: selectClip,
+                onScrubFrame: scrubToFrame,
+                onMoveClip: moveClip,
               ),
             ),
           ],

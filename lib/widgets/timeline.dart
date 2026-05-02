@@ -7,15 +7,21 @@ class TimelinePane extends StatelessWidget {
   const TimelinePane({
     super.key,
     required this.timeline,
+    required this.currentFrame,
     required this.selectedTrackIndex,
     required this.selectedClipIndex,
     required this.onSelectClip,
+    required this.onScrubFrame,
+    required this.onMoveClip,
   });
 
   final Timeline timeline;
+  final int currentFrame;
   final int selectedTrackIndex;
   final int selectedClipIndex;
   final void Function(int trackIndex, int clipIndex) onSelectClip;
+  final void Function(int frame) onScrubFrame;
+  final void Function(int trackIndex, int clipIndex, int startFrame) onMoveClip;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +32,10 @@ class TimelinePane extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const _TimelineHeader(),
+          _TimelineHeader(
+            currentFrame: currentFrame,
+            timelineDurationFrames: timeline.durationFrames,
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: timeline.tracks.length,
@@ -37,9 +46,12 @@ class TimelinePane extends StatelessWidget {
                   track: track,
                   timelineDurationFrames: timeline.durationFrames,
                   trackIndex: trackIndex,
-                  selectedClipIndex:
-                      trackIndex == selectedTrackIndex ? selectedClipIndex : -1,
+                  selectedClipIndex: trackIndex == selectedTrackIndex
+                      ? selectedClipIndex
+                      : -1,
                   onSelectClip: onSelectClip,
+                  onScrubFrame: onScrubFrame,
+                  onMoveClip: onMoveClip,
                 );
               },
             ),
@@ -51,7 +63,13 @@ class TimelinePane extends StatelessWidget {
 }
 
 class _TimelineHeader extends StatelessWidget {
-  const _TimelineHeader();
+  const _TimelineHeader({
+    required this.currentFrame,
+    required this.timelineDurationFrames,
+  });
+
+  final int currentFrame;
+  final int timelineDurationFrames;
 
   @override
   Widget build(BuildContext context) {
@@ -69,25 +87,57 @@ class _TimelineHeader extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Stack(
-              children: [
-                Positioned.fill(child: CustomPaint(painter: _TimeRulerPainter())),
-                const Positioned(
-                  left: 186,
-                  top: 0,
-                  bottom: 0,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(color: Color(0xffff5c70)),
-                    child: SizedBox(width: 2),
-                  ),
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final playheadX = _frameToX(
+                  currentFrame,
+                  timelineDurationFrames,
+                  constraints.maxWidth,
+                );
+
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: CustomPaint(painter: _TimeRulerPainter()),
+                    ),
+                    Positioned(
+                      left: playheadX,
+                      top: 0,
+                      bottom: 0,
+                      child: const DecoratedBox(
+                        decoration: BoxDecoration(color: Color(0xffff5c70)),
+                        child: SizedBox(width: 2),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+}
+
+int _xToFrame(double x, int timelineDurationFrames, double width) {
+  if (timelineDurationFrames <= 0 || width <= 0) {
+    return 0;
+  }
+
+  final ratio = (x / width).clamp(0.0, 1.0);
+  return (ratio * timelineDurationFrames).round().clamp(
+    0,
+    timelineDurationFrames - 1,
+  );
+}
+
+double _frameToX(int frame, int timelineDurationFrames, double width) {
+  if (timelineDurationFrames <= 0 || width <= 0) {
+    return 0;
+  }
+
+  return width * (frame / timelineDurationFrames).clamp(0.0, 1.0);
 }
 
 class _TimelineTrackRow extends StatelessWidget {
@@ -97,6 +147,8 @@ class _TimelineTrackRow extends StatelessWidget {
     required this.trackIndex,
     required this.selectedClipIndex,
     required this.onSelectClip,
+    required this.onScrubFrame,
+    required this.onMoveClip,
   });
 
   final TimelineTrack track;
@@ -104,6 +156,8 @@ class _TimelineTrackRow extends StatelessWidget {
   final int trackIndex;
   final int selectedClipIndex;
   final void Function(int trackIndex, int clipIndex) onSelectClip;
+  final void Function(int frame) onScrubFrame;
+  final void Function(int trackIndex, int clipIndex, int startFrame) onMoveClip;
 
   @override
   Widget build(BuildContext context) {
@@ -142,30 +196,58 @@ class _TimelineTrackRow extends StatelessWidget {
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  return Stack(
-                    children: [
-                      Positioned.fill(
-                        child: CustomPaint(painter: _TrackGridPainter()),
+                  void scrubTo(double x) {
+                    onScrubFrame(
+                      _xToFrame(
+                        x,
+                        timelineDurationFrames,
+                        constraints.maxWidth,
                       ),
-                      for (var i = 0; i < track.clips.length; i++)
-                        Positioned(
-                          left: constraints.maxWidth *
-                              track.clips[i].startRatio(
-                                timelineDurationFrames,
-                              ),
-                          top: 9,
-                          width: constraints.maxWidth *
-                              track.clips[i].widthRatio(
-                                timelineDurationFrames,
-                              ),
-                          height: 36,
-                          child: TimelineClipView(
-                            clip: track.clips[i],
-                            selected: i == selectedClipIndex,
-                            onTap: () => onSelectClip(trackIndex, i),
-                          ),
+                    );
+                  }
+
+                  return GestureDetector(
+                    key: ValueKey('timeline-track-$trackIndex-surface'),
+                    behavior: HitTestBehavior.opaque,
+                    onHorizontalDragStart: (details) {
+                      scrubTo(details.localPosition.dx);
+                    },
+                    onHorizontalDragUpdate: (details) {
+                      scrubTo(details.localPosition.dx);
+                    },
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: CustomPaint(painter: _TrackGridPainter()),
                         ),
-                    ],
+                        for (var i = 0; i < track.clips.length; i++)
+                          Positioned(
+                            left:
+                                constraints.maxWidth *
+                                track.clips[i].startRatio(
+                                  timelineDurationFrames,
+                                ),
+                            top: 9,
+                            width:
+                                constraints.maxWidth *
+                                track.clips[i].widthRatio(
+                                  timelineDurationFrames,
+                                ),
+                            height: 36,
+                            child: TimelineClipView(
+                              clip: track.clips[i],
+                              selected: i == selectedClipIndex,
+                              timelineDurationFrames: timelineDurationFrames,
+                              trackWidth: constraints.maxWidth,
+                              onTap: () => onSelectClip(trackIndex, i),
+                              onDragStart: () => onSelectClip(trackIndex, i),
+                              onDragFrame: (startFrame) {
+                                onMoveClip(trackIndex, i, startFrame);
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
                   );
                 },
               ),

@@ -18,6 +18,26 @@ class Project {
   final Timeline timeline;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  Project copyWith({
+    String? id,
+    String? name,
+    String? filePath,
+    ProjectSettings? settings,
+    Timeline? timeline,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Project(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      filePath: filePath ?? this.filePath,
+      settings: settings ?? this.settings,
+      timeline: timeline ?? this.timeline,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 class ProjectSettings {
@@ -37,13 +57,17 @@ class ProjectSettings {
 }
 
 class Timeline {
-  const Timeline({
-    required this.durationFrames,
-    required this.tracks,
-  });
+  const Timeline({required this.durationFrames, required this.tracks});
 
   final int durationFrames;
   final List<TimelineTrack> tracks;
+
+  Timeline copyWith({int? durationFrames, List<TimelineTrack>? tracks}) {
+    return Timeline(
+      durationFrames: durationFrames ?? this.durationFrames,
+      tracks: tracks ?? this.tracks,
+    );
+  }
 }
 
 class TimelineTrack {
@@ -63,6 +87,24 @@ class TimelineTrack {
   final bool locked;
   final List<TextClip> clips;
 
+  TimelineTrack copyWith({
+    String? id,
+    String? name,
+    TrackType? type,
+    bool? muted,
+    bool? locked,
+    List<TextClip>? clips,
+  }) {
+    return TimelineTrack(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      muted: muted ?? this.muted,
+      locked: locked ?? this.locked,
+      clips: clips ?? this.clips,
+    );
+  }
+
   IconData get icon {
     return switch (type) {
       TrackType.text => Icons.title,
@@ -70,9 +112,7 @@ class TimelineTrack {
   }
 }
 
-enum TrackType {
-  text,
-}
+enum TrackType { text }
 
 class TextClip {
   const TextClip({
@@ -98,6 +138,32 @@ class TextClip {
   final double fontSize;
   final Color textColor;
   final List<ClipEffect> effects;
+
+  TextClip copyWith({
+    String? id,
+    String? name,
+    int? startFrame,
+    int? durationFrames,
+    ClipTransform? transform,
+    String? text,
+    String? fontFamily,
+    double? fontSize,
+    Color? textColor,
+    List<ClipEffect>? effects,
+  }) {
+    return TextClip(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      startFrame: startFrame ?? this.startFrame,
+      durationFrames: durationFrames ?? this.durationFrames,
+      transform: transform ?? this.transform,
+      text: text ?? this.text,
+      fontFamily: fontFamily ?? this.fontFamily,
+      fontSize: fontSize ?? this.fontSize,
+      textColor: textColor ?? this.textColor,
+      effects: effects ?? this.effects,
+    );
+  }
 
   double startRatio(int timelineDurationFrames) {
     if (timelineDurationFrames <= 0) {
@@ -150,10 +216,7 @@ class ClipTransform {
 }
 
 sealed class ClipEffect {
-  const ClipEffect({
-    required this.id,
-    required this.type,
-  });
+  const ClipEffect({required this.id, required this.type});
 
   final String id;
   final EffectType type;
@@ -193,11 +256,6 @@ class FadeEffect extends ClipEffect {
   }
 }
 
-enum EffectType {
-  fade,
-}
+enum EffectType { fade }
 
-enum FadeDirection {
-  fadeIn,
-  fadeOut,
-}
+enum FadeDirection { fadeIn, fadeOut }
