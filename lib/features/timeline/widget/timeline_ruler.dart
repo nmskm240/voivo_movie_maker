@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 class TimelineRuler extends StatelessWidget {
   const TimelineRuler({super.key});
 
+  static const height = 32.0;
+
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(painter: _TimeRulerPainter());
+    return SizedBox(
+      height: height,
+      child: CustomPaint(painter: _TimeRulerPainter()),
+    );
   }
 }
 

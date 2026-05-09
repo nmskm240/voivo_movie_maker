@@ -41,7 +41,7 @@ final class LoadedProjectProvider
   }
 }
 
-String _$loadedProjectHash() => r'b937659696a227183fbaf6c818b3847a277a5f9c';
+String _$loadedProjectHash() => r'8bae4bc3b4b98c83bcf940a599ce2bcb22b0ca71';
 
 abstract class _$LoadedProject extends $Notifier<Project> {
   Project build();

@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 
 part 'playback_controller_provider.freezed.dart';
 part 'playback_controller_provider.g.dart';
@@ -18,8 +21,6 @@ sealed class PlaybackInfo with _$PlaybackInfo {
 
 @riverpod
 class PlaybackController extends _$PlaybackController {
-  static const fps = 30;
-
   @override
   PlaybackInfo build() {
     return const PlaybackInfo.stopped(currentFrame: 0);
@@ -38,7 +39,7 @@ class PlaybackController extends _$PlaybackController {
   }
 
   void seek(int frame) {
-    state = PlaybackInfo.stopped(currentFrame: frame);
+    state = PlaybackInfo.stopped(currentFrame: max(0, frame));
   }
 
   void onTick(Duration elapsed) {
@@ -47,6 +48,7 @@ class PlaybackController extends _$PlaybackController {
       return;
     }
 
+    final fps = ref.read(loadedProjectProvider).fps;
     final delta = elapsed - current.playStartElapsed;
     final frame =
         current.playStartFrame + (delta.inMicroseconds / 1000000 * fps).floor();

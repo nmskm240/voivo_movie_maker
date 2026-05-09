@@ -64,4 +64,80 @@ class TimelineEditor extends _$TimelineEditor {
         .read(loadedProjectProvider.notifier)
         .updateTimeline(Timeline(tracks: updatedTracks));
   }
+
+  void moveClip({
+    required String trackId,
+    required String clipId,
+    required int startFrame,
+  }) {
+    final project = ref.read(loadedProjectProvider);
+    final timeline = project.timeline;
+    final resolvedStartFrame = startFrame < 0 ? 0 : startFrame;
+    final tracks = timeline.tracks.toList();
+    final trackIndex = tracks.indexWhere((track) => track.id == trackId);
+    if (trackIndex == -1) {
+      return;
+    }
+
+    final track = tracks[trackIndex];
+    final clips = track.clips.toList();
+    final clipIndex = clips.indexWhere((clip) => clip.id == clipId);
+    if (clipIndex == -1) {
+      return;
+    }
+
+    final clip = clips[clipIndex];
+    clips[clipIndex] = TimelineClip(
+      id: clip.id,
+      startFrame: resolvedStartFrame,
+      durationFrames: clip.durationFrames,
+      content: clip.content,
+    );
+
+    final updatedTracks = List<TimelineTrack>.of(tracks);
+    updatedTracks[trackIndex] = TimelineTrack(id: track.id, clips: clips);
+
+    ref
+        .read(loadedProjectProvider.notifier)
+        .updateTimeline(Timeline(tracks: updatedTracks));
+  }
+
+  void resizeClip({
+    required String trackId,
+    required String clipId,
+    required int startFrame,
+    required int durationFrames,
+  }) {
+    final resolvedStartFrame = startFrame < 0 ? 0 : startFrame;
+    final resolvedDurationFrames = durationFrames < 1 ? 1 : durationFrames;
+    final project = ref.read(loadedProjectProvider);
+    final timeline = project.timeline;
+    final tracks = timeline.tracks.toList();
+    final trackIndex = tracks.indexWhere((track) => track.id == trackId);
+    if (trackIndex == -1) {
+      return;
+    }
+
+    final track = tracks[trackIndex];
+    final clips = track.clips.toList();
+    final clipIndex = clips.indexWhere((clip) => clip.id == clipId);
+    if (clipIndex == -1) {
+      return;
+    }
+
+    final clip = clips[clipIndex];
+    clips[clipIndex] = TimelineClip(
+      id: clip.id,
+      startFrame: resolvedStartFrame,
+      durationFrames: resolvedDurationFrames,
+      content: clip.content,
+    );
+
+    final updatedTracks = List<TimelineTrack>.of(tracks);
+    updatedTracks[trackIndex] = TimelineTrack(id: track.id, clips: clips);
+
+    ref
+        .read(loadedProjectProvider.notifier)
+        .updateTimeline(Timeline(tracks: updatedTracks));
+  }
 }
