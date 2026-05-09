@@ -7,7 +7,7 @@ part 'timeline_info.freezed.dart';
 @freezed
 sealed class TimelineInfo with _$TimelineInfo {
   const factory TimelineInfo({required List<TimelineTrackInfo> tracks}) =
-      __TimelineInfo;
+      _TimelineInfo;
 
   factory TimelineInfo.fromEntity(Timeline entity) {
     return TimelineInfo(

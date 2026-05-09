@@ -9,7 +9,7 @@ sealed class TimelineTrackInfo with _$TimelineTrackInfo {
   const factory TimelineTrackInfo({
     required String id,
     required List<TimelineClipInfo> clips,
-  }) = __TimelineTrackInfo;
+  }) = _TimelineTrackInfo;
 
   factory TimelineTrackInfo.fromEntity(TimelineTrack entity) {
     return TimelineTrackInfo(

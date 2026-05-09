@@ -86,10 +86,10 @@ extension TimelineInfoPatterns on TimelineInfo {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( __TimelineInfo value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TimelineInfo value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case __TimelineInfo() when $default != null:
+case _TimelineInfo() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -108,10 +108,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( __TimelineInfo value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TimelineInfo value)  $default,){
 final _that = this;
 switch (_that) {
-case __TimelineInfo():
+case _TimelineInfo():
 return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -126,10 +126,10 @@ return $default(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( __TimelineInfo value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TimelineInfo value)?  $default,){
 final _that = this;
 switch (_that) {
-case __TimelineInfo() when $default != null:
+case _TimelineInfo() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -149,7 +149,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TimelineTrackInfo> tracks)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case __TimelineInfo() when $default != null:
+case _TimelineInfo() when $default != null:
 return $default(_that.tracks);case _:
   return orElse();
 
@@ -170,7 +170,7 @@ return $default(_that.tracks);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TimelineTrackInfo> tracks)  $default,) {final _that = this;
 switch (_that) {
-case __TimelineInfo():
+case _TimelineInfo():
 return $default(_that.tracks);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -187,7 +187,7 @@ return $default(_that.tracks);}
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TimelineTrackInfo> tracks)?  $default,) {final _that = this;
 switch (_that) {
-case __TimelineInfo() when $default != null:
+case _TimelineInfo() when $default != null:
 return $default(_that.tracks);case _:
   return null;
 
@@ -199,8 +199,8 @@ return $default(_that.tracks);case _:
 /// @nodoc
 
 
-class __TimelineInfo implements TimelineInfo {
-  const __TimelineInfo({required final  List<TimelineTrackInfo> tracks}): _tracks = tracks;
+class _TimelineInfo implements TimelineInfo {
+  const _TimelineInfo({required final  List<TimelineTrackInfo> tracks}): _tracks = tracks;
   
 
  final  List<TimelineTrackInfo> _tracks;
@@ -215,13 +215,13 @@ class __TimelineInfo implements TimelineInfo {
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$_TimelineInfoCopyWith<__TimelineInfo> get copyWith => __$_TimelineInfoCopyWithImpl<__TimelineInfo>(this, _$identity);
+_$TimelineInfoCopyWith<_TimelineInfo> get copyWith => __$TimelineInfoCopyWithImpl<_TimelineInfo>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is __TimelineInfo&&const DeepCollectionEquality().equals(other._tracks, _tracks));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineInfo&&const DeepCollectionEquality().equals(other._tracks, _tracks));
 }
 
 
@@ -237,8 +237,8 @@ String toString() {
 }
 
 /// @nodoc
-abstract mixin class _$_TimelineInfoCopyWith<$Res> implements $TimelineInfoCopyWith<$Res> {
-  factory _$_TimelineInfoCopyWith(__TimelineInfo value, $Res Function(__TimelineInfo) _then) = __$_TimelineInfoCopyWithImpl;
+abstract mixin class _$TimelineInfoCopyWith<$Res> implements $TimelineInfoCopyWith<$Res> {
+  factory _$TimelineInfoCopyWith(_TimelineInfo value, $Res Function(_TimelineInfo) _then) = __$TimelineInfoCopyWithImpl;
 @override @useResult
 $Res call({
  List<TimelineTrackInfo> tracks
@@ -249,17 +249,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$_TimelineInfoCopyWithImpl<$Res>
-    implements _$_TimelineInfoCopyWith<$Res> {
-  __$_TimelineInfoCopyWithImpl(this._self, this._then);
+class __$TimelineInfoCopyWithImpl<$Res>
+    implements _$TimelineInfoCopyWith<$Res> {
+  __$TimelineInfoCopyWithImpl(this._self, this._then);
 
-  final __TimelineInfo _self;
-  final $Res Function(__TimelineInfo) _then;
+  final _TimelineInfo _self;
+  final $Res Function(_TimelineInfo) _then;
 
 /// Create a copy of TimelineInfo
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? tracks = null,}) {
-  return _then(__TimelineInfo(
+  return _then(_TimelineInfo(
 tracks: null == tracks ? _self._tracks : tracks // ignore: cast_nullable_to_non_nullable
 as List<TimelineTrackInfo>,
   ));

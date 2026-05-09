@@ -87,10 +87,10 @@ extension TimelineTrackInfoPatterns on TimelineTrackInfo {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( __TimelineTrackInfo value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TimelineTrackInfo value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case __TimelineTrackInfo() when $default != null:
+case _TimelineTrackInfo() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -109,10 +109,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( __TimelineTrackInfo value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TimelineTrackInfo value)  $default,){
 final _that = this;
 switch (_that) {
-case __TimelineTrackInfo():
+case _TimelineTrackInfo():
 return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -127,10 +127,10 @@ return $default(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( __TimelineTrackInfo value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TimelineTrackInfo value)?  $default,){
 final _that = this;
 switch (_that) {
-case __TimelineTrackInfo() when $default != null:
+case _TimelineTrackInfo() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -150,7 +150,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  List<TimelineClipInfo> clips)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case __TimelineTrackInfo() when $default != null:
+case _TimelineTrackInfo() when $default != null:
 return $default(_that.id,_that.clips);case _:
   return orElse();
 
@@ -171,7 +171,7 @@ return $default(_that.id,_that.clips);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  List<TimelineClipInfo> clips)  $default,) {final _that = this;
 switch (_that) {
-case __TimelineTrackInfo():
+case _TimelineTrackInfo():
 return $default(_that.id,_that.clips);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -188,7 +188,7 @@ return $default(_that.id,_that.clips);}
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  List<TimelineClipInfo> clips)?  $default,) {final _that = this;
 switch (_that) {
-case __TimelineTrackInfo() when $default != null:
+case _TimelineTrackInfo() when $default != null:
 return $default(_that.id,_that.clips);case _:
   return null;
 
@@ -200,8 +200,8 @@ return $default(_that.id,_that.clips);case _:
 /// @nodoc
 
 
-class __TimelineTrackInfo implements TimelineTrackInfo {
-  const __TimelineTrackInfo({required this.id, required final  List<TimelineClipInfo> clips}): _clips = clips;
+class _TimelineTrackInfo implements TimelineTrackInfo {
+  const _TimelineTrackInfo({required this.id, required final  List<TimelineClipInfo> clips}): _clips = clips;
   
 
 @override final  String id;
@@ -217,13 +217,13 @@ class __TimelineTrackInfo implements TimelineTrackInfo {
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$_TimelineTrackInfoCopyWith<__TimelineTrackInfo> get copyWith => __$_TimelineTrackInfoCopyWithImpl<__TimelineTrackInfo>(this, _$identity);
+_$TimelineTrackInfoCopyWith<_TimelineTrackInfo> get copyWith => __$TimelineTrackInfoCopyWithImpl<_TimelineTrackInfo>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is __TimelineTrackInfo&&(identical(other.id, id) || other.id == id)&&const DeepCollectionEquality().equals(other._clips, _clips));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineTrackInfo&&(identical(other.id, id) || other.id == id)&&const DeepCollectionEquality().equals(other._clips, _clips));
 }
 
 
@@ -239,8 +239,8 @@ String toString() {
 }
 
 /// @nodoc
-abstract mixin class _$_TimelineTrackInfoCopyWith<$Res> implements $TimelineTrackInfoCopyWith<$Res> {
-  factory _$_TimelineTrackInfoCopyWith(__TimelineTrackInfo value, $Res Function(__TimelineTrackInfo) _then) = __$_TimelineTrackInfoCopyWithImpl;
+abstract mixin class _$TimelineTrackInfoCopyWith<$Res> implements $TimelineTrackInfoCopyWith<$Res> {
+  factory _$TimelineTrackInfoCopyWith(_TimelineTrackInfo value, $Res Function(_TimelineTrackInfo) _then) = __$TimelineTrackInfoCopyWithImpl;
 @override @useResult
 $Res call({
  String id, List<TimelineClipInfo> clips
@@ -251,17 +251,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$_TimelineTrackInfoCopyWithImpl<$Res>
-    implements _$_TimelineTrackInfoCopyWith<$Res> {
-  __$_TimelineTrackInfoCopyWithImpl(this._self, this._then);
+class __$TimelineTrackInfoCopyWithImpl<$Res>
+    implements _$TimelineTrackInfoCopyWith<$Res> {
+  __$TimelineTrackInfoCopyWithImpl(this._self, this._then);
 
-  final __TimelineTrackInfo _self;
-  final $Res Function(__TimelineTrackInfo) _then;
+  final _TimelineTrackInfo _self;
+  final $Res Function(_TimelineTrackInfo) _then;
 
 /// Create a copy of TimelineTrackInfo
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clips = null,}) {
-  return _then(__TimelineTrackInfo(
+  return _then(_TimelineTrackInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clips: null == clips ? _self._clips : clips // ignore: cast_nullable_to_non_nullable
 as List<TimelineClipInfo>,

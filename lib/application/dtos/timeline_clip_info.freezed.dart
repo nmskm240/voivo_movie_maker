@@ -88,10 +88,10 @@ extension TimelineClipInfoPatterns on TimelineClipInfo {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( __TimelineClipInfo value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TimelineClipInfo value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case __TimelineClipInfo() when $default != null:
+case _TimelineClipInfo() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -110,10 +110,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( __TimelineClipInfo value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TimelineClipInfo value)  $default,){
 final _that = this;
 switch (_that) {
-case __TimelineClipInfo():
+case _TimelineClipInfo():
 return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -128,10 +128,10 @@ return $default(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( __TimelineClipInfo value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TimelineClipInfo value)?  $default,){
 final _that = this;
 switch (_that) {
-case __TimelineClipInfo() when $default != null:
+case _TimelineClipInfo() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -151,7 +151,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int startFrame,  int durationFrames)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case __TimelineClipInfo() when $default != null:
+case _TimelineClipInfo() when $default != null:
 return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
   return orElse();
 
@@ -172,7 +172,7 @@ return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int startFrame,  int durationFrames)  $default,) {final _that = this;
 switch (_that) {
-case __TimelineClipInfo():
+case _TimelineClipInfo():
 return $default(_that.id,_that.startFrame,_that.durationFrames);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -189,7 +189,7 @@ return $default(_that.id,_that.startFrame,_that.durationFrames);}
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int startFrame,  int durationFrames)?  $default,) {final _that = this;
 switch (_that) {
-case __TimelineClipInfo() when $default != null:
+case _TimelineClipInfo() when $default != null:
 return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
   return null;
 
@@ -201,8 +201,8 @@ return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
 /// @nodoc
 
 
-class __TimelineClipInfo implements TimelineClipInfo {
-  const __TimelineClipInfo({required this.id, required this.startFrame, required this.durationFrames});
+class _TimelineClipInfo implements TimelineClipInfo {
+  const _TimelineClipInfo({required this.id, required this.startFrame, required this.durationFrames});
   
 
 @override final  String id;
@@ -213,13 +213,13 @@ class __TimelineClipInfo implements TimelineClipInfo {
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$_TimelineClipInfoCopyWith<__TimelineClipInfo> get copyWith => __$_TimelineClipInfoCopyWithImpl<__TimelineClipInfo>(this, _$identity);
+_$TimelineClipInfoCopyWith<_TimelineClipInfo> get copyWith => __$TimelineClipInfoCopyWithImpl<_TimelineClipInfo>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is __TimelineClipInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.startFrame, startFrame) || other.startFrame == startFrame)&&(identical(other.durationFrames, durationFrames) || other.durationFrames == durationFrames));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineClipInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.startFrame, startFrame) || other.startFrame == startFrame)&&(identical(other.durationFrames, durationFrames) || other.durationFrames == durationFrames));
 }
 
 
@@ -235,8 +235,8 @@ String toString() {
 }
 
 /// @nodoc
-abstract mixin class _$_TimelineClipInfoCopyWith<$Res> implements $TimelineClipInfoCopyWith<$Res> {
-  factory _$_TimelineClipInfoCopyWith(__TimelineClipInfo value, $Res Function(__TimelineClipInfo) _then) = __$_TimelineClipInfoCopyWithImpl;
+abstract mixin class _$TimelineClipInfoCopyWith<$Res> implements $TimelineClipInfoCopyWith<$Res> {
+  factory _$TimelineClipInfoCopyWith(_TimelineClipInfo value, $Res Function(_TimelineClipInfo) _then) = __$TimelineClipInfoCopyWithImpl;
 @override @useResult
 $Res call({
  String id, int startFrame, int durationFrames
@@ -247,17 +247,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$_TimelineClipInfoCopyWithImpl<$Res>
-    implements _$_TimelineClipInfoCopyWith<$Res> {
-  __$_TimelineClipInfoCopyWithImpl(this._self, this._then);
+class __$TimelineClipInfoCopyWithImpl<$Res>
+    implements _$TimelineClipInfoCopyWith<$Res> {
+  __$TimelineClipInfoCopyWithImpl(this._self, this._then);
 
-  final __TimelineClipInfo _self;
-  final $Res Function(__TimelineClipInfo) _then;
+  final _TimelineClipInfo _self;
+  final $Res Function(_TimelineClipInfo) _then;
 
 /// Create a copy of TimelineClipInfo
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,}) {
-  return _then(__TimelineClipInfo(
+  return _then(_TimelineClipInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
 as int,durationFrames: null == durationFrames ? _self.durationFrames : durationFrames // ignore: cast_nullable_to_non_nullable

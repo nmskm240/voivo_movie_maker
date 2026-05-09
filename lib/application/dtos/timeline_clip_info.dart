@@ -9,7 +9,7 @@ sealed class TimelineClipInfo with _$TimelineClipInfo {
     required String id,
     required int startFrame,
     required int durationFrames,
-  }) = __TimelineClipInfo;
+  }) = _TimelineClipInfo;
 
   factory TimelineClipInfo.fromEntity(TimelineClip entity) {
     return TimelineClipInfo(
