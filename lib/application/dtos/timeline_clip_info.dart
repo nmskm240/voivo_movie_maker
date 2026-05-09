@@ -1,0 +1,21 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:voivo_movie_maker/domain/timeline_clip.dart';
+
+part 'timeline_clip_info.freezed.dart';
+
+@freezed
+sealed class TimelineClipInfo with _$TimelineClipInfo {
+  const factory TimelineClipInfo({
+    required String id,
+    required int startFrame,
+    required int durationFrames,
+  }) = __TimelineClipInfo;
+
+  factory TimelineClipInfo.fromEntity(TimelineClip entity) {
+    return TimelineClipInfo(
+      id: entity.id,
+      startFrame: entity.startFrame,
+      durationFrames: entity.durationFrames,
+    );
+  }
+}
