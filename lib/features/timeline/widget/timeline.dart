@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/presentation/features/timeline/widget/playhead.dart';
-import 'package:voivo_movie_maker/presentation/features/timeline/widget/timeline_ruler.dart';
-import 'package:voivo_movie_maker/presentation/providers/playback_controller_provider.dart';
+import 'package:voivo_movie_maker/features/timeline/widget/playhead.dart';
+import 'package:voivo_movie_maker/features/timeline/widget/timeline_ruler.dart';
+import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
 
 const _timelineDurationFrames = 3600;
 

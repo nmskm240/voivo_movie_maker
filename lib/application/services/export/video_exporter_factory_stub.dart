@@ -1,4 +1,4 @@
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 import 'video_exporter.dart';
 
 VideoExporter createPlatformVideoExporter() {

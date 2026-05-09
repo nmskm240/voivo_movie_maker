@@ -1,4 +1,4 @@
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 
 Future<String> createPlatformDefaultExportOutputPath(Project project) async {
   final timestamp = DateTime.now()

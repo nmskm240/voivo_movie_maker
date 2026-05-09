@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:voivo_movie_maker/data/mock_timeline.dart';
-import 'package:voivo_movie_maker/services/export/ass_subtitle_builder.dart';
-import 'package:voivo_movie_maker/services/export/ffmpeg_command_builder.dart';
+import 'package:voivo_movie_maker/application/services/export/ass_subtitle_builder.dart';
+import 'package:voivo_movie_maker/application/services/export/ffmpeg_command_builder.dart';
 
 void main() {
   test('builds ASS subtitles from text clips', () {

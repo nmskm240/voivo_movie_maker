@@ -1,4 +1,4 @@
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 
 abstract class VideoExporter {
   Future<ExportResult> export(Project project, String outputPath);

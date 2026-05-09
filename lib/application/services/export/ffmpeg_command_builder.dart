@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 
 class FfmpegCommandBuilder {
   const FfmpegCommandBuilder();

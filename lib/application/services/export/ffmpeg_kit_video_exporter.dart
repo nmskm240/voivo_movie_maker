@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:ffmpeg_kit_extended_flutter/ffmpeg_kit_extended_flutter.dart';
 import 'package:path/path.dart' as path;
 
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 import 'ass_subtitle_builder.dart';
 import 'ffmpeg_command_builder.dart';
 import 'video_exporter.dart';

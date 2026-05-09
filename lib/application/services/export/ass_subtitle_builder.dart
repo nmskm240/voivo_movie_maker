@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 
 class AssSubtitleBuilder {
   const AssSubtitleBuilder();
@@ -35,6 +35,10 @@ class AssSubtitleBuilder {
 
     for (final track in project.timeline.tracks) {
       for (final clip in track.clips) {
+        if (clip.content is! TextContent) {
+          continue;
+        }
+
         buffer.writeln(_buildDialogue(project, clip));
       }
     }
@@ -42,28 +46,27 @@ class AssSubtitleBuilder {
     return buffer.toString();
   }
 
-  String _buildDialogue(Project project, TextClip clip) {
-    final start = _formatAssTime(
-      clip.startFrame / project.settings.fps,
-    );
+  String _buildDialogue(Project project, TimelineClip clip) {
+    final content = clip.content as TextContent;
+    final start = _formatAssTime(clip.startFrame / project.settings.fps);
     final end = _formatAssTime(
       (clip.startFrame + clip.durationFrames) / project.settings.fps,
     );
     final x = (project.settings.width * clip.transform.x).round();
     final y = (project.settings.height * clip.transform.y).round();
-    final fontSize = (clip.fontSize * clip.transform.scale).round();
+    final fontSize = (content.fontSize * clip.transform.scale).round();
     final alpha = _assAlpha(clip.transform.opacity);
-    final color = _assColor(clip.textColor);
+    final color = _assColor(content.textColor);
     final fade = _fadeTag(clip, project.settings.fps);
     final rotation = clip.transform.rotation == 0
         ? ''
         : '\\frz${clip.transform.rotation.toStringAsFixed(1)}';
-    final escapedText = _escapeAssText(clip.text);
+    final escapedText = _escapeAssText(content.text);
 
     return 'Dialogue: 0,$start,$end,Default,,0,0,0,,'
         '{\\an5'
         '\\pos($x,$y)'
-        '\\fn${_escapeAssTagValue(clip.fontFamily)}'
+        '\\fn${_escapeAssTagValue(content.fontFamily)}'
         '\\fs$fontSize'
         '\\c$color'
         '\\alpha$alpha'
@@ -72,7 +75,7 @@ class AssSubtitleBuilder {
         '}$escapedText';
   }
 
-  String _fadeTag(TextClip clip, int fps) {
+  String _fadeTag(TimelineClip clip, int fps) {
     var fadeInMs = 0;
     var fadeOutMs = 0;
 

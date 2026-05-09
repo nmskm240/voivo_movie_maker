@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/presentation/features/timeline/widget/timeline.dart';
-import 'package:voivo_movie_maker/presentation/providers/playback_controller_provider.dart';
+import 'package:voivo_movie_maker/features/timeline/widget/timeline.dart';
+import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
 
 class EditorScreen extends ConsumerStatefulWidget {
   const EditorScreen({super.key});

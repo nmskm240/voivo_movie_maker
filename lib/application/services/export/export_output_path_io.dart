@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-import '../../models/timeline.dart';
+import '../../../models/timeline.dart';
 
 Future<String> createPlatformDefaultExportOutputPath(Project project) async {
   final outputDirectory = await _resolveExportBaseDirectory();

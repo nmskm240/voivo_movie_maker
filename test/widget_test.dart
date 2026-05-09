@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:voivo_movie_maker/data/mock_timeline.dart';
 import 'package:voivo_movie_maker/main.dart';
+import 'package:voivo_movie_maker/view_models/editor_timeline_view_model.dart';
 import 'package:voivo_movie_maker/widgets/timeline.dart';
 
 void main() {
@@ -34,24 +35,15 @@ void main() {
   testWidgets('scrubs preview frame by dragging empty timeline area', (
     WidgetTester tester,
   ) async {
-    int? scrubbedFrame;
-    int? movedStartFrame;
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SizedBox(
-            width: 800,
-            height: 280,
-            child: TimelinePane(
-              timeline: mockProject.timeline,
-              currentFrame: 540,
-              selectedTrackIndex: 0,
-              selectedClipIndex: 1,
-              onSelectClip: (_, _) {},
-              onScrubFrame: (frame) => scrubbedFrame = frame,
-              onMoveClip: (_, _, startFrame) => movedStartFrame = startFrame,
-            ),
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: Scaffold(
+            body: SizedBox(width: 800, height: 280, child: TimelinePane()),
           ),
         ),
       ),
@@ -66,38 +58,23 @@ void main() {
     );
     await tester.pump();
 
-    expect(scrubbedFrame, isNotNull);
-    expect(scrubbedFrame, greaterThan(900));
-    expect(movedStartFrame, isNull);
+    final state = container.read(editorTimelineViewModelProvider);
+    expect(state.currentFrame, greaterThan(900));
+    expect(state.timeline.tracks[0].clips[0].startFrame, 120);
   });
 
   testWidgets('moves clip by dragging the clip body', (
     WidgetTester tester,
   ) async {
-    int? scrubbedFrame;
-    int? movedTrackIndex;
-    int? movedClipIndex;
-    int? movedStartFrame;
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SizedBox(
-            width: 800,
-            height: 280,
-            child: TimelinePane(
-              timeline: mockProject.timeline,
-              currentFrame: 120,
-              selectedTrackIndex: 0,
-              selectedClipIndex: 0,
-              onSelectClip: (_, _) {},
-              onScrubFrame: (frame) => scrubbedFrame = frame,
-              onMoveClip: (trackIndex, clipIndex, startFrame) {
-                movedTrackIndex = trackIndex;
-                movedClipIndex = clipIndex;
-                movedStartFrame = startFrame;
-              },
-            ),
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: Scaffold(
+            body: SizedBox(width: 800, height: 280, child: TimelinePane()),
           ),
         ),
       ),
@@ -109,9 +86,75 @@ void main() {
     );
     await tester.pump();
 
-    expect(scrubbedFrame, isNull);
-    expect(movedTrackIndex, 0);
-    expect(movedClipIndex, 0);
-    expect(movedStartFrame, greaterThan(120));
+    final state = container.read(editorTimelineViewModelProvider);
+    expect(state.selectedTrackIndex, 0);
+    expect(state.selectedClipIndex, 0);
+    expect(state.currentFrame, greaterThan(120));
+    expect(state.timeline.tracks[0].clips[0].startFrame, greaterThan(120));
+  });
+
+  testWidgets('extends clip duration by dragging the right edge', (
+    WidgetTester tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: Scaffold(
+            body: SizedBox(width: 800, height: 280, child: TimelinePane()),
+          ),
+        ),
+      ),
+    );
+
+    await tester.drag(
+      find.byKey(const ValueKey('timeline-clip-clip-title-end-handle')),
+      const Offset(80, 0),
+    );
+    await tester.pump();
+
+    final clip = container
+        .read(editorTimelineViewModelProvider)
+        .timeline
+        .tracks[0]
+        .clips[0];
+    expect(clip.startFrame, 120);
+    expect(clip.durationFrames, greaterThan(240));
+  });
+
+  testWidgets('trims clip start by dragging the left edge', (
+    WidgetTester tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: Scaffold(
+            body: SizedBox(width: 800, height: 280, child: TimelinePane()),
+          ),
+        ),
+      ),
+    );
+
+    await tester.drag(
+      find.byKey(const ValueKey('timeline-clip-clip-title-start-handle')),
+      const Offset(80, 0),
+    );
+    await tester.pump();
+
+    final clip = container
+        .read(editorTimelineViewModelProvider)
+        .timeline
+        .tracks[0]
+        .clips[0];
+    expect(clip.startFrame, greaterThan(120));
+    expect(clip.durationFrames, lessThan(240));
+    expect(clip.endFrame, 360);
   });
 }
