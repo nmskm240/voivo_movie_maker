@@ -5,6 +5,10 @@ class Timeline {
   Timeline({Iterable<TimelineTrack> tracks = const []})
     : _tracks = tracks.toList();
 
+  factory Timeline.empty() {
+    return Timeline(tracks: List.generate(50, (index) => TimelineTrack()));
+  }
+
   final List<TimelineTrack> _tracks;
 
   Iterable<TimelineTrack> get tracks => _tracks;

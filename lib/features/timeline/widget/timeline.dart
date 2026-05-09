@@ -16,11 +16,13 @@ class TimelinePane extends ConsumerStatefulWidget {
 }
 
 class _TimelinePaneState extends ConsumerState<TimelinePane> {
-  final _scrollController = ScrollController();
+  final _horizontalScrollController = ScrollController();
+  final _verticalScrollController = ScrollController();
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _horizontalScrollController.dispose();
+    _verticalScrollController.dispose();
     super.dispose();
   }
 
@@ -30,18 +32,16 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
     final playbackController = ref.read(playbackControllerProvider.notifier);
     final timeline = ref.watch(timelineEditorProvider);
     final timelineEditor = ref.read(timelineEditorProvider.notifier);
-    final tracksHeight = timeline.tracks.length * TimelineTrackView.height;
 
     return Expanded(
       child: Scrollbar(
-        controller: _scrollController,
+        controller: _horizontalScrollController,
         thumbVisibility: true,
         child: SingleChildScrollView(
-          controller: _scrollController,
+          controller: _horizontalScrollController,
           scrollDirection: Axis.horizontal,
           child: SizedBox(
             width: _timelineDurationFrames.toDouble(),
-            height: TimelineRuler.height + tracksHeight,
             child: Stack(
               children: [
                 Column(
@@ -61,18 +61,31 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
                       },
                       child: const TimelineRuler(),
                     ),
-                    for (final (trackIndex, track) in timeline.tracks.indexed)
-                      TimelineTrackView(
-                        track: track,
-                        index: trackIndex,
-                        onSeekFrame: playbackController.seek,
-                        onAddClip: (startFrame) {
-                          timelineEditor.addTextClip(
-                            trackIndex: trackIndex,
-                            startFrame: startFrame,
-                          );
-                        },
+                    Expanded(
+                      child: Scrollbar(
+                        controller: _verticalScrollController,
+                        thumbVisibility: true,
+                        child: ListView.builder(
+                          controller: _verticalScrollController,
+                          itemExtent: TimelineTrackView.height,
+                          itemCount: timeline.tracks.length,
+                          itemBuilder: (context, index) {
+                            final track = timeline.tracks[index];
+                            return TimelineTrackView(
+                              track: track,
+                              index: index,
+                              onSeekFrame: playbackController.seek,
+                              onAddClip: (startFrame) {
+                                timelineEditor.addTextClip(
+                                  trackIndex: index,
+                                  startFrame: startFrame,
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
+                    ),
                   ],
                 ),
                 Positioned(

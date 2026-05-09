@@ -6,8 +6,14 @@ class Project {
     this.height = 1080,
     this.fps = 30,
     this.sampleRate = 48,
-    Timeline? timeline,
-  }) : timeline = timeline ?? Timeline();
+    required this.timeline,
+  });
+
+  factory Project.empty() {
+    return Project(
+      timeline: Timeline.empty(),
+    );
+  }
 
   final int width;
   final int height;
