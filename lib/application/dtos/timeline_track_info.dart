@@ -6,14 +6,11 @@ part 'timeline_track_info.freezed.dart';
 
 @freezed
 sealed class TimelineTrackInfo with _$TimelineTrackInfo {
-  const factory TimelineTrackInfo({
-    required String id,
-    required List<TimelineClipInfo> clips,
-  }) = _TimelineTrackInfo;
+  const factory TimelineTrackInfo({required List<TimelineClipInfo> clips}) =
+      _TimelineTrackInfo;
 
   factory TimelineTrackInfo.fromEntity(TimelineTrack entity) {
     return TimelineTrackInfo(
-      id: entity.id,
       clips: entity.clips.map(TimelineClipInfo.fromEntity).toList(),
     );
   }

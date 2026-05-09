@@ -9,9 +9,7 @@ part "loaded_project_provider.g.dart";
 class LoadedProject extends _$LoadedProject {
   @override
   Project build() {
-    return Project(
-      timeline: Timeline(tracks: [TimelineTrack(id: 'track-1')]),
-    );
+    return Project(timeline: Timeline(tracks: [TimelineTrack()]));
   }
 
   void updateTimeline(Timeline timeline) {

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TimelineTrackInfo {
 
- String get id; List<TimelineClipInfo> get clips;
+ List<TimelineClipInfo> get clips;
 /// Create a copy of TimelineTrackInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TimelineTrackInfoCopyWith<TimelineTrackInfo> get copyWith => _$TimelineTrackInf
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineTrackInfo&&(identical(other.id, id) || other.id == id)&&const DeepCollectionEquality().equals(other.clips, clips));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineTrackInfo&&const DeepCollectionEquality().equals(other.clips, clips));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,const DeepCollectionEquality().hash(clips));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(clips));
 
 @override
 String toString() {
-  return 'TimelineTrackInfo(id: $id, clips: $clips)';
+  return 'TimelineTrackInfo(clips: $clips)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TimelineTrackInfoCopyWith<$Res>  {
   factory $TimelineTrackInfoCopyWith(TimelineTrackInfo value, $Res Function(TimelineTrackInfo) _then) = _$TimelineTrackInfoCopyWithImpl;
 @useResult
 $Res call({
- String id, List<TimelineClipInfo> clips
+ List<TimelineClipInfo> clips
 });
 
 
@@ -62,10 +62,9 @@ class _$TimelineTrackInfoCopyWithImpl<$Res>
 
 /// Create a copy of TimelineTrackInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clips = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? clips = null,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,clips: null == clips ? _self.clips : clips // ignore: cast_nullable_to_non_nullable
+clips: null == clips ? _self.clips : clips // ignore: cast_nullable_to_non_nullable
 as List<TimelineClipInfo>,
   ));
 }
@@ -148,10 +147,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  List<TimelineClipInfo> clips)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TimelineClipInfo> clips)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TimelineTrackInfo() when $default != null:
-return $default(_that.id,_that.clips);case _:
+return $default(_that.clips);case _:
   return orElse();
 
 }
@@ -169,10 +168,10 @@ return $default(_that.id,_that.clips);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  List<TimelineClipInfo> clips)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TimelineClipInfo> clips)  $default,) {final _that = this;
 switch (_that) {
 case _TimelineTrackInfo():
-return $default(_that.id,_that.clips);}
+return $default(_that.clips);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -186,10 +185,10 @@ return $default(_that.id,_that.clips);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  List<TimelineClipInfo> clips)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TimelineClipInfo> clips)?  $default,) {final _that = this;
 switch (_that) {
 case _TimelineTrackInfo() when $default != null:
-return $default(_that.id,_that.clips);case _:
+return $default(_that.clips);case _:
   return null;
 
 }
@@ -201,10 +200,9 @@ return $default(_that.id,_that.clips);case _:
 
 
 class _TimelineTrackInfo implements TimelineTrackInfo {
-  const _TimelineTrackInfo({required this.id, required final  List<TimelineClipInfo> clips}): _clips = clips;
+  const _TimelineTrackInfo({required final  List<TimelineClipInfo> clips}): _clips = clips;
   
 
-@override final  String id;
  final  List<TimelineClipInfo> _clips;
 @override List<TimelineClipInfo> get clips {
   if (_clips is EqualUnmodifiableListView) return _clips;
@@ -223,16 +221,16 @@ _$TimelineTrackInfoCopyWith<_TimelineTrackInfo> get copyWith => __$TimelineTrack
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineTrackInfo&&(identical(other.id, id) || other.id == id)&&const DeepCollectionEquality().equals(other._clips, _clips));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineTrackInfo&&const DeepCollectionEquality().equals(other._clips, _clips));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,const DeepCollectionEquality().hash(_clips));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_clips));
 
 @override
 String toString() {
-  return 'TimelineTrackInfo(id: $id, clips: $clips)';
+  return 'TimelineTrackInfo(clips: $clips)';
 }
 
 
@@ -243,7 +241,7 @@ abstract mixin class _$TimelineTrackInfoCopyWith<$Res> implements $TimelineTrack
   factory _$TimelineTrackInfoCopyWith(_TimelineTrackInfo value, $Res Function(_TimelineTrackInfo) _then) = __$TimelineTrackInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, List<TimelineClipInfo> clips
+ List<TimelineClipInfo> clips
 });
 
 
@@ -260,10 +258,9 @@ class __$TimelineTrackInfoCopyWithImpl<$Res>
 
 /// Create a copy of TimelineTrackInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clips = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? clips = null,}) {
   return _then(_TimelineTrackInfo(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,clips: null == clips ? _self._clips : clips // ignore: cast_nullable_to_non_nullable
+clips: null == clips ? _self._clips : clips // ignore: cast_nullable_to_non_nullable
 as List<TimelineClipInfo>,
   ));
 }

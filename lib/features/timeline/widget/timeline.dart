@@ -68,23 +68,8 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
                         onSeekFrame: playbackController.seek,
                         onAddClip: (startFrame) {
                           timelineEditor.addTextClip(
-                            trackId: track.id,
+                            trackIndex: trackIndex,
                             startFrame: startFrame,
-                          );
-                        },
-                        onMoveClip: (clipId, startFrame) {
-                          timelineEditor.moveClip(
-                            trackId: track.id,
-                            clipId: clipId,
-                            startFrame: startFrame,
-                          );
-                        },
-                        onResizeClip: (clipId, startFrame, durationFrames) {
-                          timelineEditor.resizeClip(
-                            trackId: track.id,
-                            clipId: clipId,
-                            startFrame: startFrame,
-                            durationFrames: durationFrames,
                           );
                         },
                       ),

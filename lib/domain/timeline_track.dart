@@ -1,10 +1,9 @@
 import 'package:voivo_movie_maker/domain/timeline_clip.dart';
 
 class TimelineTrack {
-  TimelineTrack({required this.id, Iterable<TimelineClip> clips = const []})
+  TimelineTrack({Iterable<TimelineClip> clips = const []})
     : _clips = clips.toList();
 
-  final String id;
   final List<TimelineClip> _clips;
 
   Iterable<TimelineClip> get clips => _clips;
@@ -16,8 +15,8 @@ class TimelineTrack {
     _clips.add(clip);
   }
 
-  void removeClip(String id) {
-    _clips.removeWhere((x) => x.id == id);
+  void removeClip(String clipId) {
+    _clips.removeWhere((x) => x.id == clipId);
   }
 
   TimelineClip? getActiveClipAt(int frame) {
@@ -27,14 +26,4 @@ class TimelineTrack {
       return null;
     }
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is TimelineTrack && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
 }

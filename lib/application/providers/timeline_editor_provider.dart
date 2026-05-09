@@ -20,7 +20,7 @@ class TimelineEditor extends _$TimelineEditor {
   }
 
   void addTextClip({
-    required String trackId,
+    required int trackIndex,
     required int startFrame,
     int durationFrames = defaultTimelineClipDurationFrames,
     String text = 'New Clip',
@@ -47,18 +47,13 @@ class TimelineEditor extends _$TimelineEditor {
     );
 
     final tracks = timeline.tracks.toList();
-    final trackIndex = tracks.indexWhere((track) => track.id == trackId);
-    final updatedTracks = List<TimelineTrack>.of(tracks);
-
-    if (trackIndex == -1) {
-      updatedTracks.add(TimelineTrack(id: trackId, clips: [clip]));
-    } else {
-      final track = tracks[trackIndex];
-      updatedTracks[trackIndex] = TimelineTrack(
-        id: track.id,
-        clips: [...track.clips, clip],
-      );
+    if (trackIndex < 0 || trackIndex >= tracks.length) {
+      return;
     }
+
+    final updatedTracks = List<TimelineTrack>.of(tracks);
+    final track = tracks[trackIndex];
+    updatedTracks[trackIndex] = TimelineTrack(clips: [...track.clips, clip]);
 
     ref
         .read(loadedProjectProvider.notifier)
@@ -66,7 +61,7 @@ class TimelineEditor extends _$TimelineEditor {
   }
 
   void moveClip({
-    required String trackId,
+    required int trackIndex,
     required String clipId,
     required int startFrame,
   }) {
@@ -74,8 +69,7 @@ class TimelineEditor extends _$TimelineEditor {
     final timeline = project.timeline;
     final resolvedStartFrame = startFrame < 0 ? 0 : startFrame;
     final tracks = timeline.tracks.toList();
-    final trackIndex = tracks.indexWhere((track) => track.id == trackId);
-    if (trackIndex == -1) {
+    if (trackIndex < 0 || trackIndex >= tracks.length) {
       return;
     }
 
@@ -95,7 +89,7 @@ class TimelineEditor extends _$TimelineEditor {
     );
 
     final updatedTracks = List<TimelineTrack>.of(tracks);
-    updatedTracks[trackIndex] = TimelineTrack(id: track.id, clips: clips);
+    updatedTracks[trackIndex] = TimelineTrack(clips: clips);
 
     ref
         .read(loadedProjectProvider.notifier)
@@ -103,7 +97,7 @@ class TimelineEditor extends _$TimelineEditor {
   }
 
   void resizeClip({
-    required String trackId,
+    required int trackIndex,
     required String clipId,
     required int startFrame,
     required int durationFrames,
@@ -113,8 +107,7 @@ class TimelineEditor extends _$TimelineEditor {
     final project = ref.read(loadedProjectProvider);
     final timeline = project.timeline;
     final tracks = timeline.tracks.toList();
-    final trackIndex = tracks.indexWhere((track) => track.id == trackId);
-    if (trackIndex == -1) {
+    if (trackIndex < 0 || trackIndex >= tracks.length) {
       return;
     }
 
@@ -134,7 +127,7 @@ class TimelineEditor extends _$TimelineEditor {
     );
 
     final updatedTracks = List<TimelineTrack>.of(tracks);
-    updatedTracks[trackIndex] = TimelineTrack(id: track.id, clips: clips);
+    updatedTracks[trackIndex] = TimelineTrack(clips: clips);
 
     ref
         .read(loadedProjectProvider.notifier)

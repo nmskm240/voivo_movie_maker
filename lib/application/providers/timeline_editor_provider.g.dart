@@ -41,7 +41,7 @@ final class TimelineEditorProvider
   }
 }
 
-String _$timelineEditorHash() => r'0472fe8b68fddda366612229f92e015dcf8d32bf';
+String _$timelineEditorHash() => r'f2f9bd39634a1db3cf8e79806bd229bb786f9acc';
 
 abstract class _$TimelineEditor extends $Notifier<TimelineInfo> {
   TimelineInfo build();
