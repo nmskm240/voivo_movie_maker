@@ -79,4 +79,27 @@ class TimelineEditor {
     clip.trimEndTo(startFrame + durationFrames);
     _markChanged();
   }
+
+  void updateTextClip(
+    String clipId, {
+    String? text,
+    double? fontSize,
+    Color? textColor,
+  }) {
+    final clip = _timeline.getClipById(clipId);
+    final content = clip.content;
+    if (content is! TextContent) {
+      return;
+    }
+
+    clip.replaceContent(
+      TextContent(
+        text: text ?? content.text,
+        fontFamily: content.fontFamily,
+        fontSize: fontSize ?? content.fontSize,
+        textColor: textColor ?? content.textColor,
+      ),
+    );
+    _markChanged();
+  }
 }

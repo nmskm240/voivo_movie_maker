@@ -4,18 +4,20 @@ class TimelineClip {
   TimelineClip({
     required this.id,
     required int startFrame,
-    required this.content,
+    required ClipContent content,
     int durationFrames = 10,
   }) : assert(startFrame >= 0),
        assert(durationFrames > 0),
+       _content = content,
        _startFrame = startFrame,
        _durationFrames = durationFrames;
 
   final String id;
-  final ClipContent content;
+  ClipContent _content;
   int _startFrame;
   int _durationFrames;
 
+  ClipContent get content => _content;
   int get startFrame => _startFrame;
   int get durationFrames => _durationFrames;
   int get endFrame => _startFrame + _durationFrames;
@@ -53,6 +55,10 @@ class TimelineClip {
       throw ArgumentError.value(newEndFrame, 'newEndFrame');
     }
     _durationFrames = newEndFrame - _startFrame;
+  }
+
+  void replaceContent(ClipContent content) {
+    _content = content;
   }
 
   @override

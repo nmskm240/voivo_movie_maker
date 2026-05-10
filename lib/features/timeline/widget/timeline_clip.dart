@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
+import 'package:voivo_movie_maker/features/inspector/providers.dart';
 import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
 
 class TimelineClipView extends ConsumerStatefulWidget {
@@ -42,18 +43,24 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   @override
   Widget build(BuildContext context) {
     final editor = ref.watch(timelineEditorProvider);
+    final selectedClipId = ref.watch(selectedTimelineClipIdProvider);
+    final isSelected = selectedClipId == widget.clip.id;
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0xff78c257),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: const Color(0xffb7eaa0)),
+        border: Border.all(
+          color: isSelected ? const Color(0xffffffff) : const Color(0xffb7eaa0),
+          width: isSelected ? 2 : 1,
+        ),
       ),
       child: Stack(
         children: [
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
+              onTap: _selectClip,
               onPanStart: _startDrag,
               onPanUpdate: (details) {
                 widget.onAutoScroll(details.globalPosition);
@@ -115,6 +122,7 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   }
 
   void _startDrag(DragStartDetails details) {
+    _selectClip();
     _dragStartGlobalX = details.globalPosition.dx;
     _dragStartHorizontalScrollOffset =
         widget.horizontalScrollController.hasClients
@@ -152,6 +160,10 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
     return ((localPosition.dy + scrollOffset) / widget.trackHeight)
         .floor()
         .clamp(0, widget.trackCount - 1);
+  }
+
+  void _selectClip() {
+    ref.read(selectedTimelineClipIdProvider.notifier).select(widget.clip.id);
   }
 }
 
