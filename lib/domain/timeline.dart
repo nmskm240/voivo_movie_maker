@@ -13,10 +13,38 @@ class Timeline {
 
   Iterable<TimelineTrack> get tracks => _tracks;
 
+  void moveClipToTrack(String clipId, int targetTrackIndex) {
+    final sourceTrack = _tracks.singleWhere(
+      (track) => track.containsById(clipId),
+    );
+    final targetTrack = _tracks.elementAt(targetTrackIndex);
+    final clip = sourceTrack.findClip(clipId);
+    if (clip == null) {
+      return;
+    }
+
+    if (!targetTrack.canPlaceClip(clip)) {
+      return;
+    }
+
+    targetTrack.addClip(clip);
+    sourceTrack.removeClip(clipId);
+  }
+
   Iterable<TimelineClip> getActiveClipsAt(int frame) {
     return tracks
         .map((x) => x.getActiveClipAt(frame))
         .where((x) => x != null)
         .map((x) => x as TimelineClip);
+  }
+
+  TimelineClip getClipById(String clipId) {
+    return tracks
+        .expand((track) => track.clips)
+        .firstWhere((clip) => clip.id == clipId);
+  }
+
+  TimelineTrack getTrackByClipId(String clipId) {
+    return tracks.firstWhere((track) => track.containsById(clipId));
   }
 }

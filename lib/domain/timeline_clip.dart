@@ -24,6 +24,14 @@ class TimelineClip {
     return startFrame <= frame && frame < endFrame;
   }
 
+  bool isConflict(TimelineClip clip) {
+    if (clip == this) {
+      return false;
+    }
+
+    return startFrame < clip.endFrame && clip.startFrame < endFrame;
+  }
+
   void moveTo(int newStartFrame) {
     if (newStartFrame < 0) {
       throw ArgumentError.value(newStartFrame, 'newStartFrame');
