@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'timeline_editor_provider.dart';
+part of 'timeline_editor.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,11 +9,12 @@ part of 'timeline_editor_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(TimelineEditor)
+@ProviderFor(timelineEditor)
 final timelineEditorProvider = TimelineEditorProvider._();
 
 final class TimelineEditorProvider
-    extends $NotifierProvider<TimelineEditor, TimelineInfo> {
+    extends $FunctionalProvider<TimelineEditor, TimelineEditor, TimelineEditor>
+    with $Provider<TimelineEditor> {
   TimelineEditorProvider._()
     : super(
         from: null,
@@ -30,33 +31,21 @@ final class TimelineEditorProvider
 
   @$internal
   @override
-  TimelineEditor create() => TimelineEditor();
+  $ProviderElement<TimelineEditor> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TimelineEditor create(Ref ref) {
+    return timelineEditor(ref);
+  }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(TimelineInfo value) {
+  Override overrideWithValue(TimelineEditor value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<TimelineInfo>(value),
+      providerOverride: $SyncValueProvider<TimelineEditor>(value),
     );
   }
 }
 
-String _$timelineEditorHash() => r'f2f9bd39634a1db3cf8e79806bd229bb786f9acc';
-
-abstract class _$TimelineEditor extends $Notifier<TimelineInfo> {
-  TimelineInfo build();
-  @$mustCallSuper
-  @override
-  void runBuild() {
-    final ref = this.ref as $Ref<TimelineInfo, TimelineInfo>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<TimelineInfo, TimelineInfo>,
-              TimelineInfo,
-              Object?,
-              Object?
-            >;
-    element.handleCreate(ref, build);
-  }
-}
+String _$timelineEditorHash() => r'534507d129cca0dc951bdff3d72c5c6118b5d577';

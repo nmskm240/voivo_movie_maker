@@ -48,7 +48,7 @@ class PlaybackController extends _$PlaybackController {
       return;
     }
 
-    final fps = ref.read(loadedProjectProvider).fps;
+    final fps = ref.read(loadedProjectProvider).project.fps;
     final delta = elapsed - current.playStartElapsed;
     final frame =
         current.playStartFrame + (delta.inMicroseconds / 1000000 * fps).floor();

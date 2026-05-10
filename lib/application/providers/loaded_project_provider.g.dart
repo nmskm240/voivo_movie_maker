@@ -13,7 +13,7 @@ part of 'loaded_project_provider.dart';
 final loadedProjectProvider = LoadedProjectProvider._();
 
 final class LoadedProjectProvider
-    extends $NotifierProvider<LoadedProject, Project> {
+    extends $NotifierProvider<LoadedProject, ProjectSnapshot> {
   LoadedProjectProvider._()
     : super(
         from: null,
@@ -33,27 +33,27 @@ final class LoadedProjectProvider
   LoadedProject create() => LoadedProject();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Project value) {
+  Override overrideWithValue(ProjectSnapshot value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<Project>(value),
+      providerOverride: $SyncValueProvider<ProjectSnapshot>(value),
     );
   }
 }
 
-String _$loadedProjectHash() => r'335cf582577474a0092c783aa905340122616351';
+String _$loadedProjectHash() => r'5eeda637132b598457f9bcc9027ff9f0da6bed28';
 
-abstract class _$LoadedProject extends $Notifier<Project> {
-  Project build();
+abstract class _$LoadedProject extends $Notifier<ProjectSnapshot> {
+  ProjectSnapshot build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<Project, Project>;
+    final ref = this.ref as $Ref<ProjectSnapshot, ProjectSnapshot>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<Project, Project>,
-              Project,
+              AnyNotifier<ProjectSnapshot, ProjectSnapshot>,
+              ProjectSnapshot,
               Object?,
               Object?
             >;
