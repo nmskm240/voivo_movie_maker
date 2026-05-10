@@ -6,6 +6,11 @@ class TimelineTrackView extends StatelessWidget {
   const TimelineTrackView({
     required this.track,
     required this.index,
+    required this.trackCount,
+    required this.trackListKey,
+    required this.horizontalScrollController,
+    required this.trackScrollController,
+    required this.onAutoScroll,
     required this.onSeekFrame,
     required this.onAddClip,
     super.key,
@@ -13,6 +18,12 @@ class TimelineTrackView extends StatelessWidget {
 
   final TimelineTrackInfo track;
   final int index;
+  final int trackCount;
+  final GlobalKey trackListKey;
+  final ScrollController horizontalScrollController;
+  final ScrollController trackScrollController;
+  final void Function(Offset globalPosition, {bool horizontal, bool vertical})
+  onAutoScroll;
   final ValueChanged<int> onSeekFrame;
   final ValueChanged<int> onAddClip;
 
@@ -51,7 +62,17 @@ class TimelineTrackView extends StatelessWidget {
               bottom: 4,
               left: clip.startFrame.toDouble(),
               width: clip.durationFrames.toDouble(),
-              child: TimelineClipView(trackIndex: index, clip: clip),
+              child: TimelineClipView(
+                key: GlobalObjectKey(clip.id),
+                trackIndex: index,
+                trackCount: trackCount,
+                trackListKey: trackListKey,
+                horizontalScrollController: horizontalScrollController,
+                trackScrollController: trackScrollController,
+                trackHeight: TimelineTrackView.height,
+                onAutoScroll: onAutoScroll,
+                clip: clip,
+              ),
             ),
         ],
       ),

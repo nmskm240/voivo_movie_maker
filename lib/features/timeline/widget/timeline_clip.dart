@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
-import 'package:voivo_movie_maker/application/providers/timeline_clip_editor_provider.dart';
+import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
 
 class TimelineClipView extends ConsumerStatefulWidget {
   const TimelineClipView({
     required this.trackIndex,
+    required this.trackCount,
+    required this.trackListKey,
+    required this.horizontalScrollController,
+    required this.trackScrollController,
+    required this.trackHeight,
+    required this.onAutoScroll,
     required this.clip,
     super.key,
   });
 
   final int trackIndex;
+  final int trackCount;
+  final GlobalKey trackListKey;
+  final ScrollController horizontalScrollController;
+  final ScrollController trackScrollController;
+  final double trackHeight;
+  final void Function(Offset globalPosition, {bool horizontal, bool vertical})
+  onAutoScroll;
   final TimelineClipInfo clip;
 
   static const _handleWidth = 8.0;
@@ -21,18 +34,14 @@ class TimelineClipView extends ConsumerStatefulWidget {
 
 class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   double _dragStartGlobalX = 0;
+  double _dragStartHorizontalScrollOffset = 0;
   int _dragStartFrame = 0;
   int _dragStartDurationFrames = 1;
   int _dragStartEndFrame = 1;
 
   @override
   Widget build(BuildContext context) {
-    final editor = ref.read(
-      timelineClipEditorProvider((
-        trackIndex: widget.trackIndex,
-        clipId: widget.clip.id,
-      )),
-    );
+    final editor = ref.watch(timelineEditorProvider);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -45,9 +54,14 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onHorizontalDragStart: _startDrag,
-              onHorizontalDragUpdate: (details) {
-                editor.moveTo(_dragStartFrame + _deltaFrames(details));
+              onPanStart: _startDrag,
+              onPanUpdate: (details) {
+                widget.onAutoScroll(details.globalPosition);
+                editor.moveClipToTrack(
+                  widget.clip.id,
+                  startFrame: _dragStartFrame + _deltaFrames(details),
+                  targetTrackIndex: _trackIndexAt(details.globalPosition),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -71,9 +85,11 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
             side: _ResizeHandleSide.start,
             onDragStart: _startDrag,
             onDragUpdate: (details) {
+              widget.onAutoScroll(details.globalPosition, vertical: false);
               final startFrame = (_dragStartFrame + _deltaFrames(details))
                   .clamp(0, _dragStartEndFrame - 1);
-              editor.resizeTo(
+              editor.resizeToClip(
+                widget.clip.id,
                 startFrame: startFrame,
                 durationFrames: _dragStartEndFrame - startFrame,
               );
@@ -83,9 +99,11 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
             side: _ResizeHandleSide.end,
             onDragStart: _startDrag,
             onDragUpdate: (details) {
+              widget.onAutoScroll(details.globalPosition, vertical: false);
               final nextDurationFrames =
                   _dragStartDurationFrames + _deltaFrames(details);
-              editor.resizeTo(
+              editor.resizeToClip(
+                widget.clip.id,
                 startFrame: _dragStartFrame,
                 durationFrames: nextDurationFrames < 1 ? 1 : nextDurationFrames,
               );
@@ -98,13 +116,42 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
 
   void _startDrag(DragStartDetails details) {
     _dragStartGlobalX = details.globalPosition.dx;
+    _dragStartHorizontalScrollOffset =
+        widget.horizontalScrollController.hasClients
+        ? widget.horizontalScrollController.offset
+        : 0;
     _dragStartFrame = widget.clip.startFrame;
     _dragStartDurationFrames = widget.clip.durationFrames;
     _dragStartEndFrame = widget.clip.startFrame + widget.clip.durationFrames;
   }
 
   int _deltaFrames(DragUpdateDetails details) {
-    return (details.globalPosition.dx - _dragStartGlobalX).round();
+    final scrollDelta = widget.horizontalScrollController.hasClients
+        ? widget.horizontalScrollController.offset -
+              _dragStartHorizontalScrollOffset
+        : 0;
+    return (details.globalPosition.dx - _dragStartGlobalX + scrollDelta)
+        .round();
+  }
+
+  int _trackIndexAt(Offset globalPosition) {
+    final context = widget.trackListKey.currentContext;
+    if (context == null || widget.trackCount == 0) {
+      return widget.trackIndex;
+    }
+
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) {
+      return widget.trackIndex;
+    }
+
+    final localPosition = renderBox.globalToLocal(globalPosition);
+    final scrollOffset = widget.trackScrollController.hasClients
+        ? widget.trackScrollController.offset
+        : 0.0;
+    return ((localPosition.dy + scrollOffset) / widget.trackHeight)
+        .floor()
+        .clamp(0, widget.trackCount - 1);
   }
 }
 
