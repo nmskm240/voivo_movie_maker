@@ -43,84 +43,22 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
       timelineDurationFrames: _timelineDurationFrames,
     );
 
-    return Expanded(
-      child: KeyedSubtree(
-        key: _timelineViewportKey,
-        child: Scrollbar(
+    return KeyedSubtree(
+      key: _timelineViewportKey,
+      child: Scrollbar(
+        controller: _horizontalScrollController,
+        thumbVisibility: true,
+        child: SingleChildScrollView(
           controller: _horizontalScrollController,
-          thumbVisibility: true,
-          child: SingleChildScrollView(
-            controller: _horizontalScrollController,
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              width: _timelineDurationFrames.toDouble(),
-              child: Stack(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onPanDown: (details) {
-                          playbackController.seek(
-                            autoScroller.frameAtGlobalPosition(
-                              details.globalPosition,
-                            ),
-                          );
-                        },
-                        onHorizontalDragUpdate: (details) {
-                          autoScroller.autoScrollForDrag(
-                            details.globalPosition,
-                            vertical: false,
-                          );
-                          playbackController.seek(
-                            autoScroller.frameAtGlobalPosition(
-                              details.globalPosition,
-                            ),
-                          );
-                        },
-                        child: const TimelineRuler(),
-                      ),
-                      Expanded(
-                        child: Scrollbar(
-                          controller: _verticalScrollController,
-                          thumbVisibility: true,
-                          child: ListView.builder(
-                            key: _trackListKey,
-                            controller: _verticalScrollController,
-                            itemExtent: TimelineTrackView.height,
-                            itemCount: timeline.tracks.length,
-                            itemBuilder: (context, index) {
-                              final track = timeline.tracks[index];
-                              return TimelineTrackView(
-                                track: track,
-                                index: index,
-                                trackCount: timeline.tracks.length,
-                                trackListKey: _trackListKey,
-                                horizontalScrollController:
-                                    _horizontalScrollController,
-                                trackScrollController:
-                                    _verticalScrollController,
-                                onAutoScroll: autoScroller.autoScrollForDrag,
-                                onSeekFrame: playbackController.seek,
-                                onAddClip: (startFrame) {
-                                  timelineEditor.addNewClipToTrack(
-                                    targetTrackIndex: index,
-                                    startFrame: startFrame,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                    top: 0,
-                    bottom: 0,
-                    left: playbackState.currentFrame.toDouble() - 5,
-                    child: GestureDetector(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: _timelineDurationFrames.toDouble(),
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onPanDown: (details) {
                         playbackController.seek(
@@ -140,24 +78,83 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
                           ),
                         );
                       },
-                      child: const SizedBox(
-                        width: 12,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: 0,
-                              bottom: 0,
-                              left: 5,
-                              width: 2,
-                              child: Playhead(),
-                            ),
-                          ],
+                      child: const TimelineRuler(),
+                    ),
+                    Expanded(
+                      child: Scrollbar(
+                        controller: _verticalScrollController,
+                        thumbVisibility: true,
+                        child: ListView.builder(
+                          key: _trackListKey,
+                          controller: _verticalScrollController,
+                          itemExtent: TimelineTrackView.height,
+                          itemCount: timeline.tracks.length,
+                          itemBuilder: (context, index) {
+                            final track = timeline.tracks[index];
+                            return TimelineTrackView(
+                              track: track,
+                              index: index,
+                              trackCount: timeline.tracks.length,
+                              trackListKey: _trackListKey,
+                              horizontalScrollController:
+                                  _horizontalScrollController,
+                              trackScrollController: _verticalScrollController,
+                              onAutoScroll: autoScroller.autoScrollForDrag,
+                              onSeekFrame: playbackController.seek,
+                              onAddClip: (startFrame) {
+                                timelineEditor.addNewClipToTrack(
+                                  targetTrackIndex: index,
+                                  startFrame: startFrame,
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
+                  ],
+                ),
+                Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: playbackState.currentFrame.toDouble() - 5,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanDown: (details) {
+                      playbackController.seek(
+                        autoScroller.frameAtGlobalPosition(
+                          details.globalPosition,
+                        ),
+                      );
+                    },
+                    onHorizontalDragUpdate: (details) {
+                      autoScroller.autoScrollForDrag(
+                        details.globalPosition,
+                        vertical: false,
+                      );
+                      playbackController.seek(
+                        autoScroller.frameAtGlobalPosition(
+                          details.globalPosition,
+                        ),
+                      );
+                    },
+                    child: const SizedBox(
+                      width: 12,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: 5,
+                            width: 2,
+                            child: Playhead(),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
