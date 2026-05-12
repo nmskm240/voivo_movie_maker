@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
-import 'package:voivo_movie_maker/domain/timeline_clip.dart';
-import 'package:voivo_movie_maker/domain/timeline_clip_contents.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 class ProjectPreviewPane extends ConsumerWidget {
   const ProjectPreviewPane({super.key});
@@ -47,27 +46,28 @@ class _PreviewClip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (clip.content) {
-      final TextContent content => _PreviewText(content: content),
+    return switch (clip) {
+      final TextClip clip => _PreviewText(clip: clip),
+      _ => const SizedBox.shrink(),
     };
   }
 }
 
 class _PreviewText extends StatelessWidget {
-  const _PreviewText({required this.content});
+  const _PreviewText({required this.clip});
 
-  final TextContent content;
+  final TextClip clip;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        content.text,
+        clip.text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: content.textColor,
-          fontFamily: content.fontFamily,
-          fontSize: content.fontSize,
+          color: clip.color,
+          fontFamily: clip.fontFamily,
+          fontSize: clip.size,
           fontWeight: FontWeight.w600,
         ),
       ),

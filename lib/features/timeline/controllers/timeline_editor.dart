@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
-import 'package:voivo_movie_maker/domain/timeline_clip.dart';
-import 'package:voivo_movie_maker/domain/timeline_clip_contents.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 part 'timeline_editor.g.dart';
 
@@ -26,15 +25,13 @@ class TimelineEditor {
   }) {
     final track = _timeline.tracks.elementAt(targetTrackIndex);
     // TODO: factoryにする
-    final clip = TimelineClip(
+    final clip = TextClip(
+      "text",
       id: 'clip-${DateTime.now().microsecondsSinceEpoch}',
       startFrame: startFrame,
-      content: TextContent(
-        text: "text",
-        fontFamily: 'Noto Sans CJK JP',
-        fontSize: 48,
-        textColor: const Color(0xffffffff),
-      ),
+      fontFamily: 'Noto Sans CJK JP',
+      size: 48,
+      color: const Color(0xffffffff),
     );
     track.addClip(clip);
     _markChanged();
@@ -87,19 +84,11 @@ class TimelineEditor {
     Color? textColor,
   }) {
     final clip = _timeline.getClipById(clipId);
-    final content = clip.content;
-    if (content is! TextContent) {
+    if (clip is! TextClip) {
       return;
     }
 
-    clip.replaceContent(
-      TextContent(
-        text: text ?? content.text,
-        fontFamily: content.fontFamily,
-        fontSize: fontSize ?? content.fontSize,
-        textColor: textColor ?? content.textColor,
-      ),
-    );
+    clip.update(text: text, size: fontSize, color: textColor);
     _markChanged();
   }
 }

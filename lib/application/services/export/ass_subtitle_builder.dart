@@ -1,8 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-
-import '../../../models/timeline.dart';
+import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 class AssSubtitleBuilder {
   const AssSubtitleBuilder();
@@ -11,8 +9,8 @@ class AssSubtitleBuilder {
     final buffer = StringBuffer()
       ..writeln('[Script Info]')
       ..writeln('ScriptType: v4.00+')
-      ..writeln('PlayResX: ${project.settings.width}')
-      ..writeln('PlayResY: ${project.settings.height}')
+      ..writeln('PlayResX: ${project.width}')
+      ..writeln('PlayResY: ${project.height}')
       ..writeln('ScaledBorderAndShadow: yes')
       ..writeln()
       ..writeln('[V4+ Styles]')
@@ -35,7 +33,7 @@ class AssSubtitleBuilder {
 
     for (final track in project.timeline.tracks) {
       for (final clip in track.clips) {
-        if (clip.content is! TextContent) {
+        if (clip is! TextClip) {
           continue;
         }
 
@@ -46,63 +44,28 @@ class AssSubtitleBuilder {
     return buffer.toString();
   }
 
-  String _buildDialogue(Project project, TimelineClip clip) {
-    final content = clip.content as TextContent;
-    final start = _formatAssTime(clip.startFrame / project.settings.fps);
+  String _buildDialogue(Project project, TextClip clip) {
+    final start = _formatAssTime(clip.startFrame / project.fps);
     final end = _formatAssTime(
-      (clip.startFrame + clip.durationFrames) / project.settings.fps,
+      (clip.startFrame + clip.durationFrames) / project.fps,
     );
-    final x = (project.settings.width * clip.transform.x).round();
-    final y = (project.settings.height * clip.transform.y).round();
-    final fontSize = (content.fontSize * clip.transform.scale).round();
-    final alpha = _assAlpha(clip.transform.opacity);
-    final color = _assColor(content.textColor);
-    final fade = _fadeTag(clip, project.settings.fps);
+    final x = (project.width * clip.transform.position.x).round();
+    final y = (project.height * clip.transform.position.y).round();
+    final fontSize = (clip.size * clip.transform.scale.x).round();
+    final color = _assColor(clip.color);
     final rotation = clip.transform.rotation == 0
         ? ''
         : '\\frz${clip.transform.rotation.toStringAsFixed(1)}';
-    final escapedText = _escapeAssText(content.text);
+    final escapedText = _escapeAssText(clip.text);
 
     return 'Dialogue: 0,$start,$end,Default,,0,0,0,,'
         '{\\an5'
         '\\pos($x,$y)'
-        '\\fn${_escapeAssTagValue(content.fontFamily)}'
+        '\\fn${_escapeAssTagValue(clip.fontFamily)}'
         '\\fs$fontSize'
         '\\c$color'
-        '\\alpha$alpha'
-        '$fade'
         '$rotation'
         '}$escapedText';
-  }
-
-  String _fadeTag(TimelineClip clip, int fps) {
-    var fadeInMs = 0;
-    var fadeOutMs = 0;
-
-    for (final effect in clip.effects) {
-      if (effect is! FadeEffect) {
-        continue;
-      }
-
-      final durationMs = (effect.durationFrames / fps * 1000).round();
-      switch (effect.direction) {
-        case FadeDirection.fadeIn:
-          if (effect.startOffsetFrames == 0) {
-            fadeInMs = math.max(fadeInMs, durationMs);
-          }
-        case FadeDirection.fadeOut:
-          if (effect.startOffsetFrames + effect.durationFrames >=
-              clip.durationFrames) {
-            fadeOutMs = math.max(fadeOutMs, durationMs);
-          }
-      }
-    }
-
-    if (fadeInMs == 0 && fadeOutMs == 0) {
-      return '';
-    }
-
-    return '\\fad($fadeInMs,$fadeOutMs)';
   }
 
   String _formatAssTime(double seconds) {
@@ -129,11 +92,6 @@ class AssSubtitleBuilder {
         '${blue.toRadixString(16).padLeft(2, '0').toUpperCase()}'
         '${green.toRadixString(16).padLeft(2, '0').toUpperCase()}'
         '${red.toRadixString(16).padLeft(2, '0').toUpperCase()}&';
-  }
-
-  String _assAlpha(double opacity) {
-    final alpha = ((1 - opacity.clamp(0, 1)) * 255).round();
-    return '&H${alpha.toRadixString(16).padLeft(2, '0').toUpperCase()}&';
   }
 
   String _escapeAssText(String text) {

@@ -1,4 +1,4 @@
-import 'package:voivo_movie_maker/domain/timeline_clip.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/domain/timeline_track.dart';
 
 class Timeline {
