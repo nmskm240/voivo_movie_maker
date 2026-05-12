@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math.dart' hide Colors;
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 
 abstract class TimelineClip {
   TimelineClip({
@@ -110,8 +111,8 @@ class TextClip extends TimelineClipWithTransform {
   }
 }
 
-abstract class TimelineMediaClip extends TimelineClip {
-  TimelineMediaClip({
+abstract class TimelineAssetClip extends TimelineClip {
+  TimelineAssetClip({
     required this.assetId,
     required super.id,
     required super.startFrame,
@@ -121,60 +122,7 @@ abstract class TimelineMediaClip extends TimelineClip {
   }) : assert(sourceStartFrame >= 0),
        assert(sourceDurationFrames == null || sourceDurationFrames > 0);
 
-  final String assetId;
+  final AssetId assetId;
   final int sourceStartFrame;
   final int? sourceDurationFrames;
-}
-
-abstract class TimelineVisualMediaClip extends TimelineClipWithTransform {
-  TimelineVisualMediaClip({
-    required this.assetId,
-    required super.id,
-    required super.startFrame,
-    super.durationFrames,
-    super.transform,
-    this.sourceStartFrame = 0,
-    this.sourceDurationFrames,
-  }) : assert(sourceStartFrame >= 0),
-       assert(sourceDurationFrames == null || sourceDurationFrames > 0);
-
-  final String assetId;
-  final int sourceStartFrame;
-  final int? sourceDurationFrames;
-}
-
-class ImageClip extends TimelineVisualMediaClip {
-  ImageClip({
-    required super.assetId,
-    required super.id,
-    required super.startFrame,
-    super.durationFrames,
-    super.transform,
-  });
-}
-
-class VideoClip extends TimelineVisualMediaClip {
-  VideoClip({
-    required super.assetId,
-    required super.id,
-    required super.startFrame,
-    super.durationFrames,
-    super.transform,
-    super.sourceStartFrame,
-    super.sourceDurationFrames,
-  });
-}
-
-class AudioClip extends TimelineMediaClip {
-  AudioClip({
-    required super.assetId,
-    required super.id,
-    required super.startFrame,
-    super.durationFrames,
-    super.sourceStartFrame,
-    super.sourceDurationFrames,
-    this.volume = 1,
-  }) : assert(volume >= 0);
-
-  final double volume;
 }

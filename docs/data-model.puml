@@ -9,7 +9,7 @@ class Project {
   +String name
   +String filePath
   +ProjectSettings settings
-  +MediaLibrary mediaLibrary
+  +ProjectAssetLibrary assetLibrary
   +Timeline timeline
   +DateTime createdAt
   +DateTime updatedAt
@@ -23,23 +23,23 @@ class ProjectSettings {
   +String backgroundColor
 }
 
-class MediaLibrary {
-  +List<MediaAsset> assets
+class ProjectAssetLibrary {
+  +List<ProjectAsset> assets
 }
 
-abstract class MediaAsset {
+class ProjectAsset {
   +String id
   +String name
-  +String sourcePath
-  +MediaType type
-  +int durationFrames
+  +String uri
+  +ProjectAssetKind kind
+  +int? width
+  +int? height
+  +int? durationFrames
+  +int? fps
+  +int? sampleRate
+  +int? channels
 }
 
-class VideoAsset
-class ImageAsset
-class AudioAsset {
-  +String waveformCachePath
-}
 class PsdAsset {
   +List<PsdPart> parts
 }
@@ -50,11 +50,10 @@ class PsdPart {
   +bool visible
 }
 
-enum MediaType {
+enum ProjectAssetKind {
   video
   image
   audio
-  psd
 }
 
 class Timeline {
@@ -157,14 +156,11 @@ class VoiceParameters {
 }
 
 Project *-- ProjectSettings
-Project *-- MediaLibrary
+Project *-- ProjectAssetLibrary
 Project *-- Timeline
 
-MediaLibrary *-- MediaAsset
-MediaAsset <|-- VideoAsset
-MediaAsset <|-- ImageAsset
-MediaAsset <|-- AudioAsset
-MediaAsset <|-- PsdAsset
+ProjectAssetLibrary *-- ProjectAsset
+ProjectAsset <|-- PsdAsset
 PsdAsset *-- PsdPart
 
 Timeline *-- TimelineTrack
@@ -177,12 +173,12 @@ TimelineClip *-- ClipTransform
 TimelineClip *-- ClipEffect
 ClipEffect <|-- FadeEffect
 
-MediaClip --> MediaAsset : assetId
-VoiceClip --> AudioAsset : assetId
+MediaClip --> ProjectAsset : assetId
+VoiceClip --> ProjectAsset : assetId
 VoiceClip --> VoiceLine : lineId
 StandClip --> PsdAsset : assetId
 
 VoiceLine *-- VoiceParameters
-VoiceLine --> AudioAsset : generatedAssetId
+VoiceLine --> ProjectAsset : generatedAssetId
 
 @enduml
