@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 
 class ProjectPreviewPane extends ConsumerWidget {
   const ProjectPreviewPane({super.key});

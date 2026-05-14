@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TimelineClipInfo {
 
- String get id; int get startFrame; int get durationFrames;
+ TimelineClipId get id; int get startFrame; int get durationFrames;
 /// Create a copy of TimelineClipInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $TimelineClipInfoCopyWith<$Res>  {
   factory $TimelineClipInfoCopyWith(TimelineClipInfo value, $Res Function(TimelineClipInfo) _then) = _$TimelineClipInfoCopyWithImpl;
 @useResult
 $Res call({
- String id, int startFrame, int durationFrames
+ TimelineClipId id, int startFrame, int durationFrames
 });
 
 
@@ -65,7 +65,7 @@ class _$TimelineClipInfoCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
+as TimelineClipId,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
 as int,durationFrames: null == durationFrames ? _self.durationFrames : durationFrames // ignore: cast_nullable_to_non_nullable
 as int,
   ));
@@ -149,7 +149,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  int startFrame,  int durationFrames)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TimelineClipId id,  int startFrame,  int durationFrames)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TimelineClipInfo() when $default != null:
 return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
@@ -170,7 +170,7 @@ return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  int startFrame,  int durationFrames)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TimelineClipId id,  int startFrame,  int durationFrames)  $default,) {final _that = this;
 switch (_that) {
 case _TimelineClipInfo():
 return $default(_that.id,_that.startFrame,_that.durationFrames);}
@@ -187,7 +187,7 @@ return $default(_that.id,_that.startFrame,_that.durationFrames);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  int startFrame,  int durationFrames)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TimelineClipId id,  int startFrame,  int durationFrames)?  $default,) {final _that = this;
 switch (_that) {
 case _TimelineClipInfo() when $default != null:
 return $default(_that.id,_that.startFrame,_that.durationFrames);case _:
@@ -205,7 +205,7 @@ class _TimelineClipInfo implements TimelineClipInfo {
   const _TimelineClipInfo({required this.id, required this.startFrame, required this.durationFrames});
   
 
-@override final  String id;
+@override final  TimelineClipId id;
 @override final  int startFrame;
 @override final  int durationFrames;
 
@@ -239,7 +239,7 @@ abstract mixin class _$TimelineClipInfoCopyWith<$Res> implements $TimelineClipIn
   factory _$TimelineClipInfoCopyWith(_TimelineClipInfo value, $Res Function(_TimelineClipInfo) _then) = __$TimelineClipInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, int startFrame, int durationFrames
+ TimelineClipId id, int startFrame, int durationFrames
 });
 
 
@@ -259,7 +259,7 @@ class __$TimelineClipInfoCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,}) {
   return _then(_TimelineClipInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
+as TimelineClipId,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
 as int,durationFrames: null == durationFrames ? _self.durationFrames : durationFrames // ignore: cast_nullable_to_non_nullable
 as int,
   ));

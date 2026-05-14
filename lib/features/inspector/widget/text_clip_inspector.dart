@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 import 'package:voivo_movie_maker/features/inspector/widget/inspector_controls.dart';
 import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
 
@@ -12,7 +13,7 @@ class TextClipInspector extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final String clipId;
+  final TimelineClipId clipId;
   final TextClip clip;
 
   @override

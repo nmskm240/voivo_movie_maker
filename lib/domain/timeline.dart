@@ -1,4 +1,4 @@
-import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_track.dart';
 
 class Timeline {
@@ -13,7 +13,7 @@ class Timeline {
 
   Iterable<TimelineTrack> get tracks => _tracks;
 
-  void moveClipToTrack(String clipId, int targetTrackIndex) {
+  void moveClipToTrack(TimelineClipId clipId, int targetTrackIndex) {
     final sourceTrack = _tracks.singleWhere(
       (track) => track.containsById(clipId),
     );
@@ -38,13 +38,13 @@ class Timeline {
         .map((x) => x as TimelineClip);
   }
 
-  TimelineClip getClipById(String clipId) {
+  TimelineClip getClipById(TimelineClipId clipId) {
     return tracks
         .expand((track) => track.clips)
         .firstWhere((clip) => clip.id == clipId);
   }
 
-  TimelineTrack getTrackByClipId(String clipId) {
+  TimelineTrack getTrackByClipId(TimelineClipId clipId) {
     return tracks.firstWhere((track) => track.containsById(clipId));
   }
 }

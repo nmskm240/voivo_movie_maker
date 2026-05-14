@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 import 'package:voivo_movie_maker/features/inspector/widget/inspector_controls.dart';
 import 'package:voivo_movie_maker/features/inspector/widget/text_clip_inspector.dart';
 
@@ -13,7 +14,7 @@ class SelectedClipInspector extends StatelessWidget {
     return ListView(
       children: [
         Text(
-          clip.id,
+          clip.id.value,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(

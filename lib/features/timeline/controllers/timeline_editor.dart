@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 
 part 'timeline_editor.g.dart';
 
@@ -27,7 +28,7 @@ class TimelineEditor {
     // TODO: factoryにする
     final clip = TextClip(
       "text",
-      id: 'clip-${DateTime.now().microsecondsSinceEpoch}',
+      id: TimelineClipId.create(),
       startFrame: startFrame,
       fontFamily: 'Noto Sans CJK JP',
       size: 48,
@@ -38,7 +39,7 @@ class TimelineEditor {
   }
 
   void moveClipToTrack(
-    String clipId, {
+    TimelineClipId clipId, {
     required int targetTrackIndex,
     required int startFrame,
   }) {
@@ -58,7 +59,7 @@ class TimelineEditor {
   }
 
   void resizeToClip(
-    String clipId, {
+    TimelineClipId clipId, {
     required int startFrame,
     required int durationFrames,
   }) {
@@ -78,7 +79,7 @@ class TimelineEditor {
   }
 
   void updateTextClip(
-    String clipId, {
+    TimelineClipId clipId, {
     String? text,
     double? fontSize,
     Color? textColor,

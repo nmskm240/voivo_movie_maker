@@ -75,7 +75,7 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    widget.clip.id,
+                    widget.clip.id.value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

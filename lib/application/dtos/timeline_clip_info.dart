@@ -6,7 +6,7 @@ part 'timeline_clip_info.freezed.dart';
 @freezed
 sealed class TimelineClipInfo with _$TimelineClipInfo {
   const factory TimelineClipInfo({
-    required String id,
+    required TimelineClipId id,
     required int startFrame,
     required int durationFrames,
   }) = _TimelineClipInfo;

@@ -13,7 +13,7 @@ part of 'providers.dart';
 final selectedTimelineClipIdProvider = SelectedTimelineClipIdProvider._();
 
 final class SelectedTimelineClipIdProvider
-    extends $NotifierProvider<SelectedTimelineClipId, String?> {
+    extends $NotifierProvider<SelectedTimelineClipId, TimelineClipId?> {
   SelectedTimelineClipIdProvider._()
     : super(
         from: null,
@@ -33,28 +33,28 @@ final class SelectedTimelineClipIdProvider
   SelectedTimelineClipId create() => SelectedTimelineClipId();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String? value) {
+  Override overrideWithValue(TimelineClipId? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String?>(value),
+      providerOverride: $SyncValueProvider<TimelineClipId?>(value),
     );
   }
 }
 
 String _$selectedTimelineClipIdHash() =>
-    r'6f543e8578bf46b364f7a8741f2b8a2a6827c2f5';
+    r'd424733cae1c0303ed5ef0017d91e31379fff343';
 
-abstract class _$SelectedTimelineClipId extends $Notifier<String?> {
-  String? build();
+abstract class _$SelectedTimelineClipId extends $Notifier<TimelineClipId?> {
+  TimelineClipId? build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<String?, String?>;
+    final ref = this.ref as $Ref<TimelineClipId?, TimelineClipId?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String?, String?>,
-              String?,
+              AnyNotifier<TimelineClipId?, TimelineClipId?>,
+              TimelineClipId?,
               Object?,
               Object?
             >;

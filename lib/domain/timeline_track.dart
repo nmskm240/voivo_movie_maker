@@ -1,4 +1,4 @@
-import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 
 class TimelineTrack {
   TimelineTrack({Iterable<TimelineClip> clips = const []})
@@ -25,11 +25,11 @@ class TimelineTrack {
     _clips.sort((a, b) => a.startFrame.compareTo(b.startFrame));
   }
 
-  void removeClip(String clipId) {
+  void removeClip(TimelineClipId clipId) {
     _clips.removeWhere((x) => x.id == clipId);
   }
 
-  TimelineClip? findClip(String clipId) {
+  TimelineClip? findClip(TimelineClipId clipId) {
     try {
       return _clips.singleWhere((clip) => clip.id == clipId);
     } on StateError {
@@ -41,7 +41,7 @@ class TimelineTrack {
     return _clips.contains(clip);
   }
 
-  bool containsById(String clipId) {
+  bool containsById(TimelineClipId clipId) {
     return _clips.any((clip) => clip.id == clipId);
   }
 
@@ -74,7 +74,7 @@ class TimelineTrack {
   bool hasConflict({
     required int startFrame,
     required int endFrame,
-    String? ignoringClipId,
+    TimelineClipId? ignoringClipId,
   }) {
     return _clips.any((clip) {
       if (clip.id == ignoringClipId) {
