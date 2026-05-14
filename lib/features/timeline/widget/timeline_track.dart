@@ -12,7 +12,6 @@ class TimelineTrackView extends StatelessWidget {
     required this.trackScrollController,
     required this.onAutoScroll,
     required this.onSeekFrame,
-    required this.onAddClip,
     super.key,
   });
 
@@ -25,7 +24,6 @@ class TimelineTrackView extends StatelessWidget {
   final void Function(Offset globalPosition, {bool horizontal, bool vertical})
   onAutoScroll;
   final ValueChanged<int> onSeekFrame;
-  final ValueChanged<int> onAddClip;
 
   static const height = 56.0;
 
@@ -40,9 +38,6 @@ class TimelineTrackView extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               onTapDown: (details) {
                 onSeekFrame(details.localPosition.dx.floor());
-              },
-              onDoubleTapDown: (details) {
-                onAddClip(details.localPosition.dx.floor());
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
