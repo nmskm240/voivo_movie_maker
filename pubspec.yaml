@@ -41,6 +41,7 @@ dependencies:
   flutter_riverpod: ^3.3.1
   riverpod_annotation: ^4.0.2
   vector_math: ^2.2.0
+  cuid2: ^4.1.0
 
 ffmpeg_kit_extended_config:
   type: "video"

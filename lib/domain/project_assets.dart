@@ -1,5 +1,10 @@
+import 'package:cuid2/cuid2.dart';
+
 class AssetId {
-  const AssetId(this.value) : assert(value.length > 0);
+  const AssetId._(this.value);
+  factory AssetId.create() {
+    return AssetId._(cuid());
+  }
 
   final String value;
 
