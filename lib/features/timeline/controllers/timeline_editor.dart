@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/clip_factory.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 
 part 'timeline_editor.g.dart';
@@ -23,17 +24,10 @@ class TimelineEditor {
   void addNewClipToTrack({
     required int targetTrackIndex,
     required int startFrame,
+    required TimelineClipKind kind,
   }) {
     final track = _timeline.tracks.elementAt(targetTrackIndex);
-    // TODO: factoryにする
-    final clip = TextClip(
-      "text",
-      id: TimelineClipId.create(),
-      startFrame: startFrame,
-      fontFamily: 'Noto Sans CJK JP',
-      size: 48,
-      color: const Color(0xffffffff),
-    );
+    final clip = ClipFactory.create(kind, startFrame);
     track.addClip(clip);
     _markChanged();
   }

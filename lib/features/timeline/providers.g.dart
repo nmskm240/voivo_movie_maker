@@ -48,4 +48,58 @@ final class TimelineInfoProvider
   }
 }
 
-String _$timelineInfoHash() => r'6d8b6c157ae2ad711dde130146ccbdab49b6fd21';
+String _$timelineInfoHash() => r'9947e9ff28ce61418be6f64cf3cd04aa6bcda9f5';
+
+@ProviderFor(SelectedTimelineTrackIndex)
+final selectedTimelineTrackIndexProvider =
+    SelectedTimelineTrackIndexProvider._();
+
+final class SelectedTimelineTrackIndexProvider
+    extends $NotifierProvider<SelectedTimelineTrackIndex, int?> {
+  SelectedTimelineTrackIndexProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedTimelineTrackIndexProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedTimelineTrackIndexHash();
+
+  @$internal
+  @override
+  SelectedTimelineTrackIndex create() => SelectedTimelineTrackIndex();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int?>(value),
+    );
+  }
+}
+
+String _$selectedTimelineTrackIndexHash() =>
+    r'03ccfb34d51ab149886efd040667f18f77eda0d3';
+
+abstract class _$SelectedTimelineTrackIndex extends $Notifier<int?> {
+  int? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<int?, int?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int?, int?>,
+              int?,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

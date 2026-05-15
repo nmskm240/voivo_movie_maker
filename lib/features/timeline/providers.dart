@@ -9,3 +9,19 @@ TimelineInfo timelineInfo(Ref ref) {
   final timeline = ref.watch(loadedProjectProvider).project.timeline;
   return TimelineInfo.fromEntity(timeline);
 }
+
+@riverpod
+class SelectedTimelineTrackIndex extends _$SelectedTimelineTrackIndex {
+  @override
+  int? build() {
+    return null;
+  }
+
+  void select(int index) {
+    state = index;
+  }
+
+  void clear() {
+    state = null;
+  }
+}

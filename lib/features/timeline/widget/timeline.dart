@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
 import 'package:voivo_movie_maker/features/timeline/providers.dart';
+import 'package:voivo_movie_maker/features/timeline/widget/timeline_add_clip_button.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/playhead.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_auto_scroller.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_ruler.dart';
@@ -36,6 +37,10 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
     final playbackController = ref.read(playbackControllerProvider.notifier);
     final timeline = ref.watch(timelineInfoProvider);
     final timelineEditor = ref.read(timelineEditorProvider);
+    final selectedTrackIndex = ref.watch(selectedTimelineTrackIndexProvider);
+    final selectedTrackController = ref.read(
+      selectedTimelineTrackIndexProvider.notifier,
+    );
     final autoScroller = TimelineAutoScroller(
       viewportKey: _timelineViewportKey,
       horizontalScrollController: _horizontalScrollController,
@@ -104,6 +109,10 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
                                       _verticalScrollController,
                                   onAutoScroll: autoScroller.autoScrollForDrag,
                                   onSeekFrame: playbackController.seek,
+                                  onSelectTrack: () {
+                                    selectedTrackController.select(index);
+                                  },
+                                  selected: selectedTrackIndex == index,
                                 );
                               },
                             ),
@@ -159,15 +168,14 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
           Positioned(
             right: 16,
             bottom: 16,
-            child: FloatingActionButton(
-              onPressed: () {
+            child: TimelineAddClipButton(
+              onSelected: (kind) {
                 timelineEditor.addNewClipToTrack(
-                  targetTrackIndex: 0,
+                  targetTrackIndex: selectedTrackIndex ?? 0,
                   startFrame: playbackState.currentFrame,
+                  kind: kind,
                 );
               },
-              tooltip: 'Add clip',
-              child: const Icon(Icons.add),
             ),
           ),
         ],
