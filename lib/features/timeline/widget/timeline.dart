@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/add_clip_command.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/features/timeline/providers.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_add_clip_button.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/playhead.dart';
@@ -170,10 +171,12 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
             bottom: 16,
             child: TimelineAddClipButton(
               onSelected: (kind) {
-                timelineEditor.addNewClipToTrack(
-                  targetTrackIndex: selectedTrackIndex ?? 0,
-                  startFrame: playbackState.currentFrame,
-                  kind: kind,
+                timelineEditor.execute(
+                  AddClipCommand(
+                    targetTrackIndex: selectedTrackIndex ?? 0,
+                    startFrame: playbackState.currentFrame,
+                    kind: kind,
+                  ),
                 );
               },
             ),

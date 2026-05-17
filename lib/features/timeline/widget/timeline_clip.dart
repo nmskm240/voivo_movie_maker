@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/move_clip_command.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/resize_clip_command.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
 import 'package:voivo_movie_maker/features/inspector/providers.dart';
-import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
 
 class TimelineClipView extends ConsumerStatefulWidget {
   const TimelineClipView({
@@ -64,10 +66,12 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               onPanStart: _startDrag,
               onPanUpdate: (details) {
                 widget.onAutoScroll(details.globalPosition);
-                editor.moveClipToTrack(
-                  widget.clip.id,
-                  startFrame: _dragStartFrame + _deltaFrames(details),
-                  targetTrackIndex: _trackIndexAt(details.globalPosition),
+                editor.execute(
+                  MoveClipCommand(
+                    widget.clip.id,
+                    startFrame: _dragStartFrame + _deltaFrames(details),
+                    targetTrackIndex: _trackIndexAt(details.globalPosition),
+                  ),
                 );
               },
               child: Padding(
@@ -95,10 +99,12 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               widget.onAutoScroll(details.globalPosition, vertical: false);
               final startFrame = (_dragStartFrame + _deltaFrames(details))
                   .clamp(0, _dragStartEndFrame - 1);
-              editor.resizeToClip(
-                widget.clip.id,
-                startFrame: startFrame,
-                durationFrames: _dragStartEndFrame - startFrame,
+              editor.execute(
+                ResizeClipCommand(
+                  widget.clip.id,
+                  startFrame: startFrame,
+                  durationFrames: _dragStartEndFrame - startFrame,
+                ),
               );
             },
           ),
@@ -109,10 +115,14 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               widget.onAutoScroll(details.globalPosition, vertical: false);
               final nextDurationFrames =
                   _dragStartDurationFrames + _deltaFrames(details);
-              editor.resizeToClip(
-                widget.clip.id,
-                startFrame: _dragStartFrame,
-                durationFrames: nextDurationFrames < 1 ? 1 : nextDurationFrames,
+              editor.execute(
+                ResizeClipCommand(
+                  widget.clip.id,
+                  startFrame: _dragStartFrame,
+                  durationFrames: nextDurationFrames < 1
+                      ? 1
+                      : nextDurationFrames,
+                ),
               );
             },
           ),

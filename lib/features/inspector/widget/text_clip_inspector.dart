@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/update_text_clip_command.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 import 'package:voivo_movie_maker/features/inspector/widget/inspector_controls.dart';
-import 'package:voivo_movie_maker/features/timeline/controllers/timeline_editor.dart';
 
 class TextClipInspector extends ConsumerStatefulWidget {
   const TextClipInspector({
@@ -59,7 +60,7 @@ class _TextClipInspectorState extends ConsumerState<TextClipInspector> {
           style: const TextStyle(color: Colors.white, fontSize: 13),
           decoration: inspectorInputDecoration(),
           onChanged: (value) {
-            editor.updateTextClip(widget.clipId, text: value);
+            editor.execute(UpdateTextClipCommand(widget.clipId, text: value));
           },
         ),
         const SizedBox(height: 16),
@@ -74,7 +75,9 @@ class _TextClipInspectorState extends ConsumerState<TextClipInspector> {
                 max: 160,
                 divisions: 152,
                 onChanged: (value) {
-                  editor.updateTextClip(widget.clipId, fontSize: value);
+                  editor.execute(
+                    UpdateTextClipCommand(widget.clipId, fontSize: value),
+                  );
                 },
               ),
             ),
@@ -92,9 +95,11 @@ class _TextClipInspectorState extends ConsumerState<TextClipInspector> {
                   if (fontSize == null) {
                     return;
                   }
-                  editor.updateTextClip(
-                    widget.clipId,
-                    fontSize: fontSize.clamp(8, 160),
+                  editor.execute(
+                    UpdateTextClipCommand(
+                      widget.clipId,
+                      fontSize: fontSize.clamp(8, 160),
+                    ),
                   );
                 },
               ),
@@ -113,7 +118,9 @@ class _TextClipInspectorState extends ConsumerState<TextClipInspector> {
                 color: color,
                 selected: color.toARGB32() == widget.clip.color.toARGB32(),
                 onTap: () {
-                  editor.updateTextClip(widget.clipId, textColor: color);
+                  editor.execute(
+                    UpdateTextClipCommand(widget.clipId, textColor: color),
+                  );
                 },
               ),
           ],

@@ -13,7 +13,7 @@ class TextClip extends TimelineClip with WithTransform {
     this.size = 24,
     Color? color,
   }) : transform = transform ?? ClipTransform(),
-       color = color ?? Colors.black;
+       color = color ?? Colors.white;
 
   @override
   TimelineClipKind get kind => TimelineClipKind.text;
