@@ -61,3 +61,45 @@ abstract class _$SelectedTimelineClipId extends $Notifier<TimelineClipId?> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(selectedTimelineClip)
+final selectedTimelineClipProvider = SelectedTimelineClipProvider._();
+
+final class SelectedTimelineClipProvider
+    extends $FunctionalProvider<TimelineClip?, TimelineClip?, TimelineClip?>
+    with $Provider<TimelineClip?> {
+  SelectedTimelineClipProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedTimelineClipProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedTimelineClipHash();
+
+  @$internal
+  @override
+  $ProviderElement<TimelineClip?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TimelineClip? create(Ref ref) {
+    return selectedTimelineClip(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TimelineClip? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TimelineClip?>(value),
+    );
+  }
+}
+
+String _$selectedTimelineClipHash() =>
+    r'8e30f618b92a3278bbe5bf33fa643fdd088a214f';

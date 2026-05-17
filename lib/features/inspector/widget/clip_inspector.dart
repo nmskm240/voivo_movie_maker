@@ -1,45 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/features/inspector/providers.dart';
-import 'package:voivo_movie_maker/features/inspector/widget/empty_inspector.dart';
-import 'package:voivo_movie_maker/features/inspector/widget/selected_clip_inspector.dart';
+import 'package:voivo_movie_maker/features/inspector/widget/sections/inspector_section.dart';
+import 'package:voivo_movie_maker/features/inspector/widget/sections/inspector_section_registry.dart';
 
 class ClipInspectorPane extends ConsumerWidget {
   const ClipInspectorPane({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedClipId = ref.watch(selectedTimelineClipIdProvider);
-    final project = ref.watch(loadedProjectProvider).project;
-    final clip = selectedClipId == null
-        ? null
-        : _findClip(
-            project.timeline.tracks.expand((track) => track.clips),
-            selectedClipId,
-          );
+    final clip = ref.watch(selectedTimelineClipProvider);
+    final sections = clip == null
+        ? <InspectorSection>[]
+        : clipInspectorSectionsFor(clip);
+    final editor = ref.read(timelineEditorProvider);
 
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Color(0xff202124),
-        border: Border(left: BorderSide(color: Color(0xff34363a))),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: clip == null
-            ? const EmptyInspector()
-            : SelectedClipInspector(clip: clip),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: FormBuilder(
+        key: ValueKey(clip?.id.value),
+        child: ListView.separated(
+          itemCount: sections.length,
+          separatorBuilder: (context, index) => const Divider(),
+          itemBuilder: (context, index) {
+            return sections[index].build(context, editor, clip);
+          },
+        ),
       ),
     );
-  }
-
-  TimelineClip? _findClip(Iterable<TimelineClip> clips, TimelineClipId clipId) {
-    for (final clip in clips) {
-      if (clip.id == clipId) {
-        return clip;
-      }
-    }
-    return null;
   }
 }
