@@ -68,7 +68,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen>
                       );
                     },
                   ),
-                  const Expanded(flex: 2, child: ProjectPreviewPane()),
+                  const Expanded(flex: 2, child: ProjectPreview()),
                   const Expanded(flex: 3, child: TimelinePane()),
                 ],
               ),

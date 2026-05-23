@@ -15,8 +15,8 @@ class Project {
     return Project(timeline: Timeline.empty());
   }
 
-  final int width;
-  final int height;
+  final double width;
+  final double height;
   final int fps;
   final int sampleRate;
   final ProjectAssetSource assetSource;
