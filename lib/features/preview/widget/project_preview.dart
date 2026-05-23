@@ -9,7 +9,8 @@ class ProjectPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final project = ref.watch(loadedProjectProvider).project;
+    final projectSnapshot = ref.watch(loadedProjectProvider);
+    final project = projectSnapshot.project;
     final currentFrame = ref.watch(
       playbackControllerProvider.select((state) => state.currentFrame),
     );
@@ -23,7 +24,11 @@ class ProjectPreview extends ConsumerWidget {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 child: CustomPaint(
-                  painter: ProjectPreviewPainter(project, currentFrame),
+                  painter: ProjectPreviewPainter(
+                    project,
+                    currentFrame,
+                    projectSnapshot.revision,
+                  ),
                   child: const SizedBox.expand(),
                 ),
               );

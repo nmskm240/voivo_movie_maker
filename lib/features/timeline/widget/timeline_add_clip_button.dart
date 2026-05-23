@@ -39,7 +39,7 @@ class TimelineAddClipButton extends StatelessWidget {
                 kind: TimelineClipKind.image,
                 icon: Icons.image_outlined,
                 label: 'Image',
-                enabled: false,
+                enabled: true,
               ),
               _ClipKindTile(
                 kind: TimelineClipKind.audio,

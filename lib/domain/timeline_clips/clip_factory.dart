@@ -1,4 +1,5 @@
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/image_clip.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
 
 class ClipFactory {
@@ -6,6 +7,7 @@ class ClipFactory {
     final id = TimelineClipId.create();
     return switch (kind) {
       TimelineClipKind.text => TextClip("", id: id, startFrame: startFrame),
+      TimelineClipKind.image => ImageClip(id: id, startFrame: startFrame),
       _ => throw Error(),
     };
   }

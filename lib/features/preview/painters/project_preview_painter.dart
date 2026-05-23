@@ -8,9 +8,10 @@ import 'package:voivo_movie_maker/features/preview/painters/clip_painters/regist
 import 'package:voivo_movie_maker/features/preview/painters/preview_paint_context.dart';
 
 class ProjectPreviewPainter extends CustomPainter {
-  ProjectPreviewPainter(this.project, this.currentFrame);
+  ProjectPreviewPainter(this.project, this.currentFrame, this.revision);
   final Project project;
   final int currentFrame;
+  final int revision;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -75,6 +76,7 @@ class ProjectPreviewPainter extends CustomPainter {
   bool shouldRepaint(covariant ProjectPreviewPainter oldDelegate) {
     return project.width != oldDelegate.project.width ||
         project.height != oldDelegate.project.height ||
-        currentFrame != oldDelegate.currentFrame;
+        currentFrame != oldDelegate.currentFrame ||
+        revision != oldDelegate.revision;
   }
 }
