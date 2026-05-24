@@ -1,17 +1,26 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/domain/timeline_track.dart';
 import 'package:voivo_movie_maker/features/preview/painters/clip_painters/registry.dart';
 import 'package:voivo_movie_maker/features/preview/painters/preview_paint_context.dart';
 
 class ProjectPreviewPainter extends CustomPainter {
-  ProjectPreviewPainter(this.project, this.currentFrame, this.revision);
+  ProjectPreviewPainter(
+    this.project,
+    this.currentFrame,
+    this.revision, {
+    required this.imagesByAssetId,
+  });
+
   final Project project;
   final int currentFrame;
   final int revision;
+  final Map<AssetId, ui.Image> imagesByAssetId;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -21,6 +30,7 @@ class ProjectPreviewPainter extends CustomPainter {
     final scaleY = size.height / project.height;
     final context = PreviewPaintContext(
       projectSize: Size(project.width, project.height),
+      imagesByAssetId: imagesByAssetId,
     );
 
     canvas.save();
@@ -77,6 +87,7 @@ class ProjectPreviewPainter extends CustomPainter {
     return project.width != oldDelegate.project.width ||
         project.height != oldDelegate.project.height ||
         currentFrame != oldDelegate.currentFrame ||
-        revision != oldDelegate.revision;
+        revision != oldDelegate.revision ||
+        imagesByAssetId != oldDelegate.imagesByAssetId;
   }
 }

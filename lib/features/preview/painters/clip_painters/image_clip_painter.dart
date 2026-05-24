@@ -14,7 +14,18 @@ class ImageClipPainter extends ClipPainter<ImageClip> {
       height: clip.size.height,
     );
 
-    _paintMissingImage(canvas, rect);
+    final image = context.imagesByAssetId[clip.assetId];
+    if (image == null) {
+      _paintMissingImage(canvas, rect);
+      return;
+    }
+
+    canvas.drawImageRect(
+      image,
+      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+      rect,
+      Paint()..filterQuality = FilterQuality.medium,
+    );
   }
 
   void _paintMissingImage(Canvas canvas, Rect rect) {
