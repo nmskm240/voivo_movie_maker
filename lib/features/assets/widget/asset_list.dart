@@ -13,7 +13,14 @@ class AssetListPane extends ConsumerStatefulWidget {
 }
 
 class _AssetListPaneState extends ConsumerState<AssetListPane> {
+  final _chipScrollController = ScrollController();
   ProjectAssetKind? _selectedKind;
+
+  @override
+  void dispose() {
+    _chipScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,24 +60,32 @@ class _AssetListPaneState extends ConsumerState<AssetListPane> {
                 ],
               ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                spacing: 8,
-                children: [
-                  ChoiceChip(
-                    label: const Text('All'),
-                    selected: _selectedKind == null,
-                    onSelected: (_) => setState(() => _selectedKind = null),
-                  ),
-                  for (final kind in ProjectAssetKind.values)
+            SizedBox(
+              height: 48,
+              child: Scrollbar(
+                controller: _chipScrollController,
+                thumbVisibility: true,
+                child: ListView(
+                  controller: _chipScrollController,
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  children: [
                     ChoiceChip(
-                      label: Text(_labelFor(kind)),
-                      selected: _selectedKind == kind,
-                      onSelected: (_) => setState(() => _selectedKind = kind),
+                      label: const Text('All'),
+                      selected: _selectedKind == null,
+                      onSelected: (_) => setState(() => _selectedKind = null),
                     ),
-                ],
+                    const SizedBox(width: 8),
+                    for (final kind in ProjectAssetKind.values) ...[
+                      ChoiceChip(
+                        label: Text(_labelFor(kind)),
+                        selected: _selectedKind == kind,
+                        onSelected: (_) => setState(() => _selectedKind = kind),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 8),
