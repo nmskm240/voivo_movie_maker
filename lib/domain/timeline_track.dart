@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:voivo_movie_maker/domain/json_converters.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/timeline_clip_json.dart';
 
 part 'timeline_track.g.dart';
 

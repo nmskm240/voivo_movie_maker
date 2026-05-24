@@ -1,5 +1,6 @@
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:voivo_movie_maker/domain/json_converters.dart';
 
 part 'project_assets.g.dart';
 
@@ -52,16 +53,6 @@ class ProjectAsset {
 }
 
 enum ProjectAssetKind { image, video, audio }
-
-class AssetIdJsonConverter implements JsonConverter<AssetId, String> {
-  const AssetIdJsonConverter();
-
-  @override
-  AssetId fromJson(String json) => AssetId.fromString(json);
-
-  @override
-  String toJson(AssetId object) => object.value;
-}
 
 abstract interface class ProjectAssetStorage {
   Iterable<ProjectAsset> get assets;
