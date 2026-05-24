@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProjectInfo {
 
- int get width; int get height; int get fps; int get sampleRate; TimelineInfo get timeline;
+ double get width; double get height; int get fps; int get sampleRate; TimelineInfo get timeline;
 /// Create a copy of ProjectInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $ProjectInfoCopyWith<$Res>  {
   factory $ProjectInfoCopyWith(ProjectInfo value, $Res Function(ProjectInfo) _then) = _$ProjectInfoCopyWithImpl;
 @useResult
 $Res call({
- int width, int height, int fps, int sampleRate, TimelineInfo timeline
+ double width, double height, int fps, int sampleRate, TimelineInfo timeline
 });
 
 
@@ -65,8 +65,8 @@ class _$ProjectInfoCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? width = null,Object? height = null,Object? fps = null,Object? sampleRate = null,Object? timeline = null,}) {
   return _then(_self.copyWith(
 width: null == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
-as int,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
-as int,fps: null == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
+as double,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as double,fps: null == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
 as int,sampleRate: null == sampleRate ? _self.sampleRate : sampleRate // ignore: cast_nullable_to_non_nullable
 as int,timeline: null == timeline ? _self.timeline : timeline // ignore: cast_nullable_to_non_nullable
 as TimelineInfo,
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int width,  int height,  int fps,  int sampleRate,  TimelineInfo timeline)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double width,  double height,  int fps,  int sampleRate,  TimelineInfo timeline)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProjectInfo() when $default != null:
 return $default(_that.width,_that.height,_that.fps,_that.sampleRate,_that.timeline);case _:
@@ -181,7 +181,7 @@ return $default(_that.width,_that.height,_that.fps,_that.sampleRate,_that.timeli
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int width,  int height,  int fps,  int sampleRate,  TimelineInfo timeline)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double width,  double height,  int fps,  int sampleRate,  TimelineInfo timeline)  $default,) {final _that = this;
 switch (_that) {
 case _ProjectInfo():
 return $default(_that.width,_that.height,_that.fps,_that.sampleRate,_that.timeline);}
@@ -198,7 +198,7 @@ return $default(_that.width,_that.height,_that.fps,_that.sampleRate,_that.timeli
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int width,  int height,  int fps,  int sampleRate,  TimelineInfo timeline)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double width,  double height,  int fps,  int sampleRate,  TimelineInfo timeline)?  $default,) {final _that = this;
 switch (_that) {
 case _ProjectInfo() when $default != null:
 return $default(_that.width,_that.height,_that.fps,_that.sampleRate,_that.timeline);case _:
@@ -216,8 +216,8 @@ class _ProjectInfo implements ProjectInfo {
   const _ProjectInfo({required this.width, required this.height, required this.fps, required this.sampleRate, required this.timeline});
   
 
-@override final  int width;
-@override final  int height;
+@override final  double width;
+@override final  double height;
 @override final  int fps;
 @override final  int sampleRate;
 @override final  TimelineInfo timeline;
@@ -252,7 +252,7 @@ abstract mixin class _$ProjectInfoCopyWith<$Res> implements $ProjectInfoCopyWith
   factory _$ProjectInfoCopyWith(_ProjectInfo value, $Res Function(_ProjectInfo) _then) = __$ProjectInfoCopyWithImpl;
 @override @useResult
 $Res call({
- int width, int height, int fps, int sampleRate, TimelineInfo timeline
+ double width, double height, int fps, int sampleRate, TimelineInfo timeline
 });
 
 
@@ -272,8 +272,8 @@ class __$ProjectInfoCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? width = null,Object? height = null,Object? fps = null,Object? sampleRate = null,Object? timeline = null,}) {
   return _then(_ProjectInfo(
 width: null == width ? _self.width : width // ignore: cast_nullable_to_non_nullable
-as int,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
-as int,fps: null == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
+as double,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as double,fps: null == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
 as int,sampleRate: null == sampleRate ? _self.sampleRate : sampleRate // ignore: cast_nullable_to_non_nullable
 as int,timeline: null == timeline ? _self.timeline : timeline // ignore: cast_nullable_to_non_nullable
 as TimelineInfo,

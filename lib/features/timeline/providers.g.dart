@@ -48,7 +48,7 @@ final class TimelineInfoProvider
   }
 }
 
-String _$timelineInfoHash() => r'9947e9ff28ce61418be6f64cf3cd04aa6bcda9f5';
+String _$timelineInfoHash() => r'9e45ef1897df01bf96abab7c2af9ea8bc5c99fd7';
 
 @ProviderFor(SelectedTimelineTrackIndex)
 final selectedTimelineTrackIndexProvider =

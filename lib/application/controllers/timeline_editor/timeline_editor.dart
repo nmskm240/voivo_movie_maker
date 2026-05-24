@@ -7,7 +7,11 @@ part 'timeline_editor.g.dart';
 
 @riverpod
 TimelineEditor timelineEditor(Ref ref) {
-  final timeline = ref.watch(loadedProjectProvider).project.timeline;
+  final timeline = ref
+      .watch(loadedProjectProvider)
+      .requireValue
+      .project
+      .timeline;
   final markChanged = ref.read(loadedProjectProvider.notifier).markChanged;
   return TimelineEditor(timeline, markChanged);
 }

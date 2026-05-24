@@ -7,8 +7,8 @@ part 'project_info.freezed.dart';
 @freezed
 sealed class ProjectInfo with _$ProjectInfo {
   const factory ProjectInfo({
-    required int width,
-    required int height,
+    required double width,
+    required double height,
     required int fps,
     required int sampleRate,
     required TimelineInfo timeline,

@@ -6,7 +6,11 @@ part 'providers.g.dart';
 
 @riverpod
 TimelineInfo timelineInfo(Ref ref) {
-  final timeline = ref.watch(loadedProjectProvider).project.timeline;
+  final timeline = ref
+      .watch(loadedProjectProvider)
+      .requireValue
+      .project
+      .timeline;
   return TimelineInfo.fromEntity(timeline);
 }
 

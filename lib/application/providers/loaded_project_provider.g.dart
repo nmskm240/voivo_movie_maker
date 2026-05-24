@@ -9,11 +9,63 @@ part of 'loaded_project_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(ProjectPath)
+final projectPathProvider = ProjectPathProvider._();
+
+final class ProjectPathProvider
+    extends $NotifierProvider<ProjectPath, Directory> {
+  ProjectPathProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'projectPathProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$projectPathHash();
+
+  @$internal
+  @override
+  ProjectPath create() => ProjectPath();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Directory value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Directory>(value),
+    );
+  }
+}
+
+String _$projectPathHash() => r'e9f017ad9673254121d5e2ceb564415316efdb53';
+
+abstract class _$ProjectPath extends $Notifier<Directory> {
+  Directory build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<Directory, Directory>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Directory, Directory>,
+              Directory,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(LoadedProject)
 final loadedProjectProvider = LoadedProjectProvider._();
 
 final class LoadedProjectProvider
-    extends $NotifierProvider<LoadedProject, ProjectSnapshot> {
+    extends $AsyncNotifierProvider<LoadedProject, ProjectSnapshot> {
   LoadedProjectProvider._()
     : super(
         from: null,
@@ -31,29 +83,21 @@ final class LoadedProjectProvider
   @$internal
   @override
   LoadedProject create() => LoadedProject();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ProjectSnapshot value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ProjectSnapshot>(value),
-    );
-  }
 }
 
-String _$loadedProjectHash() => r'5eeda637132b598457f9bcc9027ff9f0da6bed28';
+String _$loadedProjectHash() => r'56c9a9f1c9ffc5dd852e4a0e23de0cb45e40a1f9';
 
-abstract class _$LoadedProject extends $Notifier<ProjectSnapshot> {
-  ProjectSnapshot build();
+abstract class _$LoadedProject extends $AsyncNotifier<ProjectSnapshot> {
+  FutureOr<ProjectSnapshot> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<ProjectSnapshot, ProjectSnapshot>;
+    final ref = this.ref as $Ref<AsyncValue<ProjectSnapshot>, ProjectSnapshot>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ProjectSnapshot, ProjectSnapshot>,
-              ProjectSnapshot,
+              AnyNotifier<AsyncValue<ProjectSnapshot>, ProjectSnapshot>,
+              AsyncValue<ProjectSnapshot>,
               Object?,
               Object?
             >;

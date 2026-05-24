@@ -5,6 +5,23 @@ class TimelineClipId {
   factory TimelineClipId.create() {
     return TimelineClipId._(cuid());
   }
+  factory TimelineClipId.fromString(String value) {
+    if (value.isEmpty) {
+      throw ArgumentError.value(
+        value,
+        'value',
+        'TimelineClipId cannot be empty',
+      );
+    }
+    if (!isCuid(value)) {
+      throw ArgumentError.value(
+        value,
+        'value',
+        'Invalid timeline clip ID format',
+      );
+    }
+    return TimelineClipId._(value);
+  }
 
   final String value;
 

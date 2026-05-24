@@ -1,12 +1,25 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/timeline_clip_json.dart';
 
+part 'timeline_track.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class TimelineTrack {
   TimelineTrack({Iterable<TimelineClip> clips = const []})
-    : _clips = clips.toList();
+    : clips = clips.toList();
 
-  final List<TimelineClip> _clips;
+  factory TimelineTrack.fromJson(Map<String, Object?> json) =>
+      _$TimelineTrackFromJson(json);
 
-  Iterable<TimelineClip> get clips => _clips;
+  @JsonKey(
+    name: 'clips',
+    fromJson: timelineClipsFromJson,
+    toJson: timelineClipsToJson,
+  )
+  final List<TimelineClip> clips;
+
+  Map<String, Object?> toJson() => _$TimelineTrackToJson(this);
 
   void addClip(TimelineClip clip) {
     if (contains(clip)) {
@@ -21,40 +34,40 @@ class TimelineTrack {
       throw ArgumentError.value(clip, "clip", "重複するClipがあります");
     }
 
-    _clips.add(clip);
-    _clips.sort((a, b) => a.startFrame.compareTo(b.startFrame));
+    clips.add(clip);
+    clips.sort((a, b) => a.startFrame.compareTo(b.startFrame));
   }
 
   void removeClip(TimelineClipId clipId) {
-    _clips.removeWhere((x) => x.id == clipId);
+    clips.removeWhere((x) => x.id == clipId);
   }
 
   TimelineClip? findClip(TimelineClipId clipId) {
     try {
-      return _clips.singleWhere((clip) => clip.id == clipId);
+      return clips.singleWhere((clip) => clip.id == clipId);
     } on StateError {
       return null;
     }
   }
 
   bool contains(TimelineClip clip) {
-    return _clips.contains(clip);
+    return clips.contains(clip);
   }
 
   bool containsById(TimelineClipId clipId) {
-    return _clips.any((clip) => clip.id == clipId);
+    return clips.any((clip) => clip.id == clipId);
   }
 
   TimelineClip? getActiveClipAt(int frame) {
     try {
-      return _clips.firstWhere((x) => x.isActiveAt(frame));
+      return clips.firstWhere((x) => x.isActiveAt(frame));
     } on StateError {
       return null;
     }
   }
 
   Iterable<TimelineClip> getActiveClipsAt((int start, int end) range) {
-    return _clips.where(
+    return clips.where(
       (clip) => range.$1 < clip.endFrame && clip.startFrame < range.$2,
     );
   }
@@ -76,7 +89,7 @@ class TimelineTrack {
     required int endFrame,
     TimelineClipId? ignoringClipId,
   }) {
-    return _clips.any((clip) {
+    return clips.any((clip) {
       if (clip.id == ignoringClipId) {
         return false;
       }

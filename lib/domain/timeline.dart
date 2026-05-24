@@ -1,17 +1,27 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_track.dart';
 
+part 'timeline.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class Timeline {
   Timeline({Iterable<TimelineTrack> tracks = const []})
     : _tracks = tracks.toList();
+
+  factory Timeline.fromJson(Map<String, Object?> json) =>
+      _$TimelineFromJson(json);
 
   factory Timeline.empty() {
     return Timeline(tracks: List.generate(50, (index) => TimelineTrack()));
   }
 
+  @JsonKey(name: 'tracks')
   final List<TimelineTrack> _tracks;
 
   Iterable<TimelineTrack> get tracks => _tracks;
+
+  Map<String, Object?> toJson() => _$TimelineToJson(this);
 
   void moveClipToTrack(TimelineClipId clipId, int targetTrackIndex) {
     final sourceTrack = _tracks.singleWhere(
