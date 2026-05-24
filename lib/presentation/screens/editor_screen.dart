@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:voivo_movie_maker/features/assets/widget/asset_list.dart';
 import 'package:voivo_movie_maker/features/inspector/widget/clip_inspector.dart';
 import 'package:voivo_movie_maker/features/preview/widget/project_preview.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline.dart';
@@ -73,9 +74,33 @@ class _EditorScreenState extends ConsumerState<EditorScreen>
                 ],
               ),
             ),
-            const SizedBox(width: 300, child: ClipInspectorPane()),
+            const SizedBox(width: 320, child: _EditorSidePane()),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _EditorSidePane extends StatelessWidget {
+  const _EditorSidePane();
+
+  @override
+  Widget build(BuildContext context) {
+    return const DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          TabBar(
+            tabs: [
+              Tab(text: 'Assets'),
+              Tab(text: 'Inspector'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(children: [AssetListPane(), ClipInspectorPane()]),
+          ),
+        ],
       ),
     );
   }
