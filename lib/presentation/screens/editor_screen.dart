@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/features/assets/widget/asset_list.dart';
 import 'package:voivo_movie_maker/features/inspector/widget/clip_inspector.dart';
+import 'package:voivo_movie_maker/features/preview/widget/timeline_audio_preview_sync.dart';
 import 'package:voivo_movie_maker/features/preview/widget/project_preview.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline.dart';
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
@@ -41,40 +42,45 @@ class _EditorScreenState extends ConsumerState<EditorScreen>
 
     return Scaffold(
       body: SafeArea(
-        child: Row(
+        child: Stack(
           children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Text(state.currentFrame.toString()),
-                  state.map(
-                    stopped: (stopped) {
-                      return TextButton.icon(
-                        onPressed: () {
-                          _ticker.start();
-                          playbackController.play();
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(state.currentFrame.toString()),
+                      state.map(
+                        stopped: (stopped) {
+                          return TextButton.icon(
+                            onPressed: () {
+                              _ticker.start();
+                              playbackController.play();
+                            },
+                            label: Text("start"),
+                            icon: Icon(Icons.start),
+                          );
                         },
-                        label: Text("start"),
-                        icon: Icon(Icons.start),
-                      );
-                    },
-                    playing: (playing) {
-                      return TextButton.icon(
-                        onPressed: () {
-                          _ticker.stop();
-                          playbackController.pause();
+                        playing: (playing) {
+                          return TextButton.icon(
+                            onPressed: () {
+                              _ticker.stop();
+                              playbackController.pause();
+                            },
+                            label: Text("stop"),
+                            icon: Icon(Icons.stop),
+                          );
                         },
-                        label: Text("stop"),
-                        icon: Icon(Icons.stop),
-                      );
-                    },
+                      ),
+                      const Expanded(flex: 2, child: ProjectPreview()),
+                      const Expanded(flex: 3, child: TimelinePane()),
+                    ],
                   ),
-                  const Expanded(flex: 2, child: ProjectPreview()),
-                  const Expanded(flex: 3, child: TimelinePane()),
-                ],
-              ),
+                ),
+                const SizedBox(width: 320, child: _EditorSidePane()),
+              ],
             ),
-            const SizedBox(width: 320, child: _EditorSidePane()),
+            const TimelineAudioPreviewSync(),
           ],
         ),
       ),

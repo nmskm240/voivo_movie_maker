@@ -49,6 +49,8 @@ dependencies:
   file_picker: ^11.0.2
   voicevox_flutter:
     path: third_party/voicevox_flutter
+  media_kit: ^1.2.6
+  media_kit_libs_linux: ^1.2.1
 
 ffmpeg_kit_extended_config:
   type: "video"
