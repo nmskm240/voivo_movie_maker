@@ -1,14 +1,22 @@
+import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/add_clip_command.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
+import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
+import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/features/timeline/providers.dart';
-import 'package:voivo_movie_maker/features/timeline/widget/timeline_add_clip_button.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/playhead.dart';
+import 'package:voivo_movie_maker/features/timeline/widget/timeline_add_clip_button.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_auto_scroller.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_ruler.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_track.dart';
-import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
 
 const _timelineDurationFrames = 3600;
 
@@ -34,6 +42,15 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
 
   @override
   Widget build(BuildContext context) {
+    final loadedProject = ref.watch(loadedProjectProvider);
+    return loadedProject.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text(error.toString())),
+      data: (_) => _buildLoaded(context),
+    );
+  }
+
+  Widget _buildLoaded(BuildContext context) {
     final playbackState = ref.watch(playbackControllerProvider);
     final playbackController = ref.read(playbackControllerProvider.notifier);
     final timeline = ref.watch(timelineInfoProvider);
@@ -170,12 +187,30 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
             right: 16,
             bottom: 16,
             child: TimelineAddClipButton(
-              onSelected: (kind) {
+              onSelected: (kind) async {
+                final imageAsset = kind == TimelineClipKind.image
+                    ? await _pickImageAsset()
+                    : null;
+                if (kind == TimelineClipKind.image && imageAsset == null) {
+                  return;
+                }
+
+                if (imageAsset != null) {
+                  await ref
+                      .read(loadedProjectProvider.notifier)
+                      .addAsset(
+                        imageAsset.asset,
+                        Stream.value(imageAsset.bytes),
+                      );
+                }
+
                 timelineEditor.execute(
                   AddClipCommand(
                     targetTrackIndex: selectedTrackIndex ?? 0,
                     startFrame: playbackState.currentFrame,
                     kind: kind,
+                    assetId: imageAsset?.asset.id,
+                    size: imageAsset?.clipSize,
                   ),
                 );
               },
@@ -184,5 +219,43 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
         ],
       ),
     );
+  }
+
+  Future<({ProjectAsset asset, Uint8List bytes, Size clipSize})?>
+  _pickImageAsset() async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
+    final file = result?.files.singleOrNull;
+    if (file == null || (file.bytes == null && file.path == null)) {
+      return null;
+    }
+    final bytes = file.bytes ?? await file.xFile.readAsBytes();
+
+    final image = await _decodeImage(bytes);
+    final asset = ProjectAsset(
+      id: AssetId.create(),
+      name: file.name,
+      kind: ProjectAssetKind.image,
+    );
+
+    return (asset: asset, bytes: bytes, clipSize: _defaultClipSize(image));
+  }
+
+  Future<ui.Image> _decodeImage(Uint8List bytes) async {
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    return frame.image;
+  }
+
+  Size _defaultClipSize(ui.Image image) {
+    const maxWidth = 640.0;
+    const maxHeight = 360.0;
+    final width = image.width.toDouble();
+    final height = image.height.toDouble();
+    final scale = math.min(1.0, math.min(maxWidth / width, maxHeight / height));
+
+    return Size(width * scale, height * scale);
   }
 }

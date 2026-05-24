@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:vector_math/vector_math.dart';
 
 class PreviewPaintContext {
-  const PreviewPaintContext({required this.projectSize});
+  const PreviewPaintContext({
+    required this.projectSize,
+  });
 
   final Size projectSize;
 

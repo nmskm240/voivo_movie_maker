@@ -27,7 +27,15 @@ TimelineClip? selectedTimelineClip(Ref ref) {
     return null;
   }
 
-  final timeline = ref.watch(loadedProjectProvider).project.timeline;
+  final loadedProject = ref.watch(loadedProjectProvider);
+  final timeline = loadedProject.when(
+    data: (snapshot) => snapshot.project.timeline,
+    loading: () => null,
+    error: (error, stackTrace) => null,
+  );
+  if (timeline == null) {
+    return null;
+  }
   for (final clip in timeline.tracks.expand((track) => track.clips)) {
     if (clip.id == selectedClipId) {
       return clip;

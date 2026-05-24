@@ -102,4 +102,4 @@ final class SelectedTimelineClipProvider
 }
 
 String _$selectedTimelineClipHash() =>
-    r'8e30f618b92a3278bbe5bf33fa643fdd088a214f';
+    r'57c7013cf3866c0fa7dd929a7fc03e2fe17715c8';

@@ -42,7 +42,7 @@ final class PlaybackControllerProvider
 }
 
 String _$playbackControllerHash() =>
-    r'e864b5173a9856442ea9a40f3152017e5dd97536';
+    r'b86b35d814e760f1916415cd192e92df872eaefb';
 
 abstract class _$PlaybackController extends $Notifier<PlaybackInfo> {
   PlaybackInfo build();

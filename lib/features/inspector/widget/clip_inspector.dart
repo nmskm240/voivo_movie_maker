@@ -15,7 +15,7 @@ class ClipInspectorPane extends ConsumerWidget {
     final sections = clip == null
         ? <InspectorSection>[]
         : clipInspectorSectionsFor(clip);
-    final editor = ref.read(timelineEditorProvider);
+    final editor = clip == null ? null : ref.read(timelineEditorProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -25,7 +25,7 @@ class ClipInspectorPane extends ConsumerWidget {
           itemCount: sections.length,
           separatorBuilder: (context, index) => const Divider(),
           itemBuilder: (context, index) {
-            return sections[index].build(context, editor, clip);
+            return sections[index].build(context, editor!, clip);
           },
         ),
       ),

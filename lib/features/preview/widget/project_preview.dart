@@ -10,32 +10,38 @@ class ProjectPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final projectSnapshot = ref.watch(loadedProjectProvider);
-    final project = projectSnapshot.project;
     final currentFrame = ref.watch(
       playbackControllerProvider.select((state) => state.currentFrame),
     );
 
-    return Center(
-      child: AspectRatio(
-        aspectRatio: project.width / project.height,
-        child: ClipRect(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                child: CustomPaint(
-                  painter: ProjectPreviewPainter(
-                    project,
-                    currentFrame,
-                    projectSnapshot.revision,
-                  ),
-                  child: const SizedBox.expand(),
-                ),
-              );
-            },
+    return projectSnapshot.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text(error.toString())),
+      data: (projectSnapshot) {
+        final project = projectSnapshot.project;
+        return Center(
+          child: AspectRatio(
+            aspectRatio: project.width / project.height,
+            child: ClipRect(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    child: CustomPaint(
+                      painter: ProjectPreviewPainter(
+                        project,
+                        currentFrame,
+                        projectSnapshot.revision,
+                      ),
+                      child: const SizedBox.expand(),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

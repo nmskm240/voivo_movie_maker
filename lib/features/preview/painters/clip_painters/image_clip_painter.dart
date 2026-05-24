@@ -14,6 +14,10 @@ class ImageClipPainter extends ClipPainter<ImageClip> {
       height: clip.size.height,
     );
 
+    _paintMissingImage(canvas, rect);
+  }
+
+  void _paintMissingImage(Canvas canvas, Rect rect) {
     canvas.drawRect(rect, Paint()..color = const Color(0xff1f2937));
     canvas.drawRect(
       rect.deflate(2),
