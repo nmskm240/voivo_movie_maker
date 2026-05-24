@@ -4,6 +4,7 @@ import 'package:voivo_movie_maker/application/controllers/timeline_editor/comman
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/resize_clip_command.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
+import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/features/inspector/providers.dart';
 
 class TimelineClipView extends ConsumerStatefulWidget {
@@ -72,8 +73,11 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
                     startFrame: _dragStartFrame + _deltaFrames(details),
                     targetTrackIndex: _trackIndexAt(details.globalPosition),
                   ),
+                  save: false,
                 );
               },
+              onPanEnd: (_) => _saveProject(),
+              onPanCancel: _saveProject,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Align(
@@ -105,8 +109,11 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
                   startFrame: startFrame,
                   durationFrames: _dragStartEndFrame - startFrame,
                 ),
+                save: false,
               );
             },
+            onDragEnd: (_) => _saveProject(),
+            onDragCancel: _saveProject,
           ),
           _ResizeHandle(
             side: _ResizeHandleSide.end,
@@ -123,8 +130,11 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
                       ? 1
                       : nextDurationFrames,
                 ),
+                save: false,
               );
             },
+            onDragEnd: (_) => _saveProject(),
+            onDragCancel: _saveProject,
           ),
         ],
       ),
@@ -175,6 +185,10 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   void _selectClip() {
     ref.read(selectedTimelineClipIdProvider.notifier).select(widget.clip.id);
   }
+
+  void _saveProject() {
+    ref.read(loadedProjectProvider.notifier).save();
+  }
 }
 
 class _ResizeHandle extends StatelessWidget {
@@ -182,11 +196,15 @@ class _ResizeHandle extends StatelessWidget {
     required this.side,
     required this.onDragStart,
     required this.onDragUpdate,
+    required this.onDragEnd,
+    required this.onDragCancel,
   });
 
   final _ResizeHandleSide side;
   final GestureDragStartCallback onDragStart;
   final GestureDragUpdateCallback onDragUpdate;
+  final GestureDragEndCallback onDragEnd;
+  final GestureDragCancelCallback onDragCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +218,8 @@ class _ResizeHandle extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onHorizontalDragStart: onDragStart,
         onHorizontalDragUpdate: onDragUpdate,
+        onHorizontalDragEnd: onDragEnd,
+        onHorizontalDragCancel: onDragCancel,
         child: const DecoratedBox(
           decoration: BoxDecoration(color: Color(0x44ffffff)),
         ),

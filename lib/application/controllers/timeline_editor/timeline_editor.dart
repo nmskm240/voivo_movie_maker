@@ -20,14 +20,14 @@ class TimelineEditor {
   const TimelineEditor(this._timeline, this._markChanged);
 
   final Timeline _timeline;
-  final void Function() _markChanged;
+  final void Function({bool save}) _markChanged;
 
-  void execute(TimelineEditorCommand command) {
+  void execute(TimelineEditorCommand command, {bool save = true}) {
     if (!command.canExecute(_timeline)) {
       return;
     }
 
     command.execute(_timeline);
-    _markChanged();
+    _markChanged(save: save);
   }
 }

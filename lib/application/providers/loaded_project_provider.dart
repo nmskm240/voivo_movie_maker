@@ -42,9 +42,16 @@ class LoadedProject extends _$LoadedProject {
     return ProjectSnapshot(project: project);
   }
 
-  Future<void> markChanged() async {
+  Future<void> markChanged({bool save = true}) async {
     final snapshot = state.requireValue;
     state = AsyncData(snapshot.copyWith(revision: snapshot.revision + 1));
+    if (save) {
+      await ref.read(projectRepositoryProvider).save(snapshot.project);
+    }
+  }
+
+  Future<void> save() async {
+    final snapshot = state.requireValue;
     await ref.read(projectRepositoryProvider).save(snapshot.project);
   }
 

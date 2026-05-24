@@ -85,7 +85,7 @@ final class LoadedProjectProvider
   LoadedProject create() => LoadedProject();
 }
 
-String _$loadedProjectHash() => r'56c9a9f1c9ffc5dd852e4a0e23de0cb45e40a1f9';
+String _$loadedProjectHash() => r'a81031672f007bf62ea17aad92de008277231502';
 
 abstract class _$LoadedProject extends $AsyncNotifier<ProjectSnapshot> {
   FutureOr<ProjectSnapshot> build();

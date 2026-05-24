@@ -17,6 +17,7 @@ final class DirectoryProjectRepository implements ProjectRepository {
 
   final Directory directory;
   final File _projectFile;
+  Future<void> _saveQueue = Future.value();
 
   @override
   Future<Project> load() async {
@@ -38,6 +39,12 @@ final class DirectoryProjectRepository implements ProjectRepository {
 
   @override
   Future<void> save(Project project) async {
+    final saveTask = _saveQueue.then((_) => _write(project));
+    _saveQueue = saveTask.catchError((_) {});
+    return saveTask;
+  }
+
+  Future<void> _write(Project project) async {
     if (!await directory.exists()) {
       await directory.create(recursive: true);
     }
