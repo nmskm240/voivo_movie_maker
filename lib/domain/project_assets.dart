@@ -1,9 +1,21 @@
 import 'package:cuid2/cuid2.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'project_assets.g.dart';
 
 class AssetId {
   const AssetId._(this.value);
   factory AssetId.create() {
     return AssetId._(cuid());
+  }
+  factory AssetId.fromString(String value) {
+    if (value.isEmpty) {
+      throw ArgumentError.value(value, 'value', 'AssetId cannot be empty');
+    }
+    if (!isCuid(value)) {
+      throw ArgumentError.value(value, 'value', 'Invalid asset ID format');
+    }
+    return AssetId._(value);
   }
 
   final String value;
@@ -20,56 +32,44 @@ class AssetId {
   String toString() => value;
 }
 
-abstract class ProjectAsset {
+@JsonSerializable()
+class ProjectAsset {
   const ProjectAsset({
     required this.id,
     required this.name,
-    required this.uri,
     required this.kind,
   });
 
+  factory ProjectAsset.fromJson(Map<String, Object?> json) =>
+      _$ProjectAssetFromJson(json);
+
+  @AssetIdJsonConverter()
   final AssetId id;
   final String name;
-  final Uri uri;
   final ProjectAssetKind kind;
+
+  Map<String, Object?> toJson() => _$ProjectAssetToJson(this);
 }
 
 enum ProjectAssetKind { image, video, audio }
 
-class ProjectAssetSource {
-  ProjectAssetSource({Iterable<ProjectAsset> assets = const []})
-    : _assets = {for (final asset in assets) asset.id: asset};
+class AssetIdJsonConverter implements JsonConverter<AssetId, String> {
+  const AssetIdJsonConverter();
 
-  final Map<AssetId, ProjectAsset> _assets;
+  @override
+  AssetId fromJson(String json) => AssetId.fromString(json);
 
-  ProjectAsset? findById(AssetId assetId) {
-    return _assets[assetId];
-  }
+  @override
+  String toJson(AssetId object) => object.value;
+}
 
-  ProjectAsset getById(AssetId assetId) {
-    final asset = findById(assetId);
-    if (asset == null) {
-      throw ArgumentError.value(assetId, 'assetId', 'Unknown project asset');
-    }
-    return asset;
-  }
+abstract interface class ProjectAssetStorage {
+  Iterable<ProjectAsset> get assets;
 
-  bool containsById(AssetId assetId) {
-    return _assets.containsKey(assetId);
-  }
-
-  void add(ProjectAsset asset) {
-    if (containsById(asset.id)) {
-      throw ArgumentError.value(
-        asset.id,
-        'asset.id',
-        'Duplicate project asset',
-      );
-    }
-    _assets[asset.id] = asset;
-  }
-
-  void remove(AssetId assetId) {
-    _assets.remove(assetId);
-  }
+  ProjectAsset? findById(AssetId assetId);
+  ProjectAsset getById(AssetId assetId);
+  Stream<List<int>> getBytes(ProjectAsset asset);
+  Stream<List<int>> getBytesById(AssetId assetId);
+  Future<void> add(ProjectAsset asset, Stream<List<int>> bytes);
+  Future<void> remove(AssetId assetId);
 }
