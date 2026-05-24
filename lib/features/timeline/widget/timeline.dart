@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/asset_clip_selection.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
@@ -11,6 +12,7 @@ import 'package:voivo_movie_maker/features/timeline/widget/timeline_add_clip_but
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_auto_scroller.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_ruler.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_track.dart';
+import 'package:voivo_movie_maker/features/voicevox/widget/voicevox_asset_dialog.dart';
 
 const _timelineDurationFrames = 3600;
 
@@ -183,7 +185,9 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
             bottom: 16,
             child: TimelineAddClipButton(
               onSelected: (kind) async {
-                final selectedAsset = await assetClipPicker.pickFor(kind);
+                final selectedAsset = kind == TimelineClipKind.audio
+                    ? await _pickAudioClipAsset(context, assetClipPicker)
+                    : await assetClipPicker.pickFor(kind);
                 if ((kind == TimelineClipKind.image ||
                         kind == TimelineClipKind.audio) &&
                     selectedAsset == null) {
@@ -203,4 +207,45 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
       ),
     );
   }
+
+  Future<AssetClipSelection?> _pickAudioClipAsset(
+    BuildContext context,
+    AssetClipPicker assetClipPicker,
+  ) async {
+    final source = await showDialog<_AudioSource>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Audio'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.upload_file),
+                title: const Text('Import file'),
+                onTap: () => Navigator.of(context).pop(_AudioSource.file),
+              ),
+              ListTile(
+                leading: const Icon(Icons.graphic_eq),
+                title: const Text('VOICEVOX'),
+                onTap: () => Navigator.of(context).pop(_AudioSource.voicevox),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!context.mounted) {
+      return null;
+    }
+
+    return switch (source) {
+      _AudioSource.file => assetClipPicker.pickAudio(),
+      _AudioSource.voicevox => showVoicevoxAssetDialog(context),
+      null => Future.value(),
+    };
+  }
 }
+
+enum _AudioSource { file, voicevox }

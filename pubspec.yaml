@@ -34,7 +34,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  ffmpeg_kit_extended_flutter: ^0.4.0
+  ffmpeg_kit_extended_flutter:
+    path: third_party/ffmpeg_kit_extended_flutter
   path_provider: ^2.1.5
   path: ^1.9.1
   freezed_annotation: ^3.1.0
@@ -46,6 +47,8 @@ dependencies:
   flutter_form_builder: ^10.3.0+2
   flutter_colorpicker: ^1.1.0
   file_picker: ^11.0.2
+  voicevox_flutter:
+    path: third_party/voicevox_flutter
 
 ffmpeg_kit_extended_config:
   type: "video"

@@ -27,3 +27,7 @@ Thumbs.db
 
 # Local project workspace
 .dev_project/
+
+# Local VOICEVOX runtime payloads are large and are downloaded separately.
+/voicevox/
+/third_party/*

@@ -123,6 +123,34 @@ if(SEPOL_COMPAT_LIBRARY)
     COMPONENT Runtime)
 endif()
 
+# Optional local VOICEVOX runtime payload. Put the Linux core libraries in
+# third_party/voicevox_core/linux-x64/lib and model/dictionary files in
+# voicevox/ to have them copied into the desktop bundle.
+set(VOICEVOX_CORE_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/voicevox_core/linux-x64/lib")
+if(EXISTS "${VOICEVOX_CORE_LIB_DIR}")
+  install(DIRECTORY "${VOICEVOX_CORE_LIB_DIR}/"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime
+    FILES_MATCHING PATTERN "*.so*")
+endif()
+
+set(VOICEVOX_RUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../voicevox")
+if(EXISTS "${VOICEVOX_RUNTIME_DIR}")
+  install(DIRECTORY "${VOICEVOX_RUNTIME_DIR}"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}"
+    COMPONENT Runtime)
+endif()
+
+# The current Flutter native-assets hook input does not advertise code asset
+# support, so bundle FFmpegKit's Linux runtime directly when present.
+set(FFMPEG_KIT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/ffmpeg_kit_runtime/linux-x64/lib")
+if(EXISTS "${FFMPEG_KIT_LIB_DIR}")
+  install(DIRECTORY "${FFMPEG_KIT_LIB_DIR}/"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime
+    FILES_MATCHING PATTERN "*.so*")
+endif()
+
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
 set(FLUTTER_ASSET_DIR_NAME "flutter_assets")
