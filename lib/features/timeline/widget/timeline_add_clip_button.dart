@@ -45,7 +45,7 @@ class TimelineAddClipButton extends StatelessWidget {
                 kind: TimelineClipKind.audio,
                 icon: Icons.graphic_eq,
                 label: 'Audio',
-                enabled: false,
+                enabled: true,
               ),
             ],
           ),

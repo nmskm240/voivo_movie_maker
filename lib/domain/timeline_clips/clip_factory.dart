@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/audio_clip.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/image_clip.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
@@ -21,7 +22,11 @@ class ClipFactory {
         assetId: assetId ?? (throw ArgumentError.notNull('assetId')),
         size: size,
       ),
-      _ => throw Error(),
+      TimelineClipKind.audio => AudioClip(
+        id: id,
+        startFrame: startFrame,
+        assetId: assetId ?? (throw ArgumentError.notNull('assetId')),
+      ),
     };
   }
 }

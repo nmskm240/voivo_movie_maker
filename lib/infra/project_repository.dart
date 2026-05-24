@@ -39,19 +39,18 @@ final class DirectoryProjectRepository implements ProjectRepository {
 
   @override
   Future<void> save(Project project) async {
-    final saveTask = _saveQueue.then((_) => _write(project));
+    final saveTask = _saveQueue.then((_) async {
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+
+      const encoder = JsonEncoder.withIndent('  ');
+      final tempFile = File('${_projectFile.path}.tmp');
+      await tempFile.writeAsString(encoder.convert(project.toJson()));
+      await tempFile.rename(_projectFile.path);
+    });
+
     _saveQueue = saveTask.catchError((_) {});
     return saveTask;
-  }
-
-  Future<void> _write(Project project) async {
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
-
-    const encoder = JsonEncoder.withIndent('  ');
-    final tempFile = File('${_projectFile.path}.tmp');
-    await tempFile.writeAsString(encoder.convert(project.toJson()));
-    await tempFile.rename(_projectFile.path);
   }
 }

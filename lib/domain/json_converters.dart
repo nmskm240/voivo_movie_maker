@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/audio_clip.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/image_clip.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
@@ -37,9 +38,7 @@ class TimelineClipListJsonConverter
     return switch (_readClipKind(json['kind'])) {
       TimelineClipKind.text => TextClip.fromJson(json),
       TimelineClipKind.image => ImageClip.fromJson(json),
-      TimelineClipKind.audio => throw const FormatException(
-        'Audio clips are not supported yet',
-      ),
+      TimelineClipKind.audio => AudioClip.fromJson(json),
     };
   }
 
@@ -47,6 +46,7 @@ class TimelineClipListJsonConverter
     return switch (clip) {
       TextClip() => clip.toJson(),
       ImageClip() => clip.toJson(),
+      AudioClip() => clip.toJson(),
       _ => throw UnsupportedError('Unsupported clip type: ${clip.runtimeType}'),
     };
   }
