@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/features/assets/asset_timeline_drag_data.dart';
 import 'package:voivo_movie_maker/features/voicevox/widget/voicevox_asset_dialog.dart';
 
 class AssetListPane extends ConsumerStatefulWidget {
@@ -160,6 +161,26 @@ class _AssetListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Draggable<AssetTimelineDragData>(
+      data: AssetTimelineDragData(asset: asset, storage: storage),
+      feedback: _AssetDragFeedback(asset: asset),
+      childWhenDragging: Opacity(
+        opacity: 0.45,
+        child: _AssetListTileContent(asset: asset, storage: storage),
+      ),
+      child: _AssetListTileContent(asset: asset, storage: storage),
+    );
+  }
+}
+
+class _AssetListTileContent extends StatelessWidget {
+  const _AssetListTileContent({required this.asset, required this.storage});
+
+  final ProjectAsset asset;
+  final ProjectAssetStorage storage;
+
+  @override
+  Widget build(BuildContext context) {
     return ListTile(
       dense: true,
       leading: _AssetThumbnail(asset: asset, storage: storage),
@@ -171,6 +192,69 @@ class _AssetListTile extends StatelessWidget {
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
+  }
+}
+
+class _AssetDragFeedback extends StatelessWidget {
+  const _AssetDragFeedback({required this.asset});
+
+  final ProjectAsset asset;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: Colors.transparent,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: const Color(0xff78c257),
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x66000000),
+              blurRadius: 12,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          width: 180,
+          height: 40,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                Icon(
+                  _iconFor(asset.kind),
+                  color: const Color(0xff10210c),
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    asset.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: const Color(0xff10210c),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _iconFor(ProjectAssetKind kind) {
+    return switch (kind) {
+      ProjectAssetKind.image => Icons.image_outlined,
+      ProjectAssetKind.video => Icons.movie_outlined,
+      ProjectAssetKind.audio => Icons.graphic_eq,
+    };
   }
 }
 

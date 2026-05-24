@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_track_info.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/features/assets/asset_timeline_drag_data.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_clip.dart';
 
 class TimelineTrackView extends StatelessWidget {
@@ -13,6 +15,7 @@ class TimelineTrackView extends StatelessWidget {
     required this.onAutoScroll,
     required this.onSeekFrame,
     required this.onSelectTrack,
+    required this.onAcceptAsset,
     required this.selected,
     super.key,
   });
@@ -27,6 +30,7 @@ class TimelineTrackView extends StatelessWidget {
   onAutoScroll;
   final ValueChanged<int> onSeekFrame;
   final VoidCallback onSelectTrack;
+  final void Function(AssetTimelineDragData data, int frame) onAcceptAsset;
   final bool selected;
 
   static const height = 56.0;
@@ -38,30 +42,52 @@ class TimelineTrackView extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (details) {
-                onSelectTrack();
-                onSeekFrame(details.localPosition.dx.floor());
+            child: DragTarget<AssetTimelineDragData>(
+              onWillAcceptWithDetails: (details) {
+                return switch (details.data.asset.kind) {
+                  ProjectAssetKind.image || ProjectAssetKind.audio => true,
+                  ProjectAssetKind.video => false,
+                };
               },
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: selected
-                      ? const Color(0xff1f2a33)
-                      : index.isEven
-                      ? const Color(0xff161b1f)
-                      : const Color(0xff11161a),
-                  border: Border(
-                    left: BorderSide(
-                      color: selected
-                          ? const Color(0xff60a5fa)
-                          : Colors.transparent,
-                      width: 3,
+              onAcceptWithDetails: (details) {
+                onSelectTrack();
+                onAcceptAsset(
+                  details.data,
+                  _frameAtGlobalPosition(context, details.offset),
+                );
+              },
+              builder: (context, candidateData, rejectedData) {
+                final isDropTarget = candidateData.isNotEmpty;
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (details) {
+                    onSelectTrack();
+                    onSeekFrame(details.localPosition.dx.floor());
+                  },
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: isDropTarget
+                          ? const Color(0xff23351f)
+                          : selected
+                          ? const Color(0xff1f2a33)
+                          : index.isEven
+                          ? const Color(0xff161b1f)
+                          : const Color(0xff11161a),
+                      border: Border(
+                        left: BorderSide(
+                          color: isDropTarget
+                              ? const Color(0xff9ccc65)
+                              : selected
+                              ? const Color(0xff60a5fa)
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                        bottom: const BorderSide(color: Color(0xff2b3339)),
+                      ),
                     ),
-                    bottom: const BorderSide(color: Color(0xff2b3339)),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
           for (final clip in track.clips)
@@ -85,5 +111,13 @@ class TimelineTrackView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  int _frameAtGlobalPosition(BuildContext context, Offset globalPosition) {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) {
+      return 0;
+    }
+    return renderBox.globalToLocal(globalPosition).dx.floor().clamp(0, 1 << 30);
   }
 }

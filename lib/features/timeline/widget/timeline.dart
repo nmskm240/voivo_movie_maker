@@ -1,10 +1,16 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/asset_clip_selection.dart';
+import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/add_clip_command.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/features/assets/asset_timeline_drag_data.dart';
 import 'package:voivo_movie_maker/features/timeline/providers.dart';
 import 'package:voivo_movie_maker/features/timeline/services/asset_clip_picker.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/playhead.dart';
@@ -127,6 +133,16 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
                                   onSelectTrack: () {
                                     selectedTrackController.select(index);
                                   },
+                                  onAcceptAsset: (data, frame) {
+                                    selectedTrackController.select(index);
+                                    _addDroppedAsset(
+                                      context: context,
+                                      data: data,
+                                      targetTrackIndex: index,
+                                      startFrame: frame,
+                                      timelineEditor: timelineEditor,
+                                    );
+                                  },
                                   selected: selectedTrackIndex == index,
                                 );
                               },
@@ -245,6 +261,66 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
       _AudioSource.voicevox => showVoicevoxAssetDialog(context),
       null => Future.value(),
     };
+  }
+
+  Future<void> _addDroppedAsset({
+    required BuildContext context,
+    required AssetTimelineDragData data,
+    required int targetTrackIndex,
+    required int startFrame,
+    required TimelineEditor timelineEditor,
+  }) async {
+    try {
+      final kind = switch (data.asset.kind) {
+        ProjectAssetKind.image => TimelineClipKind.image,
+        ProjectAssetKind.audio => TimelineClipKind.audio,
+        ProjectAssetKind.video => null,
+      };
+      if (kind == null) {
+        return;
+      }
+
+      final size = data.asset.kind == ProjectAssetKind.image
+          ? await _defaultImageClipSize(data)
+          : null;
+      if (!context.mounted) {
+        return;
+      }
+
+      timelineEditor.execute(
+        AddClipCommand(
+          targetTrackIndex: targetTrackIndex,
+          startFrame: startFrame,
+          kind: kind,
+          assetId: data.asset.id,
+          size: size,
+        ),
+      );
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.toString())));
+    }
+  }
+
+  Future<ui.Size> _defaultImageClipSize(AssetTimelineDragData data) async {
+    final bytes = await data.storage
+        .getBytes(data.asset)
+        .fold<List<int>>(<int>[], (bytes, chunk) => bytes..addAll(chunk))
+        .then(Uint8List.fromList);
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    final image = frame.image;
+    const maxWidth = 640.0;
+    const maxHeight = 360.0;
+    final width = image.width.toDouble();
+    final height = image.height.toDouble();
+    final scale = (maxWidth / width).clamp(0.0, 1.0);
+    final constrainedScale = (maxHeight / height).clamp(0.0, scale);
+    return ui.Size(width * constrainedScale, height * constrainedScale);
   }
 }
 
