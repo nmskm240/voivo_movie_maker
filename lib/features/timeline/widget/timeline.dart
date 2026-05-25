@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/application/controllers/timeline_editor/asset_clip_selection.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/commands/add_clip_command.dart';
 import 'package:voivo_movie_maker/application/controllers/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
@@ -18,7 +17,7 @@ import 'package:voivo_movie_maker/features/timeline/widget/timeline_add_clip_but
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_auto_scroller.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_ruler.dart';
 import 'package:voivo_movie_maker/features/timeline/widget/timeline_track.dart';
-import 'package:voivo_movie_maker/features/voicevox/widget/voicevox_asset_dialog.dart';
+import 'package:voivo_movie_maker/features/voice_generation/widget/voice_editor.dart';
 
 const _timelineDurationFrames = 3600;
 
@@ -69,198 +68,165 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
       timelineDurationFrames: _timelineDurationFrames,
     );
 
-    return KeyedSubtree(
-      key: _timelineViewportKey,
-      child: Stack(
-        children: [
-          Scrollbar(
-            controller: _horizontalScrollController,
-            thumbVisibility: true,
-            child: SingleChildScrollView(
-              controller: _horizontalScrollController,
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: _timelineDurationFrames.toDouble(),
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onPanDown: (details) {
-                            playbackController.seek(
-                              autoScroller.frameAtGlobalPosition(
-                                details.globalPosition,
-                              ),
-                            );
-                          },
-                          onHorizontalDragUpdate: (details) {
-                            autoScroller.autoScrollForDrag(
-                              details.globalPosition,
-                              vertical: false,
-                            );
-                            playbackController.seek(
-                              autoScroller.frameAtGlobalPosition(
-                                details.globalPosition,
-                              ),
-                            );
-                          },
-                          child: const TimelineRuler(),
-                        ),
-                        Expanded(
-                          child: Scrollbar(
-                            controller: _verticalScrollController,
-                            thumbVisibility: true,
-                            child: ListView.builder(
-                              key: _trackListKey,
-                              controller: _verticalScrollController,
-                              itemExtent: TimelineTrackView.height,
-                              itemCount: timeline.tracks.length,
-                              itemBuilder: (context, index) {
-                                final track = timeline.tracks[index];
-                                return TimelineTrackView(
-                                  track: track,
-                                  index: index,
-                                  trackCount: timeline.tracks.length,
-                                  trackListKey: _trackListKey,
-                                  horizontalScrollController:
-                                      _horizontalScrollController,
-                                  trackScrollController:
-                                      _verticalScrollController,
-                                  onAutoScroll: autoScroller.autoScrollForDrag,
-                                  onSeekFrame: playbackController.seek,
-                                  onSelectTrack: () {
-                                    selectedTrackController.select(index);
-                                  },
-                                  onAcceptAsset: (data, frame) {
-                                    selectedTrackController.select(index);
-                                    _addDroppedAsset(
-                                      context: context,
-                                      data: data,
-                                      targetTrackIndex: index,
-                                      startFrame: frame,
-                                      timelineEditor: timelineEditor,
-                                    );
-                                  },
-                                  selected: selectedTrackIndex == index,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      top: 0,
-                      bottom: 0,
-                      left: playbackState.currentFrame.toDouble() - 5,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onPanDown: (details) {
-                          playbackController.seek(
-                            autoScroller.frameAtGlobalPosition(
-                              details.globalPosition,
-                            ),
-                          );
-                        },
-                        onHorizontalDragUpdate: (details) {
-                          autoScroller.autoScrollForDrag(
-                            details.globalPosition,
-                            vertical: false,
-                          );
-                          playbackController.seek(
-                            autoScroller.frameAtGlobalPosition(
-                              details.globalPosition,
-                            ),
-                          );
-                        },
-                        child: const SizedBox(
-                          width: 12,
-                          child: Stack(
+    return Column(
+      children: [
+        Expanded(
+          child: KeyedSubtree(
+            key: _timelineViewportKey,
+            child: Stack(
+              children: [
+                Scrollbar(
+                  controller: _horizontalScrollController,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _horizontalScrollController,
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: _timelineDurationFrames.toDouble(),
+                      child: Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Positioned(
-                                top: 0,
-                                bottom: 0,
-                                left: 5,
-                                width: 2,
-                                child: Playhead(),
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onPanDown: (details) {
+                                  playbackController.seek(
+                                    autoScroller.frameAtGlobalPosition(
+                                      details.globalPosition,
+                                    ),
+                                  );
+                                },
+                                onHorizontalDragUpdate: (details) {
+                                  autoScroller.autoScrollForDrag(
+                                    details.globalPosition,
+                                    vertical: false,
+                                  );
+                                  playbackController.seek(
+                                    autoScroller.frameAtGlobalPosition(
+                                      details.globalPosition,
+                                    ),
+                                  );
+                                },
+                                child: const TimelineRuler(),
+                              ),
+                              Expanded(
+                                child: Scrollbar(
+                                  controller: _verticalScrollController,
+                                  thumbVisibility: true,
+                                  child: ListView.builder(
+                                    key: _trackListKey,
+                                    controller: _verticalScrollController,
+                                    itemExtent: TimelineTrackView.height,
+                                    itemCount: timeline.tracks.length,
+                                    itemBuilder: (context, index) {
+                                      final track = timeline.tracks[index];
+                                      return TimelineTrackView(
+                                        track: track,
+                                        index: index,
+                                        trackCount: timeline.tracks.length,
+                                        trackListKey: _trackListKey,
+                                        horizontalScrollController:
+                                            _horizontalScrollController,
+                                        trackScrollController:
+                                            _verticalScrollController,
+                                        onAutoScroll:
+                                            autoScroller.autoScrollForDrag,
+                                        onSeekFrame: playbackController.seek,
+                                        onSelectTrack: () {
+                                          selectedTrackController.select(index);
+                                        },
+                                        onAcceptAsset: (data, frame) {
+                                          selectedTrackController.select(index);
+                                          _addDroppedAsset(
+                                            context: context,
+                                            data: data,
+                                            targetTrackIndex: index,
+                                            startFrame: frame,
+                                            timelineEditor: timelineEditor,
+                                          );
+                                        },
+                                        selected: selectedTrackIndex == index,
+                                      );
+                                    },
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ),
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: playbackState.currentFrame.toDouble() - 5,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onPanDown: (details) {
+                                playbackController.seek(
+                                  autoScroller.frameAtGlobalPosition(
+                                    details.globalPosition,
+                                  ),
+                                );
+                              },
+                              onHorizontalDragUpdate: (details) {
+                                autoScroller.autoScrollForDrag(
+                                  details.globalPosition,
+                                  vertical: false,
+                                );
+                                playbackController.seek(
+                                  autoScroller.frameAtGlobalPosition(
+                                    details.globalPosition,
+                                  ),
+                                );
+                              },
+                              child: const SizedBox(
+                                width: 12,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 0,
+                                      bottom: 0,
+                                      left: 5,
+                                      width: 2,
+                                      child: Playhead(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: TimelineAddClipButton(
+                    onSelected: (kind) async {
+                      final selectedAsset = await assetClipPicker.pickFor(kind);
+                      if ((kind == TimelineClipKind.image ||
+                              kind == TimelineClipKind.audio) &&
+                          selectedAsset == null) {
+                        return;
+                      }
+
+                      await timelineEditor.addClip(
+                        targetTrackIndex: selectedTrackIndex ?? 0,
+                        startFrame: playbackState.currentFrame,
+                        kind: kind,
+                        assetSelection: selectedAsset,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: TimelineAddClipButton(
-              onSelected: (kind) async {
-                final selectedAsset = kind == TimelineClipKind.audio
-                    ? await _pickAudioClipAsset(context, assetClipPicker)
-                    : await assetClipPicker.pickFor(kind);
-                if ((kind == TimelineClipKind.image ||
-                        kind == TimelineClipKind.audio) &&
-                    selectedAsset == null) {
-                  return;
-                }
-
-                await timelineEditor.addClip(
-                  targetTrackIndex: selectedTrackIndex ?? 0,
-                  startFrame: playbackState.currentFrame,
-                  kind: kind,
-                  assetSelection: selectedAsset,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+        ),
+        VoiceEditor(onCreated: (_) async => {}),
+      ],
     );
-  }
-
-  Future<AssetClipSelection?> _pickAudioClipAsset(
-    BuildContext context,
-    AssetClipPicker assetClipPicker,
-  ) async {
-    final source = await showDialog<_AudioSource>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Audio'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.upload_file),
-                title: const Text('Import file'),
-                onTap: () => Navigator.of(context).pop(_AudioSource.file),
-              ),
-              ListTile(
-                leading: const Icon(Icons.graphic_eq),
-                title: const Text('VOICEVOX'),
-                onTap: () => Navigator.of(context).pop(_AudioSource.voicevox),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    if (!context.mounted) {
-      return null;
-    }
-
-    return switch (source) {
-      _AudioSource.file => assetClipPicker.pickAudio(),
-      _AudioSource.voicevox => showVoicevoxAssetDialog(context),
-      null => Future.value(),
-    };
   }
 
   Future<void> _addDroppedAsset({
@@ -323,5 +289,3 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
     return ui.Size(width * constrainedScale, height * constrainedScale);
   }
 }
-
-enum _AudioSource { file, voicevox }

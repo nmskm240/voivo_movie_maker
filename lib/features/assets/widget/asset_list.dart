@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/features/assets/asset_timeline_drag_data.dart';
-import 'package:voivo_movie_maker/features/voicevox/widget/voicevox_asset_dialog.dart';
 
 class AssetListPane extends ConsumerStatefulWidget {
   const AssetListPane({super.key});
@@ -58,37 +57,6 @@ class _AssetListPaneState extends ConsumerState<AssetListPane> {
                   Text(
                     filteredAssets.length.toString(),
                     style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  const SizedBox(width: 8),
-                  Tooltip(
-                    message: 'Create VOICEVOX audio',
-                    child: IconButton(
-                      onPressed: () async {
-                        final selection = await showVoicevoxAssetDialog(
-                          context,
-                        );
-                        if (selection == null || !context.mounted) {
-                          return;
-                        }
-
-                        try {
-                          await ref
-                              .read(loadedProjectProvider.notifier)
-                              .addAsset(
-                                selection.asset,
-                                Stream.value(selection.bytes),
-                              );
-                        } catch (error) {
-                          if (!context.mounted) {
-                            return;
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(error.toString())),
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.graphic_eq),
-                    ),
                   ),
                 ],
               ),
