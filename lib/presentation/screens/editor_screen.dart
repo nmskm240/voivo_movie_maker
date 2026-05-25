@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:voivo_movie_maker/features/assets/widget/asset_list.dart';
-import 'package:voivo_movie_maker/features/inspector/widget/clip_inspector.dart';
-import 'package:voivo_movie_maker/features/preview/widget/timeline_audio_preview_sync.dart';
-import 'package:voivo_movie_maker/features/preview/widget/project_preview.dart';
-import 'package:voivo_movie_maker/features/timeline/widget/timeline.dart';
+import 'package:voivo_movie_maker/presentation/widgets/assets/asset_list.dart';
+import 'package:voivo_movie_maker/presentation/widgets/inspector/clip_inspector.dart';
+import 'package:voivo_movie_maker/presentation/widgets/preview/timeline_audio_preview_sync.dart';
+import 'package:voivo_movie_maker/presentation/widgets/preview/project_preview.dart';
+import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline.dart';
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
 
 class EditorScreen extends ConsumerStatefulWidget {
