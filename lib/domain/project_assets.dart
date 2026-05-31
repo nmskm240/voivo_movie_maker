@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:voivo_movie_maker/domain/json_converters.dart';
@@ -35,11 +37,8 @@ class AssetId {
 
 @JsonSerializable()
 class ProjectAsset {
-  const ProjectAsset({
-    required this.id,
-    required this.name,
-    required this.kind,
-  });
+  ProjectAsset({required this.name, required this.kind, AssetId? id})
+    : id = id ?? AssetId.create();
 
   factory ProjectAsset.fromJson(Map<String, Object?> json) =>
       _$ProjectAssetFromJson(json);
@@ -48,19 +47,66 @@ class ProjectAsset {
   final AssetId id;
   final String name;
   final ProjectAssetKind kind;
+  String get fileName => id.value;
 
   Map<String, Object?> toJson() => _$ProjectAssetToJson(this);
 }
 
 enum ProjectAssetKind { image, video, audio }
 
-abstract interface class ProjectAssetStorage {
-  Iterable<ProjectAsset> get assets;
+@JsonSerializable()
+class ProjectAssetCatalog {
+  ProjectAssetCatalog({Iterable<ProjectAsset> assets = const []})
+    : _assets = assets.toList();
 
-  ProjectAsset? findById(AssetId assetId);
-  ProjectAsset getById(AssetId assetId);
-  Stream<List<int>> getBytes(ProjectAsset asset);
-  Stream<List<int>> getBytesById(AssetId assetId);
-  Future<void> add(ProjectAsset asset, Stream<List<int>> bytes);
-  Future<void> remove(AssetId assetId);
+  factory ProjectAssetCatalog.fromJson(Map<String, Object?> json) =>
+      _$ProjectAssetCatalogFromJson(json);
+
+  final List<ProjectAsset> _assets;
+  Iterable<ProjectAsset> get assets => List.unmodifiable(_assets);
+
+  ProjectAsset? findById(AssetId assetId) {
+    try {
+      return _assets.firstWhere((asset) => asset.id == assetId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void add(ProjectAsset asset) {
+    if (_assets.any((saved) => saved.id == asset.id)) {
+      throw ArgumentError.value(asset.id, 'asset.id', 'Duplicate asset ID');
+    }
+    if (_assets.any((saved) => saved.name == asset.name)) {
+      throw ArgumentError.value(
+        asset.name,
+        'asset.name',
+        'Duplicate asset name',
+      );
+    }
+    _assets.add(asset);
+  }
+
+  void remove(AssetId assetId) {
+    _assets.removeWhere((asset) => asset.id == assetId);
+  }
+
+  Map<String, Object?> toJson() => _$ProjectAssetCatalogToJson(this);
 }
+
+abstract interface class IProjectAssetStore {
+  Stream<List<int>> load(ProjectAsset asset);
+  Future<ProjectAsset> save(File file);
+}
+
+abstract interface class ProjectAssetStorage {
+  // Iterable<ProjectAsset> get assets;
+
+  // ProjectAsset? findById(AssetId assetId);
+  // ProjectAsset getById(AssetId assetId);
+  // Stream<List<int>> getBytes(ProjectAsset asset);
+  // Stream<List<int>> getBytesById(AssetId assetId);
+  // Future<void> add(ProjectAsset asset, Stream<List<int>> bytes);
+  // Future<void> remove(AssetId assetId);
+}
+

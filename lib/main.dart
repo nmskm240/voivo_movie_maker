@@ -1,15 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:voivo_movie_maker/application/services/voice_generator.dart';
-import 'package:voivo_movie_maker/infra/project_repository.dart';
 import 'package:voivo_movie_maker/presentation/screens/editor_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
-  runApp(const VoivoMovieMakerApp());
+
+  final appDir = await getApplicationSupportDirectory();
+  final workspaceDir = Directory(p.join(appDir.path, 'voivo_movie_maker'));
+
+  if (!workspaceDir.existsSync()) {
+    workspaceDir.createSync(recursive: true);
+  }
+  runApp(ProviderScope(overrides: [], child: const VoivoMovieMakerApp()));
 }
 
 class VoivoMovieMakerApp extends StatelessWidget {
@@ -19,10 +28,6 @@ class VoivoMovieMakerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
-        projectRepositoryProvider.overrideWith((ref) {
-          final directory = ref.watch(projectPathProvider);
-          return DirectoryProjectRepository(directory);
-        }),
         voiceGeneratorProvider.overrideWith((ref) {
           return VoicevoxCoreSpeechService.create();
         }),

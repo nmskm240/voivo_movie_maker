@@ -57,7 +57,7 @@ class LoadedProject extends _$LoadedProject {
 
   Future<void> addAsset(ProjectAsset asset, Stream<List<int>> bytes) async {
     final snapshot = state.requireValue;
-    await snapshot.project.assetStorage.add(asset, bytes);
+    snapshot.project.assets.add(asset);
     state = AsyncData(snapshot.copyWith(revision: snapshot.revision + 1));
     await ref.read(projectRepositoryProvider).save(snapshot.project);
   }

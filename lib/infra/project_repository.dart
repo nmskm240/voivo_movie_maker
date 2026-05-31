@@ -22,7 +22,7 @@ final class DirectoryProjectRepository implements ProjectRepository {
   @override
   Future<Project> load() async {
     if (!await _projectFile.exists()) {
-      return Project.empty(assetStorage: DirectoryAssetStorage(directory));
+      return Project.empty();
     }
 
     final json = jsonDecode(await _projectFile.readAsString());
@@ -30,11 +30,7 @@ final class DirectoryProjectRepository implements ProjectRepository {
       throw const FormatException('Project file root must be an object');
     }
 
-    final assetStorage = DirectoryAssetStorage(
-      directory,
-      assets: Project.assetsFromJson(json),
-    );
-    return Project.fromJson(json, assetStorage: assetStorage);
+    return Project.fromJson(json);
   }
 
   @override

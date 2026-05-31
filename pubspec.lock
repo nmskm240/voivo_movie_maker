@@ -244,9 +244,10 @@ packages:
   ffmpeg_kit_extended_flutter:
     dependency: "direct main"
     description:
-      path: "third_party/ffmpeg_kit_extended_flutter"
-      relative: true
-    source: path
+      name: ffmpeg_kit_extended_flutter
+      sha256: "3e3a6e08bc6354e77e9a8990017573b228a8769b8ec9d869dd91def13cb5ed68"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.5.3"
   file:
     dependency: transitive
@@ -256,6 +257,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  file_magic_number:
+    dependency: "direct main"
+    description:
+      name: file_magic_number
+      sha256: cd0ec23eb2511206152baa87edb90b4862dc1690b1fbe5ebcf06654d3ee3112b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.2"
   file_picker:
     dependency: "direct main"
     description:
@@ -1049,5 +1058,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.11.5 <4.0.0"
-  flutter: ">=3.38.4"
+  dart: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"

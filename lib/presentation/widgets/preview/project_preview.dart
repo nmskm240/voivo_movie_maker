@@ -102,9 +102,9 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
 
   Future<Uint8List> _readAssetBytes(Project project, AssetId assetId) async {
     final builder = BytesBuilder(copy: false);
-    await for (final chunk in project.assetStorage.getBytesById(assetId)) {
-      builder.add(chunk);
-    }
+    // await for (final chunk in project.assetStorage.getBytesById(assetId)) {
+    //   builder.add(chunk);
+    // }
     return builder.takeBytes();
   }
 

@@ -273,10 +273,7 @@ class _TimelinePaneState extends ConsumerState<TimelinePane> {
   }
 
   Future<ui.Size> _defaultImageClipSize(AssetTimelineDragData data) async {
-    final bytes = await data.storage
-        .getBytes(data.asset)
-        .fold<List<int>>(<int>[], (bytes, chunk) => bytes..addAll(chunk))
-        .then(Uint8List.fromList);
+    final bytes = Uint8List.fromList([]);
     final codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
     final image = frame.image;

@@ -32,11 +32,7 @@ class _AssetListPaneState extends ConsumerState<AssetListPane> {
       error: (error, stackTrace) => Center(child: Text(error.toString())),
       data: (snapshot) {
         final assets = snapshot.project.assets;
-        final filteredAssets = _selectedKind == null
-            ? assets
-            : assets
-                  .where((asset) => asset.kind == _selectedKind)
-                  .toList(growable: false);
+        final filteredAssets = assets.assets;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -90,22 +86,22 @@ class _AssetListPaneState extends ConsumerState<AssetListPane> {
               ),
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: filteredAssets.isEmpty
-                  ? const Center(child: Text('No assets'))
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-                      itemCount: filteredAssets.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 4),
-                      itemBuilder: (context, index) {
-                        return _AssetListTile(
-                          asset: filteredAssets[index],
-                          storage: snapshot.project.assetStorage,
-                        );
-                      },
-                    ),
-            ),
+            // Expanded(
+            //   child: filteredAssets.isEmpty
+            //       ? const Center(child: Text('No assets'))
+            //       : ListView.separated(
+            //           padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+            //           itemCount: filteredAssets.length,
+            //           separatorBuilder: (context, index) =>
+            //               const SizedBox(height: 4),
+            //           itemBuilder: (context, index) {
+            //             return _AssetListTile(
+            //               asset: filteredAssets.elementAt(index),
+            //               storage: snapshot.project.assetStorage,
+            //             );
+            //           },
+            //         ),
+            // ),
           ],
         );
       },
@@ -244,9 +240,7 @@ class _AssetThumbnail extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(5),
-          child: asset.kind == ProjectAssetKind.image
-              ? _ImageAssetThumbnail(asset: asset, storage: storage)
-              : Icon(_iconFor(asset.kind), size: 20),
+          child: Icon(_iconFor(asset.kind), size: 20),
         ),
       ),
     );
@@ -261,38 +255,38 @@ class _AssetThumbnail extends StatelessWidget {
   }
 }
 
-class _ImageAssetThumbnail extends StatelessWidget {
-  const _ImageAssetThumbnail({required this.asset, required this.storage});
+// class _ImageAssetThumbnail extends StatelessWidget {
+//   const _ImageAssetThumbnail({required this.asset, required this.storage});
 
-  final ProjectAsset asset;
-  final ProjectAssetStorage storage;
+//   final ProjectAsset asset;
+//   final ProjectAssetStorage storage;
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: storage
-          .getBytes(asset)
-          .fold<List<int>>(<int>[], (bytes, chunk) => bytes..addAll(chunk))
-          .then(Uint8List.fromList),
-      builder: (context, snapshot) {
-        final bytes = snapshot.data;
-        if (bytes == null) {
-          return const Center(
-            child: SizedBox.square(
-              dimension: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
-        }
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder<Uint8List>(
+//       future: storage
+//           .getBytes(asset)
+//           .fold<List<int>>(<int>[], (bytes, chunk) => bytes..addAll(chunk))
+//           .then(Uint8List.fromList),
+//       builder: (context, snapshot) {
+//         final bytes = snapshot.data;
+//         if (bytes == null) {
+//           return const Center(
+//             child: SizedBox.square(
+//               dimension: 16,
+//               child: CircularProgressIndicator(strokeWidth: 2),
+//             ),
+//           );
+//         }
 
-        return Image.memory(
-          bytes,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return const Icon(Icons.broken_image_outlined, size: 20);
-          },
-        );
-      },
-    );
-  }
-}
+//         return Image.memory(
+//           bytes,
+//           fit: BoxFit.cover,
+//           errorBuilder: (context, error, stackTrace) {
+//             return const Icon(Icons.broken_image_outlined, size: 20);
+//           },
+//         );
+//       },
+//     );
+//   }
+// }

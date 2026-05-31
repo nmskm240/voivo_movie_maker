@@ -12,6 +12,7 @@ class ClipFactory {
     int startFrame, {
     AssetId? assetId,
     Size? size,
+    int? durationFrames,
   }) {
     final id = TimelineClipId.create();
     return switch (kind) {
@@ -19,12 +20,14 @@ class ClipFactory {
       TimelineClipKind.image => ImageClip(
         id: id,
         startFrame: startFrame,
+        durationFrames: durationFrames ?? 10,
         assetId: assetId ?? (throw ArgumentError.notNull('assetId')),
         size: size,
       ),
       TimelineClipKind.audio => AudioClip(
         id: id,
         startFrame: startFrame,
+        durationFrames: durationFrames ?? 10,
         assetId: assetId ?? (throw ArgumentError.notNull('assetId')),
       ),
     };

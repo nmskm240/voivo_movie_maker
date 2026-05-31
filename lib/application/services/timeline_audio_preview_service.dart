@@ -121,27 +121,27 @@ final class TimelineAudioPreviewService {
 
   Future<File> _fileForAsset(Project project, AssetId assetId) {
     return _cachedFilesByAssetId.putIfAbsent(assetId, () async {
-      final asset = project.assetStorage.getById(assetId);
+      final asset = project.assets.findById(assetId);
       final directory = await getTemporaryDirectory();
       final file = File(
-        p.join(directory.path, 'voivo_preview_${asset.id.value}_${asset.name}'),
+        p.join(directory.path, 'voivo_preview_${asset!.id.value}_${asset.name}'),
       );
       if (await file.exists()) {
         return file;
       }
 
       final sink = file.openWrite();
-      try {
-        await for (final chunk in project.assetStorage.getBytes(asset)) {
-          sink.add(chunk);
-        }
-      } catch (_) {
-        await sink.close();
-        if (await file.exists()) {
-          await file.delete();
-        }
-        rethrow;
-      }
+      // try {
+      //   await for (final chunk in project.assetStorage.getBytes(asset)) {
+      //     sink.add(chunk);
+      //   }
+      // } catch (_) {
+      //   await sink.close();
+      //   if (await file.exists()) {
+      //     await file.delete();
+      //   }
+      //   rethrow;
+      // }
       await sink.close();
       return file;
     });
