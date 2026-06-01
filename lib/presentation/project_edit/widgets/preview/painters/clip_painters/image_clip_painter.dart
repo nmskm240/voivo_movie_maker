@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/image_clip.dart';
-import 'package:voivo_movie_maker/presentation/widgets/preview/painters/clip_painters/clip_painter.dart';
-import 'package:voivo_movie_maker/presentation/widgets/preview/painters/preview_paint_context.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/clip_painters/clip_painter.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/preview_paint_context.dart';
 
 class ImageClipPainter extends ClipPainter<ImageClip> {
   const ImageClipPainter();

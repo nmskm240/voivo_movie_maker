@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline_ruler.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_ruler.dart';
 
 class TimelineAutoScroller {
   const TimelineAutoScroller({

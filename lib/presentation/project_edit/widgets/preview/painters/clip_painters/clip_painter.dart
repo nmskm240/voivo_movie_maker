@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
-import 'package:voivo_movie_maker/presentation/widgets/preview/painters/preview_paint_context.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/preview_paint_context.dart';
 
 abstract class ClipPainter<T extends TimelineClip> {
   const ClipPainter();

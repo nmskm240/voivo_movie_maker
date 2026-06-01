@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
-import 'package:voivo_movie_maker/presentation/widgets/assets/asset_timeline_drag_data.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/assets/asset_timeline_drag_data.dart';
 
 class AssetListPane extends ConsumerStatefulWidget {
   const AssetListPane({super.key});

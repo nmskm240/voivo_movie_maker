@@ -9,15 +9,15 @@ import 'package:voivo_movie_maker/application/providers/loaded_project_provider.
 import 'package:voivo_movie_maker/application/providers/playback_controller_provider.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
-import 'package:voivo_movie_maker/presentation/widgets/assets/asset_timeline_drag_data.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/providers.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/assets/asset_timeline_drag_data.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/providers.dart';
 import 'package:voivo_movie_maker/application/services/asset_clip_picker.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/playhead.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline_add_clip_button.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline_auto_scroller.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline_ruler.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline_track.dart';
-import 'package:voivo_movie_maker/presentation/widgets/voice_generation/voice_editor.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/playhead.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_add_clip_button.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_auto_scroller.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_ruler.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_track.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/voice_generation/voice_editor.dart';
 
 const _timelineDurationFrames = 3600;
 

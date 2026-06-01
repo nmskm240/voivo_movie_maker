@@ -6,8 +6,8 @@ import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/domain/timeline_track.dart';
-import 'package:voivo_movie_maker/presentation/widgets/preview/painters/clip_painters/registry.dart';
-import 'package:voivo_movie_maker/presentation/widgets/preview/painters/preview_paint_context.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/clip_painters/registry.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/preview_paint_context.dart';
 
 class ProjectPreviewPainter extends CustomPainter {
   ProjectPreviewPainter(

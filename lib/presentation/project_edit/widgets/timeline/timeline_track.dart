@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_track_info.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
-import 'package:voivo_movie_maker/presentation/widgets/assets/asset_timeline_drag_data.dart';
-import 'package:voivo_movie_maker/presentation/widgets/timeline/timeline_clip.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/assets/asset_timeline_drag_data.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_clip.dart';
 
 class TimelineTrackView extends StatelessWidget {
   const TimelineTrackView({

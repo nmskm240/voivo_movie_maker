@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
-import 'package:voivo_movie_maker/presentation/widgets/inspector/providers.dart';
-import 'package:voivo_movie_maker/presentation/widgets/inspector/sections/inspector_section.dart';
-import 'package:voivo_movie_maker/presentation/widgets/inspector/sections/inspector_section_registry.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/providers.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section_registry.dart';
 
 class ClipInspectorPane extends ConsumerWidget {
   const ClipInspectorPane({super.key});

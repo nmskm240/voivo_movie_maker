@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/update_clip_transform_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
-import 'package:voivo_movie_maker/presentation/widgets/inspector/fields/vector2_form_field.dart';
-import 'package:voivo_movie_maker/presentation/widgets/inspector/sections/inspector_section.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/fields/vector2_form_field.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section.dart';
 
 class TransformTraitSection implements InspectorSection {
   @override

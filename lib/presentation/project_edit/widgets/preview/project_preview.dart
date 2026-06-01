@@ -8,7 +8,7 @@ import 'package:voivo_movie_maker/application/providers/playback_controller_prov
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/image_clip.dart';
-import 'package:voivo_movie_maker/presentation/widgets/preview/painters/project_preview_painter.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/project_preview_painter.dart';
 
 class ProjectPreview extends ConsumerStatefulWidget {
   const ProjectPreview({super.key});

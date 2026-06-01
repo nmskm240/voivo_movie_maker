@@ -5,7 +5,7 @@ import 'package:voivo_movie_maker/application/services/timeline_editor/commands/
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
 import 'package:voivo_movie_maker/application/providers/loaded_project_provider.dart';
-import 'package:voivo_movie_maker/presentation/widgets/inspector/providers.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/providers.dart';
 
 class TimelineClipView extends ConsumerStatefulWidget {
   const TimelineClipView({
