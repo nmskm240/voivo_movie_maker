@@ -27,7 +27,6 @@ class AudioClip extends TimelineClip with AudibleClip {
   @TimelineClipIdJsonConverter()
   @override
   TimelineClipId get id => super.id;
-  @AssetIdJsonConverter()
   AssetId assetId;
 
   Map<String, Object?> toJson() {

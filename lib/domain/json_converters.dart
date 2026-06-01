@@ -64,16 +64,6 @@ class TimelineClipListJsonConverter
   }
 }
 
-class AssetIdJsonConverter implements JsonConverter<AssetId, String> {
-  const AssetIdJsonConverter();
-
-  @override
-  AssetId fromJson(String json) => AssetId.fromString(json);
-
-  @override
-  String toJson(AssetId object) => object.value;
-}
-
 class TimelineClipIdJsonConverter
     implements JsonConverter<TimelineClipId, String> {
   const TimelineClipIdJsonConverter();

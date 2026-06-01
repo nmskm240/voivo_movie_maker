@@ -31,7 +31,6 @@ class ImageClip extends TimelineClip with WithTransform {
   @TimelineClipIdJsonConverter()
   @override
   TimelineClipId get id => super.id;
-  @AssetIdJsonConverter()
   AssetId assetId;
   @SizeJsonConverter()
   Size size;

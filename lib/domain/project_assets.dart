@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:voivo_movie_maker/domain/json_converters.dart';
 
 part 'project_assets.g.dart';
 
+@JsonSerializable()
 class AssetId {
-  const AssetId._(this.value);
+  const AssetId(this.value);
   factory AssetId.create() {
-    return AssetId._(cuid());
+    return AssetId(cuid());
   }
   factory AssetId.fromString(String value) {
     if (value.isEmpty) {
@@ -18,8 +18,9 @@ class AssetId {
     if (!isCuid(value)) {
       throw ArgumentError.value(value, 'value', 'Invalid asset ID format');
     }
-    return AssetId._(value);
+    return AssetId(value);
   }
+  factory AssetId.fromJson(String value) => AssetId.fromString(value);
 
   final String value;
 
@@ -33,6 +34,8 @@ class AssetId {
 
   @override
   String toString() => value;
+
+  String toJson() => value;
 }
 
 @JsonSerializable()
@@ -43,7 +46,6 @@ class ProjectAsset {
   factory ProjectAsset.fromJson(Map<String, Object?> json) =>
       _$ProjectAssetFromJson(json);
 
-  @AssetIdJsonConverter()
   final AssetId id;
   final String name;
   final ProjectAssetKind kind;
@@ -109,4 +111,3 @@ abstract interface class ProjectAssetStorage {
   // Future<void> add(ProjectAsset asset, Stream<List<int>> bytes);
   // Future<void> remove(AssetId assetId);
 }
-

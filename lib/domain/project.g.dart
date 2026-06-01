@@ -6,7 +6,16 @@ part of 'project.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+ProjectId _$ProjectIdFromJson(Map<String, dynamic> json) =>
+    ProjectId(json['value'] as String);
+
+Map<String, dynamic> _$ProjectIdToJson(ProjectId instance) => <String, dynamic>{
+  'value': instance.value,
+};
+
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
+  id: json['id'] == null ? null : ProjectId.fromJson(json['id'] as String),
+  name: json['name'] as String? ?? 'Untitled Project',
   width: (json['width'] as num?)?.toDouble() ?? 1920,
   height: (json['height'] as num?)?.toDouble() ?? 1080,
   fps: (json['fps'] as num?)?.toInt() ?? 30,
@@ -16,6 +25,8 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
 );
 
 Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
+  'id': instance.id.toJson(),
+  'name': instance.name,
   'width': instance.width,
   'height': instance.height,
   'fps': instance.fps,

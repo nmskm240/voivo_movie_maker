@@ -1,52 +1,79 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:voivo_movie_maker/constants.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
-import 'package:voivo_movie_maker/domain/project_repository.dart';
-import 'package:voivo_movie_maker/infra/asset_storage.dart';
 
-final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
-  throw UnimplementedError('No project repository implementation provided');
-});
+final class ProjectRepository implements IProjectRepository {
+  const ProjectRepository(this.root);
 
-final class DirectoryProjectRepository implements ProjectRepository {
-  DirectoryProjectRepository(this.directory)
-    : _projectFile = File(p.join(directory.path, 'project.json'));
-
-  final Directory directory;
-  final File _projectFile;
-  Future<void> _saveQueue = Future.value();
+  final Directory root;
 
   @override
-  Future<Project> load() async {
-    if (!await _projectFile.exists()) {
-      return Project.empty();
+  Future<List<Project>> findAny() async {
+    final projects = <Project>[];
+    if (!await root.exists()) {
+      return projects;
     }
 
-    final json = jsonDecode(await _projectFile.readAsString());
+    await for (final entity in root.list()) {
+      if (entity is! Directory) {
+        continue;
+      }
+
+      final projectFile = _projectFileIn(entity);
+      if (!await projectFile.exists()) {
+        continue;
+      }
+
+      projects.add(await _read(projectFile));
+    }
+    return projects;
+  }
+
+  @override
+  Future<Project> getById(ProjectId id) async {
+    final projectFile = _projectFileIn(_projectDirectoryFor(id));
+    if (!await projectFile.exists()) {
+      throw ArgumentError.value(id, 'id', 'Project not found');
+    }
+
+    return _read(projectFile);
+  }
+
+  @override
+  Future<void> save(Project project) async {
+    await root.create(recursive: true);
+    final projectDir = _projectDirectoryFor(project.id);
+    if (!await projectDir.exists()) {
+     await projectDir.create(recursive: true);
+    }
+    final assetsDir = Directory(p.join(projectDir.path, assetDirectoryName));
+    if (!await assetsDir.exists()) {
+      await assetsDir.create(recursive: true);
+    }
+
+    const encoder = JsonEncoder.withIndent('  ');
+    final tempFile = File(p.join(projectDir.path, ".$projectFileName.tmp"));
+    await tempFile.writeAsString(encoder.convert(project.toJson()));
+    await tempFile.rename(_projectFileIn(projectDir).path);
+  }
+
+  Directory _projectDirectoryFor(ProjectId id) {
+    return Directory(p.join(root.path, id.value));
+  }
+
+  File _projectFileIn(Directory directory) {
+    return File(p.join(directory.path, projectFileName));
+  }
+
+  Future<Project> _read(File file) async {
+    final json = jsonDecode(await file.readAsString());
     if (json is! Map<String, Object?>) {
       throw const FormatException('Project file root must be an object');
     }
 
     return Project.fromJson(json);
-  }
-
-  @override
-  Future<void> save(Project project) async {
-    final saveTask = _saveQueue.then((_) async {
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
-      }
-
-      const encoder = JsonEncoder.withIndent('  ');
-      final tempFile = File('${_projectFile.path}.tmp');
-      await tempFile.writeAsString(encoder.convert(project.toJson()));
-      await tempFile.rename(_projectFile.path);
-    });
-
-    _saveQueue = saveTask.catchError((_) {});
-    return saveTask;
   }
 }

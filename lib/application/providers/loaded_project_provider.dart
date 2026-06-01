@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' as p;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:voivo_movie_maker/application/providers/project_repository.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
-import 'package:voivo_movie_maker/infra/project_repository.dart';
 
 part "loaded_project_provider.freezed.dart";
 part "loaded_project_provider.g.dart";
+
+final loadedProjectIdProvider = Provider<ProjectId?>((ref) => null);
 
 @freezed
 sealed class ProjectSnapshot with _$ProjectSnapshot {
@@ -37,9 +40,24 @@ class LoadedProject extends _$LoadedProject {
   @override
   Future<ProjectSnapshot> build() async {
     final repository = ref.watch(projectRepositoryProvider);
-    final project = await repository.load();
-    await repository.save(project);
+    final projectId = ref.watch(loadedProjectIdProvider);
+    if (projectId != null) {
+      final project = await repository.getById(projectId);
+      return ProjectSnapshot(project: project);
+    }
+
+    final project = await _loadExistingOrCreate(repository);
     return ProjectSnapshot(project: project);
+  }
+
+  Future<Project> _loadExistingOrCreate(IProjectRepository repository) async {
+    final projects = await repository.findAny();
+    if (projects.isNotEmpty) {
+      return projects.first;
+    }
+    final project = Project.empty();
+    await repository.save(project);
+    return project;
   }
 
   Future<void> markChanged({bool save = true}) async {
