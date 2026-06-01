@@ -1,15 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:voivo_movie_maker/application/providers/project_repository.dart';
 import 'package:voivo_movie_maker/application/services/voice_generator.dart';
-import 'package:voivo_movie_maker/presentation/screens/editor_screen.dart';
+import 'package:voivo_movie_maker/infra/project_repository.dart';
+import 'package:voivo_movie_maker/presentation/router.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: binding);
   MediaKit.ensureInitialized();
 
   final appDir = await getApplicationSupportDirectory();
@@ -18,7 +22,17 @@ void main() async {
   if (!workspaceDir.existsSync()) {
     workspaceDir.createSync(recursive: true);
   }
-  runApp(ProviderScope(overrides: [], child: const VoivoMovieMakerApp()));
+  FlutterNativeSplash.remove();
+  runApp(
+    ProviderScope(
+      overrides: [
+        projectRepositoryProvider.overrideWithValue(
+          ProjectRepository(workspaceDir),
+        ),
+      ],
+      child: const VoivoMovieMakerApp(),
+    ),
+  );
 }
 
 class VoivoMovieMakerApp extends StatelessWidget {
@@ -32,7 +46,7 @@ class VoivoMovieMakerApp extends StatelessWidget {
           return VoicevoxCoreSpeechService.create();
         }),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Voivo Movie Maker',
         theme: ThemeData(
@@ -44,7 +58,7 @@ class VoivoMovieMakerApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.black87,
           fontFamily: 'Noto Sans CJK JP',
         ),
-        home: const EditorScreen(),
+        routerConfig: appRouter,
       ),
     );
   }
