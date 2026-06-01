@@ -14,7 +14,7 @@ class ProjectListScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Projects')),
       body: SafeArea(
         child: ref
-            .watch(fetchProjectsProvider)
+            .watch(fetchProjectSummariesProvider)
             .when(
               data: (items) {
                 if (items.isEmpty) {

@@ -9,44 +9,47 @@ part of 'usecases.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(fetchProjects)
-final fetchProjectsProvider = FetchProjectsProvider._();
+@ProviderFor(fetchProjectSummaries)
+final fetchProjectSummariesProvider = FetchProjectSummariesProvider._();
 
-final class FetchProjectsProvider
+final class FetchProjectSummariesProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<Project>>,
-          List<Project>,
-          FutureOr<List<Project>>
+          AsyncValue<List<ProjectSummary>>,
+          List<ProjectSummary>,
+          FutureOr<List<ProjectSummary>>
         >
-    with $FutureModifier<List<Project>>, $FutureProvider<List<Project>> {
-  FetchProjectsProvider._()
+    with
+        $FutureModifier<List<ProjectSummary>>,
+        $FutureProvider<List<ProjectSummary>> {
+  FetchProjectSummariesProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'fetchProjectsProvider',
+        name: r'fetchProjectSummariesProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$fetchProjectsHash();
+  String debugGetCreateSourceHash() => _$fetchProjectSummariesHash();
 
   @$internal
   @override
-  $FutureProviderElement<List<Project>> $createElement(
+  $FutureProviderElement<List<ProjectSummary>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<Project>> create(Ref ref) {
-    return fetchProjects(ref);
+  FutureOr<List<ProjectSummary>> create(Ref ref) {
+    return fetchProjectSummaries(ref);
   }
 }
 
-String _$fetchProjectsHash() => r'b4ded3f249429089978ba08b4ad5cffa9ceb9e06';
+String _$fetchProjectSummariesHash() =>
+    r'716325f6797e417231032a89239c4ef0633a133c';
 
 @ProviderFor(createProject)
 final createProjectProvider = CreateProjectFamily._();
