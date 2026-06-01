@@ -73,14 +73,6 @@ class Project {
   Map<String, Object?> toJson() => _$ProjectToJson(this);
 }
 
-abstract interface class IProjectReader {
-  Future<Project> read();
-}
-
-abstract interface class IProjectWriter {
-  Future<void> write(Project project);
-}
-
 abstract interface class IProjectRepository {
   Future<List<Project>> findAny();
   Future<Project> getById(ProjectId id);
