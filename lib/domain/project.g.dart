@@ -14,7 +14,9 @@ Map<String, dynamic> _$ProjectIdToJson(ProjectId instance) => <String, dynamic>{
 };
 
 Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
-  id: json['id'] == null ? null : ProjectId.fromJson(json['id'] as String),
+  id: json['id'] == null
+      ? null
+      : ProjectId.fromJson(json['id'] as Map<String, dynamic>),
   name: json['name'] as String? ?? 'Untitled Project',
   width: (json['width'] as num?)?.toDouble() ?? 1920,
   height: (json['height'] as num?)?.toDouble() ?? 1080,

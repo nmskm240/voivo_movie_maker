@@ -1,9 +1,13 @@
 import 'package:cuid2/cuid2.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'base.g.dart';
+
+@JsonSerializable()
 class TimelineClipId {
-  const TimelineClipId._(this.value);
+  const TimelineClipId(this.value);
   factory TimelineClipId.create() {
-    return TimelineClipId._(cuid());
+    return TimelineClipId(cuid());
   }
   factory TimelineClipId.fromString(String value) {
     if (value.isEmpty) {
@@ -20,8 +24,10 @@ class TimelineClipId {
         'Invalid timeline clip ID format',
       );
     }
-    return TimelineClipId._(value);
+    return TimelineClipId(value);
   }
+  factory TimelineClipId.fromJson(Map<String, Object?> value) =>
+      _$TimelineClipIdFromJson(value);
 
   final String value;
 
@@ -36,6 +42,8 @@ class TimelineClipId {
 
   @override
   String toString() => value;
+
+  Map<String, Object?> toJson() => _$TimelineClipIdToJson(this);
 }
 
 enum TimelineClipKind { text, image, audio }

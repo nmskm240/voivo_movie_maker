@@ -16,7 +16,9 @@ Map<String, dynamic> _$AssetIdToJson(AssetId instance) => <String, dynamic>{
 ProjectAsset _$ProjectAssetFromJson(Map<String, dynamic> json) => ProjectAsset(
   name: json['name'] as String,
   kind: $enumDecode(_$ProjectAssetKindEnumMap, json['kind']),
-  id: json['id'] == null ? null : AssetId.fromJson(json['id'] as String),
+  id: json['id'] == null
+      ? null
+      : AssetId.fromJson(json['id'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$ProjectAssetToJson(ProjectAsset instance) =>

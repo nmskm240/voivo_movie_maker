@@ -8,7 +8,7 @@ part of 'text_clip.dart';
 
 TextClip _$TextClipFromJson(Map<String, dynamic> json) => TextClip(
   json['text'] as String,
-  id: const TimelineClipIdJsonConverter().fromJson(json['id'] as String),
+  id: TimelineClipId.fromJson(json['id'] as Map<String, dynamic>),
   startFrame: (json['startFrame'] as num).toInt(),
   durationFrames: (json['durationFrames'] as num?)?.toInt() ?? 10,
   transform: json['transform'] == null
@@ -26,7 +26,7 @@ Map<String, dynamic> _$TextClipToJson(TextClip instance) => <String, dynamic>{
   'startFrame': instance.startFrame,
   'durationFrames': instance.durationFrames,
   'transform': instance.transform.toJson(),
-  'id': const TimelineClipIdJsonConverter().toJson(instance.id),
+  'id': instance.id.toJson(),
   'text': instance.text,
   'fontFamily': instance.fontFamily,
   'size': instance.size,

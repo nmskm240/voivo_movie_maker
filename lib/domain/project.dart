@@ -20,7 +20,8 @@ class ProjectId {
     }
     return ProjectId(value);
   }
-  factory ProjectId.fromJson(String value) => ProjectId.fromString(value);
+  factory ProjectId.fromJson(Map<String, Object?> value) =>
+      _$ProjectIdFromJson(value);
 
   final String value;
 
@@ -35,7 +36,7 @@ class ProjectId {
   @override
   String toString() => value;
 
-  String toJson() => value;
+  Map<String, Object?> toJson() => _$ProjectIdToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)

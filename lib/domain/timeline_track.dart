@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:voivo_movie_maker/domain/json_converters.dart';
+import 'package:voivo_movie_maker/utils/json_converters.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 
 part 'timeline_track.g.dart';
@@ -12,11 +12,7 @@ class TimelineTrack {
   factory TimelineTrack.fromJson(Map<String, Object?> json) =>
       _$TimelineTrackFromJson(json);
 
-  @JsonKey(
-    name: 'clips',
-    fromJson: timelineClipsFromJson,
-    toJson: timelineClipsToJson,
-  )
+  @TimelineClipJsonConverter()
   final List<TimelineClip> clips;
 
   Map<String, Object?> toJson() => _$TimelineTrackToJson(this);

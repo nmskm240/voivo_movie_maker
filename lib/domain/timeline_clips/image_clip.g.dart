@@ -7,9 +7,9 @@ part of 'image_clip.dart';
 // **************************************************************************
 
 ImageClip _$ImageClipFromJson(Map<String, dynamic> json) => ImageClip(
-  id: const TimelineClipIdJsonConverter().fromJson(json['id'] as String),
+  id: TimelineClipId.fromJson(json['id'] as Map<String, dynamic>),
   startFrame: (json['startFrame'] as num).toInt(),
-  assetId: AssetId.fromJson(json['assetId'] as String),
+  assetId: AssetId.fromJson(json['assetId'] as Map<String, dynamic>),
   durationFrames: (json['durationFrames'] as num?)?.toInt() ?? 10,
   transform: json['transform'] == null
       ? null
@@ -24,7 +24,7 @@ Map<String, dynamic> _$ImageClipToJson(ImageClip instance) => <String, dynamic>{
   'startFrame': instance.startFrame,
   'durationFrames': instance.durationFrames,
   'transform': instance.transform.toJson(),
-  'id': const TimelineClipIdJsonConverter().toJson(instance.id),
+  'id': instance.id.toJson(),
   'assetId': instance.assetId.toJson(),
   'size': const SizeJsonConverter().toJson(instance.size),
 };

@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:voivo_movie_maker/domain/json_converters.dart';
+import 'package:voivo_movie_maker/utils/json_converters.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 
 part 'transform.g.dart';

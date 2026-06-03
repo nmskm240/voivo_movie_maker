@@ -20,7 +20,7 @@ class AssetId {
     }
     return AssetId(value);
   }
-  factory AssetId.fromJson(String value) => AssetId.fromString(value);
+  factory AssetId.fromJson(Map<String, Object?> value) => _$AssetIdFromJson(value);
 
   final String value;
 
@@ -35,7 +35,7 @@ class AssetId {
   @override
   String toString() => value;
 
-  String toJson() => value;
+  Map<String, Object?> toJson() => _$AssetIdToJson(this);
 }
 
 @JsonSerializable()

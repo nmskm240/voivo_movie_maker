@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:voivo_movie_maker/domain/json_converters.dart';
+import 'package:voivo_movie_maker/utils/json_converters.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/traits/transform.dart';
@@ -28,7 +28,6 @@ class ImageClip extends TimelineClip with WithTransform {
   TimelineClipKind get kind => TimelineClipKind.image;
   @override
   final ClipTransform transform;
-  @TimelineClipIdJsonConverter()
   @override
   TimelineClipId get id => super.id;
   AssetId assetId;

@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:voivo_movie_maker/domain/json_converters.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/traits/audio.dart';
@@ -24,7 +23,6 @@ class AudioClip extends TimelineClip with AudibleClip {
   TimelineClipKind get kind => TimelineClipKind.audio;
   @override
   final ClipAudio audio;
-  @TimelineClipIdJsonConverter()
   @override
   TimelineClipId get id => super.id;
   AssetId assetId;

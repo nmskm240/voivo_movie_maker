@@ -7,9 +7,9 @@ part of 'audio_clip.dart';
 // **************************************************************************
 
 AudioClip _$AudioClipFromJson(Map<String, dynamic> json) => AudioClip(
-  id: const TimelineClipIdJsonConverter().fromJson(json['id'] as String),
+  id: TimelineClipId.fromJson(json['id'] as Map<String, dynamic>),
   startFrame: (json['startFrame'] as num).toInt(),
-  assetId: AssetId.fromJson(json['assetId'] as String),
+  assetId: AssetId.fromJson(json['assetId'] as Map<String, dynamic>),
   durationFrames: (json['durationFrames'] as num?)?.toInt() ?? 10,
   audio: json['audio'] == null
       ? null
@@ -20,6 +20,6 @@ Map<String, dynamic> _$AudioClipToJson(AudioClip instance) => <String, dynamic>{
   'startFrame': instance.startFrame,
   'durationFrames': instance.durationFrames,
   'audio': instance.audio.toJson(),
-  'id': const TimelineClipIdJsonConverter().toJson(instance.id),
+  'id': instance.id.toJson(),
   'assetId': instance.assetId.toJson(),
 };
