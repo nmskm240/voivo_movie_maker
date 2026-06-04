@@ -24,21 +24,17 @@ class TextClip extends TimelineClip with WithTransform {
       _$TextClipFromJson(json);
 
   @override
-  @JsonKey(includeFromJson: false)
   TimelineClipKind get kind => TimelineClipKind.text;
   @override
   final ClipTransform transform;
-  @override
-  TimelineClipId get id => super.id;
   String text;
   String fontFamily;
   double size;
   @ColorJsonConverter()
   Color color;
 
-  Map<String, Object?> toJson() {
-    return {..._$TextClipToJson(this), 'kind': kind.name};
-  }
+  Map<String, Object?> toJson() => _$TextClipToJson(this);
+
 
   void update({String? text, String? fontFamily, double? size, Color? color}) {
     this.text = text ?? this.text;

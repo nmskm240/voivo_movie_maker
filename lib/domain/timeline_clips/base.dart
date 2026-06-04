@@ -1,5 +1,6 @@
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 part 'base.g.dart';
 
@@ -61,7 +62,7 @@ abstract class TimelineClip {
   final TimelineClipId id;
   int _startFrame;
   int _durationFrames;
-
+  @TimelineClipKindJsonConverter()
   TimelineClipKind get kind;
 
   int get startFrame => _startFrame;

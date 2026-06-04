@@ -23,10 +23,10 @@ TextClip _$TextClipFromJson(Map<String, dynamic> json) => TextClip(
 );
 
 Map<String, dynamic> _$TextClipToJson(TextClip instance) => <String, dynamic>{
+  'id': instance.id.toJson(),
   'startFrame': instance.startFrame,
   'durationFrames': instance.durationFrames,
   'transform': instance.transform.toJson(),
-  'id': instance.id.toJson(),
   'text': instance.text,
   'fontFamily': instance.fontFamily,
   'size': instance.size,

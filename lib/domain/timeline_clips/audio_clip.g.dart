@@ -17,9 +17,9 @@ AudioClip _$AudioClipFromJson(Map<String, dynamic> json) => AudioClip(
 );
 
 Map<String, dynamic> _$AudioClipToJson(AudioClip instance) => <String, dynamic>{
+  'id': instance.id.toJson(),
   'startFrame': instance.startFrame,
   'durationFrames': instance.durationFrames,
   'audio': instance.audio.toJson(),
-  'id': instance.id.toJson(),
   'assetId': instance.assetId.toJson(),
 };

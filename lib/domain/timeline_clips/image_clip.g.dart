@@ -21,10 +21,10 @@ ImageClip _$ImageClipFromJson(Map<String, dynamic> json) => ImageClip(
 );
 
 Map<String, dynamic> _$ImageClipToJson(ImageClip instance) => <String, dynamic>{
+  'id': instance.id.toJson(),
   'startFrame': instance.startFrame,
   'durationFrames': instance.durationFrames,
   'transform': instance.transform.toJson(),
-  'id': instance.id.toJson(),
   'assetId': instance.assetId.toJson(),
   'size': const SizeJsonConverter().toJson(instance.size),
 };

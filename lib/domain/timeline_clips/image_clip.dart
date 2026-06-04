@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/traits/asset.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
@@ -9,7 +10,7 @@ import 'package:voivo_movie_maker/domain/timeline_clips/traits/transform.dart';
 part 'image_clip.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class ImageClip extends TimelineClip with WithTransform {
+class ImageClip extends TimelineClip with WithAsset, WithTransform {
   ImageClip({
     required super.id,
     required super.startFrame,
@@ -21,37 +22,21 @@ class ImageClip extends TimelineClip with WithTransform {
        size = size ?? const Size(640, 360);
 
   factory ImageClip.fromJson(Map<String, Object?> json) =>
-      _$ImageClipFromJson(_normalizeJson(json));
+      _$ImageClipFromJson(json);
 
   @override
-  @JsonKey(includeFromJson: false)
   TimelineClipKind get kind => TimelineClipKind.image;
   @override
   final ClipTransform transform;
   @override
-  TimelineClipId get id => super.id;
   AssetId assetId;
   @SizeJsonConverter()
   Size size;
 
-  Map<String, Object?> toJson() {
-    return {..._$ImageClipToJson(this), 'kind': kind.name};
-  }
+  Map<String, Object?> toJson() =>_$ImageClipToJson(this);
 
   void update({AssetId? assetId, Size? size}) {
     this.assetId = assetId ?? this.assetId;
     this.size = size ?? this.size;
-  }
-
-  static Map<String, Object?> _normalizeJson(Map<String, Object?> json) {
-    if (json.containsKey('size') ||
-        !json.containsKey('width') ||
-        !json.containsKey('height')) {
-      return json;
-    }
-    return {
-      ...json,
-      'size': {'width': json['width'], 'height': json['height']},
-    };
   }
 }
