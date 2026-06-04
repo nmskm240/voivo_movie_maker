@@ -13,8 +13,8 @@ class TimelineClipJsonConverter
 
   @override
   TimelineClip fromJson(Map<String, Object?> json) {
-    return switch (TimelineClipKind.values.firstWhere(
-      (kind) => kind.name == json['kind'],
+    return switch (const TimelineClipKindJsonConverter().fromJson(
+      json['kind'],
     )) {
       TimelineClipKind.text => TextClip.fromJson(json),
       TimelineClipKind.image => ImageClip.fromJson(json),
@@ -31,6 +31,27 @@ class TimelineClipJsonConverter
       _ => throw UnsupportedError('Unsupported clip type: ${clip.runtimeType}'),
     };
   }
+}
+
+class TimelineClipKindJsonConverter
+    implements JsonConverter<TimelineClipKind, Object?> {
+  const TimelineClipKindJsonConverter();
+
+  @override
+  TimelineClipKind fromJson(Object? json) {
+    if (json is! String) {
+      throw const FormatException('Clip kind must be a string');
+    }
+    for (final kind in TimelineClipKind.values) {
+      if (kind.name == json) {
+        return kind;
+      }
+    }
+    throw FormatException('Unknown clip kind: $json');
+  }
+
+  @override
+  Object? toJson(TimelineClipKind kind) => kind.name;
 }
 
 class ColorJsonConverter implements JsonConverter<Color, int> {
