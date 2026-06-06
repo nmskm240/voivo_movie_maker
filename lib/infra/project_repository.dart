@@ -36,7 +36,11 @@ final class ProjectRepository implements IProjectRepository {
   Future<Project> getById(ProjectId id) async {
     final projectFile = _projectFileIn(_projectDirectoryFor(id));
     if (!await projectFile.exists()) {
-      throw ArgumentError.value(id, 'id', 'Project not found');
+      throw ArgumentError.value(
+        id.value,
+        'id',
+        'Project not found at ${projectFile.path}',
+      );
     }
 
     return _read(projectFile);
@@ -47,7 +51,7 @@ final class ProjectRepository implements IProjectRepository {
     await root.create(recursive: true);
     final projectDir = _projectDirectoryFor(project.id);
     if (!await projectDir.exists()) {
-     await projectDir.create(recursive: true);
+      await projectDir.create(recursive: true);
     }
     final assetsDir = Directory(p.join(projectDir.path, assetDirectoryName));
     if (!await assetsDir.exists()) {

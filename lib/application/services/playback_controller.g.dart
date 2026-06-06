@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'playback_controller_provider.dart';
+part of 'playback_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -21,9 +21,16 @@ final class PlaybackControllerProvider
         retry: null,
         name: r'playbackControllerProvider',
         isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
+        dependencies: <ProviderOrFamily>[projectProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          PlaybackControllerProvider.$allTransitiveDependencies0,
+          PlaybackControllerProvider.$allTransitiveDependencies1,
+        ],
       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
 
   @override
   String debugGetCreateSourceHash() => _$playbackControllerHash();
@@ -42,7 +49,7 @@ final class PlaybackControllerProvider
 }
 
 String _$playbackControllerHash() =>
-    r'b86b35d814e760f1916415cd192e92df872eaefb';
+    r'08b545d17a010f159517682ca37dd3a7e70a85ac';
 
 abstract class _$PlaybackController extends $Notifier<PlaybackInfo> {
   PlaybackInfo build();
