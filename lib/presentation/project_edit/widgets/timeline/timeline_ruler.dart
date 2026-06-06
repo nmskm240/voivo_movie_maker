@@ -30,7 +30,7 @@ class _TimeRulerPainter extends CustomPainter {
       canvas.drawLine(Offset(x, 24), Offset(x, size.height), linePaint);
       textPainter.text = TextSpan(
         text: '00:${(i * 5).toString().padLeft(2, '0')}',
-        style: const TextStyle(color: Color(0xffa9b3ba), fontSize: 11),
+        style: TextStyle(color: Color(0xffa9b3ba), fontSize: 11),
       );
       textPainter.layout();
       textPainter.paint(canvas, Offset(x + 6, 6));

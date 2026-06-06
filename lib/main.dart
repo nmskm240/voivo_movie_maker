@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:voivo_movie_maker/application/providers/project_repository.dart';
+import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/voice_generator.dart';
 import 'package:voivo_movie_maker/infra/project_repository.dart';
 import 'package:voivo_movie_maker/presentation/router.dart';

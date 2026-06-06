@@ -69,8 +69,8 @@ final class ProjectIdProvider
         retry: null,
         name: r'projectIdProvider',
         isAutoDispose: true,
-        dependencies: <ProviderOrFamily>[],
-        $allTransitiveDependencies: <ProviderOrFamily>[],
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
 
   @override
@@ -95,7 +95,7 @@ final class ProjectIdProvider
   }
 }
 
-String _$projectIdHash() => r'9f4eb295916ca91bfa3d16635dc117ab4c7a2006';
+String _$projectIdHash() => r'9f29a9a6a73014b5081dc18323f1ebe9134de9e3';
 
 @ProviderFor(project)
 final projectProvider = ProjectProvider._();
