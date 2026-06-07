@@ -62,14 +62,15 @@ class _TimelineViewState extends ConsumerState<TimelineView> {
                               child: Scrollbar(
                                 controller: _verticalScrollController,
                                 thumbVisibility: true,
-                                child: ListView.builder(
+                                child: ListView.separated(
                                   controller: _verticalScrollController,
-                                  itemExtent: TimelineTrackView.height,
                                   itemCount: widget.timeline.tracks.length,
                                   itemBuilder: (context, index) {
                                     final track = widget.timeline.tracks[index];
                                     return TimelineTrackView(track: track);
                                   },
+                                  separatorBuilder: (context, index) =>
+                                      const Divider(height: 1),
                                 ),
                               ),
                             ),
