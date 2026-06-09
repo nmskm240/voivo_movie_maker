@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
-import 'package:voivo_movie_maker/presentation/project_edit/view_model.dart';
 // import 'package:voivo_movie_maker/presentation/project_edit/widgets/assets/asset_list.dart';
-// import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/clip_inspector.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/clip_inspector.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/playback_button.dart';
 // import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/timeline_audio_preview_sync.dart';
 // import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/project_preview.dart';
@@ -35,7 +34,16 @@ class _EditorScreenBody extends ConsumerWidget {
           children: [
             const PlaybackButton(),
             // const Expanded(flex: 2, child: ProjectPreview()),
-            const Expanded(flex: 3, child: TimelineView()),
+            const Expanded(
+              flex: 3,
+              child: Row(
+                children: [
+                  Expanded(child: TimelineView()),
+                  VerticalDivider(width: 1),
+                  SizedBox(width: 320, child: ClipInspectorPane()),
+                ],
+              ),
+            ),
           ],
         ),
       ),

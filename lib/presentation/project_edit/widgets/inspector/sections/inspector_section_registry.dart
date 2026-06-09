@@ -4,15 +4,8 @@ import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/se
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/transform_trait_section.dart';
 
 List<InspectorSection> clipInspectorSectionsFor(TimelineClip clip) {
-  final sections = switch (clip.kind) {
-    TimelineClipKind.text => [TransformTraitSection(), TextClipSection()],
-    TimelineClipKind.image => [TransformTraitSection()],
-    TimelineClipKind.audio => <InspectorSection>[],
-  };
-
-  if (sections.any((section) => !section.isSupports(clip))) {
-    throw Error();
-  }
-
-  return sections;
+  return <InspectorSection>[
+    TransformTraitSection(),
+    TextClipSection(),
+  ].where((section) => section.isSupports(clip)).toList();
 }
