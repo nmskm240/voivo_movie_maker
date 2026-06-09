@@ -164,25 +164,7 @@ class _TimelineViewState extends ConsumerState<TimelineView> {
                                         const Divider(),
                                   ),
                                 ),
-                                Positioned(
-                                  top: 0,
-                                  bottom: 0,
-                                  left:
-                                      playbackState.currentFrame *
-                                          pixelsPerFrame -
-                                      5,
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onHorizontalDragUpdate: (details) {
-                                      playbackController.seek(
-                                        playbackState.currentFrame +
-                                            (details.delta.dx / pixelsPerFrame)
-                                                .round(),
-                                      );
-                                    },
-                                    child: const Playhead(),
-                                  ),
-                                ),
+                                Playhead(pixelsPerFrame: pixelsPerFrame                                ),
                               ],
                             ),
                           ),
