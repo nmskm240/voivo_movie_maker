@@ -1,5 +1,6 @@
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 part 'base.g.dart';
@@ -7,26 +8,16 @@ part 'base.g.dart';
 @JsonSerializable()
 class TimelineClipId {
   const TimelineClipId(this.value);
-  factory TimelineClipId.create() {
-    return TimelineClipId(cuid());
-  }
+
+  factory TimelineClipId.create() => TimelineClipId(cuid());
+
   factory TimelineClipId.fromString(String value) {
-    if (value.isEmpty) {
-      throw ArgumentError.value(
-        value,
-        'value',
-        'TimelineClipId cannot be empty',
-      );
-    }
-    if (!isCuid(value)) {
-      throw ArgumentError.value(
-        value,
-        'value',
-        'Invalid timeline clip ID format',
-      );
+    if (value.isEmpty || !isCuid(value)) {
+      throw ArgumentError.value(value, 'value', 'Invalid timeline clip ID');
     }
     return TimelineClipId(value);
   }
+
   factory TimelineClipId.fromJson(Map<String, Object?> value) =>
       _$TimelineClipIdFromJson(value);
 
@@ -36,10 +27,8 @@ class TimelineClipId {
   int get hashCode => value.hashCode;
 
   @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        other is TimelineClipId && other.value == value;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) || other is TimelineClipId && other.value == value;
 
   @override
   String toString() => value;
@@ -47,39 +36,64 @@ class TimelineClipId {
   Map<String, Object?> toJson() => _$TimelineClipIdToJson(this);
 }
 
-enum TimelineClipKind { text, image, audio }
-
-abstract class TimelineClip {
+@JsonSerializable(explicitToJson: true)
+class TimelineClip {
   TimelineClip({
     required this.id,
     required int startFrame,
     int durationFrames = 10,
+    Iterable<ClipComponent> components = const [],
   }) : assert(startFrame >= 0),
        assert(durationFrames > 0),
        _startFrame = startFrame,
-       _durationFrames = durationFrames;
+       _durationFrames = durationFrames,
+       components = components.toList() {
+    _validateUniqueComponentTypes();
+  }
+
+  factory TimelineClip.fromJson(Map<String, Object?> json) =>
+      _$TimelineClipFromJson(json);
 
   final TimelineClipId id;
   int _startFrame;
   int _durationFrames;
-  @TimelineClipKindJsonConverter()
-  TimelineClipKind get kind;
+  @ClipComponentJsonConverter()
+  final List<ClipComponent> components;
 
   int get startFrame => _startFrame;
   int get durationFrames => _durationFrames;
   int get endFrame => _startFrame + _durationFrames;
 
-  bool isActiveAt(int frame) {
-    return startFrame <= frame && frame < endFrame;
-  }
-
-  bool isConflict(TimelineClip clip) {
-    if (clip == this) {
-      return false;
+  T? component<T extends ClipComponent>() {
+    for (final component in components) {
+      if (component is T) {
+        return component;
+      }
     }
-
-    return startFrame < clip.endFrame && clip.startFrame < endFrame;
+    return null;
   }
+
+  bool hasComponent<T extends ClipComponent>() => component<T>() != null;
+
+  void addComponent(ClipComponent component) {
+    if (components.any((saved) => saved.runtimeType == component.runtimeType)) {
+      throw ArgumentError.value(
+        component,
+        'component',
+        'A component of this type already exists',
+      );
+    }
+    components.add(component);
+  }
+
+  void removeComponent<T extends ClipComponent>() {
+    components.removeWhere((component) => component is T);
+  }
+
+  bool isActiveAt(int frame) => startFrame <= frame && frame < endFrame;
+
+  bool isConflict(TimelineClip clip) =>
+      clip != this && startFrame < clip.endFrame && clip.startFrame < endFrame;
 
   void moveTo(int newStartFrame) {
     if (newStartFrame < 0) {
@@ -104,12 +118,24 @@ abstract class TimelineClip {
     _durationFrames = newEndFrame - _startFrame;
   }
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is TimelineClip && other.id == id;
+  void _validateUniqueComponentTypes() {
+    final types = <Type>{};
+    for (final component in components) {
+      if (!types.add(component.runtimeType)) {
+        throw ArgumentError.value(
+          components,
+          'components',
+          'Component types must be unique',
+        );
+      }
+    }
   }
+
+  Map<String, Object?> toJson() => _$TimelineClipToJson(this);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is TimelineClip && other.id == id;
 
   @override
   int get hashCode => id.hashCode;

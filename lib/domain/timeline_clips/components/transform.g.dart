@@ -6,8 +6,8 @@ part of 'transform.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ClipTransform _$ClipTransformFromJson(Map<String, dynamic> json) =>
-    ClipTransform(
+TransformComponent _$TransformComponentFromJson(Map<String, dynamic> json) =>
+    TransformComponent(
       position: _$JsonConverterFromJson<Map<String, Object?>, Vector2>(
         json['position'],
         const Vector2JsonConverter().fromJson,
@@ -19,7 +19,7 @@ ClipTransform _$ClipTransformFromJson(Map<String, dynamic> json) =>
       rotation: (json['rotation'] as num?)?.toDouble() ?? 0,
     );
 
-Map<String, dynamic> _$ClipTransformToJson(ClipTransform instance) =>
+Map<String, dynamic> _$TransformComponentToJson(TransformComponent instance) =>
     <String, dynamic>{
       'position': const Vector2JsonConverter().toJson(instance.position),
       'scale': const Vector2JsonConverter().toJson(instance.scale),

@@ -23,7 +23,11 @@ class Timeline {
 
   Map<String, Object?> toJson() => _$TimelineToJson(this);
 
-  void moveClipToTrack(TimelineClipId clipId, int targetTrackIndex) {
+  void moveClipToTrack(
+    TimelineClipId clipId,
+    int targetTrackIndex, {
+    int? startFrame,
+  }) {
     final sourceTrack = _tracks.singleWhere(
       (track) => track.containsById(clipId),
     );
@@ -33,12 +37,15 @@ class Timeline {
       return;
     }
 
-    if (!targetTrack.canPlaceClip(clip)) {
+    final resolvedStartFrame = startFrame ?? clip.startFrame;
+    if (resolvedStartFrame < 0 ||
+        !targetTrack.canPlaceClip(clip, startFrame: resolvedStartFrame)) {
       return;
     }
 
-    targetTrack.addClip(clip);
     sourceTrack.removeClip(clipId);
+    clip.moveTo(resolvedStartFrame);
+    targetTrack.addClip(clip);
   }
 
   Iterable<TimelineClip> getActiveClipsAt(int frame) {

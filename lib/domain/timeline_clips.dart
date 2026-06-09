@@ -1,6 +1,7 @@
-export 'timeline_clips/audio_clip.dart';
 export 'timeline_clips/base.dart';
-export 'timeline_clips/image_clip.dart';
-export 'timeline_clips/text_clip.dart';
-export 'timeline_clips/traits/audio.dart';
-export 'timeline_clips/traits/transform.dart';
+export 'timeline_clips/components/asset.dart';
+export 'timeline_clips/components/audio.dart';
+export 'timeline_clips/components/base.dart';
+export 'timeline_clips/components/image.dart';
+export 'timeline_clips/components/text.dart';
+export 'timeline_clips/components/transform.dart';
