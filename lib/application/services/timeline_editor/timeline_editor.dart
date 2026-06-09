@@ -5,16 +5,21 @@ import 'package:voivo_movie_maker/domain/timeline.dart';
 
 part 'timeline_editor.g.dart';
 
-@Riverpod(dependencies: [project])
+@Riverpod(dependencies: [CurrentTimeline])
 TimelineEditor timelineEditor(Ref ref) {
-  final project = ref.watch(projectProvider).value;
-  return TimelineEditor(project?.timeline);
+  final timeline = ref.watch(timelineProvider).value;
+  return TimelineEditor(
+    timeline,
+    onChanged: ref.read(timelineProvider.notifier).notifyChanged,
+  );
 }
 
 class TimelineEditor {
-  const TimelineEditor(this._timeline);
+  const TimelineEditor(this._timeline, {required void Function() onChanged})
+    : _onChanged = onChanged;
 
   final Timeline? _timeline;
+  final void Function() _onChanged;
 
   void execute(TimelineEditorCommand command) {
     if (_timeline == null) {
@@ -25,5 +30,6 @@ class TimelineEditor {
     }
 
     command.execute(_timeline);
+    _onChanged();
   }
 }

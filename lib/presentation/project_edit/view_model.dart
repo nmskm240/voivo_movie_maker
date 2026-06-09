@@ -8,9 +8,8 @@ part "view_model.g.dart";
 
 @freezed
 sealed class ProjectEditState with _$ProjectEditState {
-  const factory ProjectEditState({
-    required ProjectInfo project,
-  }) = _ProjectEditState;
+  const factory ProjectEditState({required ProjectInfo project}) =
+      _ProjectEditState;
 }
 
 @Riverpod(dependencies: [project])

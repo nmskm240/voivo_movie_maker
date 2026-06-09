@@ -109,7 +109,7 @@ final class ProjectProvider
         argument: null,
         retry: null,
         name: r'projectProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: <ProviderOrFamily>[projectIdProvider],
         $allTransitiveDependencies: <ProviderOrFamily>[
           ProjectProvider.$allTransitiveDependencies0,
@@ -132,4 +132,55 @@ final class ProjectProvider
   }
 }
 
-String _$projectHash() => r'6d3bb0939e690632abc6ae8913985321882ce061';
+String _$projectHash() => r'4c03c5d06ae894c6e9cac1db985d3eb172da7373';
+
+@ProviderFor(CurrentTimeline)
+final timelineProvider = CurrentTimelineProvider._();
+
+final class CurrentTimelineProvider
+    extends $AsyncNotifierProvider<CurrentTimeline, Timeline> {
+  CurrentTimelineProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'timelineProvider',
+        isAutoDispose: true,
+        dependencies: <ProviderOrFamily>[projectProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          CurrentTimelineProvider.$allTransitiveDependencies0,
+          CurrentTimelineProvider.$allTransitiveDependencies1,
+        ],
+      );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$currentTimelineHash();
+
+  @$internal
+  @override
+  CurrentTimeline create() => CurrentTimeline();
+}
+
+String _$currentTimelineHash() => r'83e16a6a72c57021e230cd775906112e51afed7d';
+
+abstract class _$CurrentTimeline extends $AsyncNotifier<Timeline> {
+  FutureOr<Timeline> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<Timeline>, Timeline>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Timeline>, Timeline>,
+              AsyncValue<Timeline>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

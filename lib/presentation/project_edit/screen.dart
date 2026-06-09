@@ -30,21 +30,14 @@ class _EditorScreenBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: ref.watch(projectEditViewModelProvider).when(
-        data: (state) => SafeArea(
-          child: Column(
-            children: [
-              const PlaybackButton(),
-              // const Expanded(flex: 2, child: ProjectPreview()),
-              Expanded(
-                flex: 3,
-                child: TimelineView(timeline: state.project.timeline),
-              ),
-            ],
-          ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const PlaybackButton(),
+            // const Expanded(flex: 2, child: ProjectPreview()),
+            const Expanded(flex: 3, child: TimelineView()),
+          ],
         ),
-        error: (error, stackTrace) => Center(child: Text(error.toString())),
-        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }

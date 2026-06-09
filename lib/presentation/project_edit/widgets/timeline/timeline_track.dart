@@ -5,11 +5,13 @@ import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/tim
 class TimelineTrackView extends StatelessWidget {
   const TimelineTrackView({
     required this.track,
+    required this.pixelsPerFrame,
     this.selected = false,
     super.key,
   });
 
   final TimelineTrackInfo track;
+  final double pixelsPerFrame;
   final bool selected;
 
   static const height = 56.0;
@@ -24,8 +26,8 @@ class TimelineTrackView extends StatelessWidget {
             Positioned(
               top: 4,
               bottom: 4,
-              left: clip.startFrame.toDouble(),
-              width: clip.durationFrames.toDouble(),
+              left: clip.startFrame * pixelsPerFrame,
+              width: clip.durationFrames * pixelsPerFrame,
               child: TimelineClipView(
                 key: GlobalObjectKey(clip.id),
                 clip: clip,
