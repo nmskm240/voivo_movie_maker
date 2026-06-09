@@ -2,7 +2,7 @@ import 'package:vector_math/vector_math.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/traits/transform.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/transform.dart';
 
 class UpdateClipTransformCommand implements TimelineEditorCommand {
   const UpdateClipTransformCommand(
@@ -19,16 +19,14 @@ class UpdateClipTransformCommand implements TimelineEditorCommand {
 
   @override
   bool canExecute(Timeline timeline) {
-    return timeline.getClipById(clipId) is WithTransform;
+    return timeline.getClipById(clipId).hasComponent<TransformComponent>();
   }
 
   @override
   void execute(Timeline timeline) {
-    final clip = timeline.getClipById(clipId);
-    if (clip is! WithTransform) {
-      return;
-    }
-
-    clip.updateTransform(position: position, scale: scale, rotation: rotation);
+    timeline
+        .getClipById(clipId)
+        .component<TransformComponent>()
+        ?.update(position: position, scale: scale, rotation: rotation);
   }
 }

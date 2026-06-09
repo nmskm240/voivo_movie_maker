@@ -23,15 +23,11 @@ Future<Project> project(Ref ref) async {
   return repository.getById(id);
 }
 
-@Riverpod(name: 'timelineProvider', dependencies: [project])
-class CurrentTimeline extends _$CurrentTimeline {
+@Riverpod(dependencies: [project])
+class TimelineNotifier extends _$TimelineNotifier {
   @override
   Future<Timeline> build() async {
     final project = await ref.watch(projectProvider.future);
     return project.timeline;
-  }
-
-  void notifyChanged() {
-    ref.notifyListeners();
   }
 }

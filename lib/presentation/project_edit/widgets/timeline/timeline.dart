@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/playhead.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_ruler.dart';
@@ -59,7 +58,6 @@ class _TimelineViewState extends ConsumerState<TimelineView> {
         ),
       ),
     );
-    final playbackState = ref.watch(playbackControllerProvider);
     final playbackController = ref.read(playbackControllerProvider.notifier);
     final selectedTrackIndex = ref.watch(
       timelineSelectionStateProvider.select(
@@ -88,84 +86,34 @@ class _TimelineViewState extends ConsumerState<TimelineView> {
             durationFrames * pixelsPerFrame + 64,
           );
 
-          return Column(
-            children: [
-              Row(
-                children: [
-                  const SizedBox(
-                    width: TimelineTrackHeader.width,
-                    height: TimelineRuler.height,
-                  ),
-                  const VerticalDivider(),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: _rulerHorizontalScrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: timelineWidth,
-                        child: TimelineRulerGestureArea(
-                          pixelsPerFrame: pixelsPerFrame,
-                          onSeek: playbackController.seek,
-                          onZoom: ref
-                              .read(timelineViewModelProvider.notifier)
-                              .setPixelsPerFrame,
-                          child: TimelineRuler(pixelsPerFrame: pixelsPerFrame),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Row(
+          return ScrollConfiguration(
+            behavior: ScrollConfiguration.of(
+              context,
+            ).copyWith(overscroll: false),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: TimelineTrackHeader.width,
-                      child: ListView.separated(
-                        controller: _trackHeaderVerticalScrollController,
-                        itemCount: timeline.tracks.length,
-                        itemBuilder: (context, index) => TimelineTrackHeader(
-                          index: index,
-                          selected: selectedTrackIndex == index,
-                          onSelected: () => ref
-                              .read(timelineSelectionStateProvider.notifier)
-                              .selectTrack(index),
-                          onAddClip: () => _showAddClipSheet(index),
-                        ),
-                        separatorBuilder: (context, index) => const Divider(),
-                      ),
+                      height: TimelineRuler.height,
                     ),
                     const VerticalDivider(),
                     Expanded(
-                      child: Scrollbar(
-                        controller: _bodyHorizontalScrollController,
-                        thumbVisibility: true,
-                        child: SingleChildScrollView(
-                          controller: _bodyHorizontalScrollController,
-                          scrollDirection: Axis.horizontal,
-                          child: SizedBox(
-                            width: timelineWidth,
-                            child: Stack(
-                              children: [
-                                Scrollbar(
-                                  controller: _bodyVerticalScrollController,
-                                  thumbVisibility: true,
-                                  child: ListView.separated(
-                                    controller: _bodyVerticalScrollController,
-                                    itemCount: timeline.tracks.length,
-                                    itemBuilder: (context, index) {
-                                      final track = timeline.tracks[index];
-                                      return TimelineTrackView(
-                                        track: track,
-                                        pixelsPerFrame: pixelsPerFrame,
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) =>
-                                        const Divider(),
-                                  ),
-                                ),
-                                Playhead(pixelsPerFrame: pixelsPerFrame                                ),
-                              ],
+                      child: SingleChildScrollView(
+                        controller: _rulerHorizontalScrollController,
+                        scrollDirection: Axis.horizontal,
+                        physics: const ClampingScrollPhysics(),
+                        child: SizedBox(
+                          width: timelineWidth,
+                          child: TimelineRulerGestureArea(
+                            pixelsPerFrame: pixelsPerFrame,
+                            onSeek: playbackController.seek,
+                            onZoom: ref
+                                .read(timelineViewModelProvider.notifier)
+                                .setPixelsPerFrame,
+                            child: TimelineRuler(
+                              pixelsPerFrame: pixelsPerFrame,
                             ),
                           ),
                         ),
@@ -173,8 +121,72 @@ class _TimelineViewState extends ConsumerState<TimelineView> {
                     ),
                   ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: TimelineTrackHeader.width,
+                        child: ListView.separated(
+                          controller: _trackHeaderVerticalScrollController,
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: timeline.tracks.length,
+                          itemBuilder: (context, index) => TimelineTrackHeader(
+                            index: index,
+                            selected: selectedTrackIndex == index,
+                            onSelected: () => ref
+                                .read(timelineSelectionStateProvider.notifier)
+                                .selectTrack(index),
+                            onAddClip: () => ref
+                                .read(timelineViewModelProvider.notifier)
+                                .addClip(index),
+                          ),
+                          separatorBuilder: (context, index) => const Divider(),
+                        ),
+                      ),
+                      const VerticalDivider(),
+                      Expanded(
+                        child: Scrollbar(
+                          controller: _bodyHorizontalScrollController,
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: _bodyHorizontalScrollController,
+                            scrollDirection: Axis.horizontal,
+                            physics: const ClampingScrollPhysics(),
+                            child: SizedBox(
+                              width: timelineWidth,
+                              child: Stack(
+                                children: [
+                                  Scrollbar(
+                                    controller: _bodyVerticalScrollController,
+                                    thumbVisibility: true,
+                                    child: ListView.separated(
+                                      controller: _bodyVerticalScrollController,
+                                      physics: const ClampingScrollPhysics(),
+                                      itemCount: timeline.tracks.length,
+                                      itemBuilder: (context, index) {
+                                        final track = timeline.tracks[index];
+                                        return TimelineTrackView(
+                                          trackIndex: index,
+                                          track: track,
+                                          pixelsPerFrame: pixelsPerFrame,
+                                        );
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const Divider(),
+                                    ),
+                                  ),
+                                  Playhead(pixelsPerFrame: pixelsPerFrame),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -185,69 +197,5 @@ class _TimelineViewState extends ConsumerState<TimelineView> {
     ref
         .read(timelineViewModelProvider.notifier)
         .setHorizontalScrollOffset(_bodyHorizontalScrollController.offset);
-  }
-
-  Future<void> _showAddClipSheet(int trackIndex) async {
-    ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
-
-    final kind = await showModalBottomSheet<TimelineClipKind>(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _ClipKindTile(
-                kind: TimelineClipKind.text,
-                icon: Icons.text_fields,
-                label: 'Text',
-              ),
-              _ClipKindTile(
-                kind: TimelineClipKind.image,
-                icon: Icons.image_outlined,
-                label: 'Image',
-              ),
-              _ClipKindTile(
-                kind: TimelineClipKind.audio,
-                icon: Icons.graphic_eq,
-                label: 'Audio',
-              ),
-            ],
-          ),
-        );
-      },
-    );
-    if (!mounted || kind == null) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Track ${trackIndex + 1} に ${kind.name} clip を追加するUIを選択しました',
-        ),
-      ),
-    );
-  }
-}
-
-class _ClipKindTile extends StatelessWidget {
-  const _ClipKindTile({
-    required this.kind,
-    required this.icon,
-    required this.label,
-  });
-
-  final TimelineClipKind kind;
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      onTap: () => Navigator.of(context).pop(kind),
-    );
   }
 }

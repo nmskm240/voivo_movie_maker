@@ -134,12 +134,12 @@ final class ProjectProvider
 
 String _$projectHash() => r'4c03c5d06ae894c6e9cac1db985d3eb172da7373';
 
-@ProviderFor(CurrentTimeline)
-final timelineProvider = CurrentTimelineProvider._();
+@ProviderFor(TimelineNotifier)
+final timelineProvider = TimelineNotifierProvider._();
 
-final class CurrentTimelineProvider
-    extends $AsyncNotifierProvider<CurrentTimeline, Timeline> {
-  CurrentTimelineProvider._()
+final class TimelineNotifierProvider
+    extends $AsyncNotifierProvider<TimelineNotifier, Timeline> {
+  TimelineNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -148,8 +148,8 @@ final class CurrentTimelineProvider
         isAutoDispose: true,
         dependencies: <ProviderOrFamily>[projectProvider],
         $allTransitiveDependencies: <ProviderOrFamily>[
-          CurrentTimelineProvider.$allTransitiveDependencies0,
-          CurrentTimelineProvider.$allTransitiveDependencies1,
+          TimelineNotifierProvider.$allTransitiveDependencies0,
+          TimelineNotifierProvider.$allTransitiveDependencies1,
         ],
       );
 
@@ -158,16 +158,16 @@ final class CurrentTimelineProvider
       ProjectProvider.$allTransitiveDependencies0;
 
   @override
-  String debugGetCreateSourceHash() => _$currentTimelineHash();
+  String debugGetCreateSourceHash() => _$timelineNotifierHash();
 
   @$internal
   @override
-  CurrentTimeline create() => CurrentTimeline();
+  TimelineNotifier create() => TimelineNotifier();
 }
 
-String _$currentTimelineHash() => r'83e16a6a72c57021e230cd775906112e51afed7d';
+String _$timelineNotifierHash() => r'ec11f0a30c4da12ea774b4c701bb003d2df8e8fd';
 
-abstract class _$CurrentTimeline extends $AsyncNotifier<Timeline> {
+abstract class _$TimelineNotifier extends $AsyncNotifier<Timeline> {
   FutureOr<Timeline> build();
   @$mustCallSuper
   @override

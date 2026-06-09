@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TimelineViewState {
 
- TimelineInfo get timeline; double get pixelsPerFrame; double get horizontalScrollOffset;
+ TimelineInfo get timeline; double get pixelsPerFrame; double get horizontalScrollOffset; int get revision;
 /// Create a copy of TimelineViewState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TimelineViewStateCopyWith<TimelineViewState> get copyWith => _$TimelineViewStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineViewState&&(identical(other.timeline, timeline) || other.timeline == timeline)&&(identical(other.pixelsPerFrame, pixelsPerFrame) || other.pixelsPerFrame == pixelsPerFrame)&&(identical(other.horizontalScrollOffset, horizontalScrollOffset) || other.horizontalScrollOffset == horizontalScrollOffset));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineViewState&&(identical(other.timeline, timeline) || other.timeline == timeline)&&(identical(other.pixelsPerFrame, pixelsPerFrame) || other.pixelsPerFrame == pixelsPerFrame)&&(identical(other.horizontalScrollOffset, horizontalScrollOffset) || other.horizontalScrollOffset == horizontalScrollOffset)&&(identical(other.revision, revision) || other.revision == revision));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,timeline,pixelsPerFrame,horizontalScrollOffset);
+int get hashCode => Object.hash(runtimeType,timeline,pixelsPerFrame,horizontalScrollOffset,revision);
 
 @override
 String toString() {
-  return 'TimelineViewState(timeline: $timeline, pixelsPerFrame: $pixelsPerFrame, horizontalScrollOffset: $horizontalScrollOffset)';
+  return 'TimelineViewState(timeline: $timeline, pixelsPerFrame: $pixelsPerFrame, horizontalScrollOffset: $horizontalScrollOffset, revision: $revision)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TimelineViewStateCopyWith<$Res>  {
   factory $TimelineViewStateCopyWith(TimelineViewState value, $Res Function(TimelineViewState) _then) = _$TimelineViewStateCopyWithImpl;
 @useResult
 $Res call({
- TimelineInfo timeline, double pixelsPerFrame, double horizontalScrollOffset
+ TimelineInfo timeline, double pixelsPerFrame, double horizontalScrollOffset, int revision
 });
 
 
@@ -62,12 +62,13 @@ class _$TimelineViewStateCopyWithImpl<$Res>
 
 /// Create a copy of TimelineViewState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? timeline = null,Object? pixelsPerFrame = null,Object? horizontalScrollOffset = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? timeline = null,Object? pixelsPerFrame = null,Object? horizontalScrollOffset = null,Object? revision = null,}) {
   return _then(_self.copyWith(
 timeline: null == timeline ? _self.timeline : timeline // ignore: cast_nullable_to_non_nullable
 as TimelineInfo,pixelsPerFrame: null == pixelsPerFrame ? _self.pixelsPerFrame : pixelsPerFrame // ignore: cast_nullable_to_non_nullable
 as double,horizontalScrollOffset: null == horizontalScrollOffset ? _self.horizontalScrollOffset : horizontalScrollOffset // ignore: cast_nullable_to_non_nullable
-as double,
+as double,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of TimelineViewState
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TimelineInfo timeline,  double pixelsPerFrame,  double horizontalScrollOffset)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TimelineInfo timeline,  double pixelsPerFrame,  double horizontalScrollOffset,  int revision)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TimelineViewState() when $default != null:
-return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset);case _:
+return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset,_that.revision);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TimelineInfo timeline,  double pixelsPerFrame,  double horizontalScrollOffset)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TimelineInfo timeline,  double pixelsPerFrame,  double horizontalScrollOffset,  int revision)  $default,) {final _that = this;
 switch (_that) {
 case _TimelineViewState():
-return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset);}
+return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset,_that.revision);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -196,10 +197,10 @@ return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TimelineInfo timeline,  double pixelsPerFrame,  double horizontalScrollOffset)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TimelineInfo timeline,  double pixelsPerFrame,  double horizontalScrollOffset,  int revision)?  $default,) {final _that = this;
 switch (_that) {
 case _TimelineViewState() when $default != null:
-return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset);case _:
+return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset,_that.revision);case _:
   return null;
 
 }
@@ -211,12 +212,13 @@ return $default(_that.timeline,_that.pixelsPerFrame,_that.horizontalScrollOffset
 
 
 class _TimelineViewState implements TimelineViewState {
-  const _TimelineViewState({required this.timeline, this.pixelsPerFrame = 1.0, this.horizontalScrollOffset = 0.0});
+  const _TimelineViewState({required this.timeline, this.pixelsPerFrame = 1.0, this.horizontalScrollOffset = 0.0, this.revision = 0});
   
 
 @override final  TimelineInfo timeline;
 @override@JsonKey() final  double pixelsPerFrame;
 @override@JsonKey() final  double horizontalScrollOffset;
+@override@JsonKey() final  int revision;
 
 /// Create a copy of TimelineViewState
 /// with the given fields replaced by the non-null parameter values.
@@ -228,16 +230,16 @@ _$TimelineViewStateCopyWith<_TimelineViewState> get copyWith => __$TimelineViewS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineViewState&&(identical(other.timeline, timeline) || other.timeline == timeline)&&(identical(other.pixelsPerFrame, pixelsPerFrame) || other.pixelsPerFrame == pixelsPerFrame)&&(identical(other.horizontalScrollOffset, horizontalScrollOffset) || other.horizontalScrollOffset == horizontalScrollOffset));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineViewState&&(identical(other.timeline, timeline) || other.timeline == timeline)&&(identical(other.pixelsPerFrame, pixelsPerFrame) || other.pixelsPerFrame == pixelsPerFrame)&&(identical(other.horizontalScrollOffset, horizontalScrollOffset) || other.horizontalScrollOffset == horizontalScrollOffset)&&(identical(other.revision, revision) || other.revision == revision));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,timeline,pixelsPerFrame,horizontalScrollOffset);
+int get hashCode => Object.hash(runtimeType,timeline,pixelsPerFrame,horizontalScrollOffset,revision);
 
 @override
 String toString() {
-  return 'TimelineViewState(timeline: $timeline, pixelsPerFrame: $pixelsPerFrame, horizontalScrollOffset: $horizontalScrollOffset)';
+  return 'TimelineViewState(timeline: $timeline, pixelsPerFrame: $pixelsPerFrame, horizontalScrollOffset: $horizontalScrollOffset, revision: $revision)';
 }
 
 
@@ -248,7 +250,7 @@ abstract mixin class _$TimelineViewStateCopyWith<$Res> implements $TimelineViewS
   factory _$TimelineViewStateCopyWith(_TimelineViewState value, $Res Function(_TimelineViewState) _then) = __$TimelineViewStateCopyWithImpl;
 @override @useResult
 $Res call({
- TimelineInfo timeline, double pixelsPerFrame, double horizontalScrollOffset
+ TimelineInfo timeline, double pixelsPerFrame, double horizontalScrollOffset, int revision
 });
 
 
@@ -265,12 +267,13 @@ class __$TimelineViewStateCopyWithImpl<$Res>
 
 /// Create a copy of TimelineViewState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? timeline = null,Object? pixelsPerFrame = null,Object? horizontalScrollOffset = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? timeline = null,Object? pixelsPerFrame = null,Object? horizontalScrollOffset = null,Object? revision = null,}) {
   return _then(_TimelineViewState(
 timeline: null == timeline ? _self.timeline : timeline // ignore: cast_nullable_to_non_nullable
 as TimelineInfo,pixelsPerFrame: null == pixelsPerFrame ? _self.pixelsPerFrame : pixelsPerFrame // ignore: cast_nullable_to_non_nullable
 as double,horizontalScrollOffset: null == horizontalScrollOffset ? _self.horizontalScrollOffset : horizontalScrollOffset // ignore: cast_nullable_to_non_nullable
-as double,
+as double,revision: null == revision ? _self.revision : revision // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

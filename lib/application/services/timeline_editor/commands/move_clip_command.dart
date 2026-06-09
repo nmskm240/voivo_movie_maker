@@ -15,7 +15,9 @@ class MoveClipCommand implements TimelineEditorCommand {
 
   @override
   bool canExecute(Timeline timeline) {
-    if (targetTrackIndex < 0 || targetTrackIndex >= timeline.tracks.length) {
+    if (startFrame < 0 ||
+        targetTrackIndex < 0 ||
+        targetTrackIndex >= timeline.tracks.length) {
       return false;
     }
 
@@ -26,13 +28,6 @@ class MoveClipCommand implements TimelineEditorCommand {
 
   @override
   void execute(Timeline timeline) {
-    final clip = timeline.getClipById(clipId);
-    final currentTrack = timeline.getTrackByClipId(clipId);
-    final currentTrackIndex = timeline.tracks.toList().indexOf(currentTrack);
-
-    if (currentTrackIndex != targetTrackIndex) {
-      timeline.moveClipToTrack(clipId, targetTrackIndex);
-    }
-    clip.moveTo(startFrame);
+    timeline.moveClipToTrack(clipId, targetTrackIndex, startFrame: startFrame);
   }
 }

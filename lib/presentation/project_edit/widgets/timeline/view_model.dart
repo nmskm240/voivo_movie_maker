@@ -2,6 +2,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_info.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
+import 'package:voivo_movie_maker/application/services/playback_controller.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/move_clip_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 
 part 'view_model.freezed.dart';
 part 'view_model.g.dart';
@@ -12,10 +19,18 @@ sealed class TimelineViewState with _$TimelineViewState {
     required TimelineInfo timeline,
     @Default(1.0) double pixelsPerFrame,
     @Default(0.0) double horizontalScrollOffset,
+    @Default(0) int revision,
   }) = _TimelineViewState;
 }
 
-@Riverpod(dependencies: [CurrentTimeline])
+@Riverpod(
+  dependencies: [
+    TimelineNotifier,
+    timelineEditor,
+    PlaybackController,
+    TimelineSelectionState,
+  ],
+)
 class TimelineViewModel extends _$TimelineViewModel {
   static const minPixelsPerFrame = 0.25;
   static const maxPixelsPerFrame = 8.0;
@@ -30,6 +45,64 @@ class TimelineViewModel extends _$TimelineViewModel {
       pixelsPerFrame: pixelsPerFrame,
       horizontalScrollOffset: horizontalScrollOffset,
     );
+  }
+
+  bool execute(TimelineEditorCommand command) {
+    final timeline = ref.read(timelineProvider).value;
+    final current = state.value;
+    if (timeline == null || current == null) {
+      return false;
+    }
+    if (!command.canExecute(timeline)) {
+      return false;
+    }
+
+    ref.read(timelineEditorProvider).execute(timeline, command);
+    state = AsyncData(
+      current.copyWith(
+        timeline: TimelineInfo.fromEntity(timeline),
+        revision: current.revision + 1,
+      ),
+    );
+    return true;
+  }
+
+  void addClip(int trackIndex) {
+    final clip = TimelineClip(
+      id: TimelineClipId.create(),
+      startFrame: ref.read(playbackControllerProvider).currentFrame,
+      durationFrames: 90,
+    );
+    final added = execute(
+      AddClipCommand(targetTrackIndex: trackIndex, clip: clip),
+    );
+    if (!added) {
+      return;
+    }
+
+    ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
+    ref.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
+  }
+
+  bool moveClip(
+    TimelineClipId clipId, {
+    required int targetTrackIndex,
+    required int startFrame,
+  }) {
+    final command = MoveClipCommand(
+      clipId,
+      targetTrackIndex: targetTrackIndex,
+      startFrame: startFrame,
+    );
+    if (!execute(command)) {
+      return false;
+    }
+
+    ref
+        .read(timelineSelectionStateProvider.notifier)
+        .selectTrack(targetTrackIndex);
+    ref.read(timelineSelectionStateProvider.notifier).selectClip(clipId);
+    return true;
   }
 
   void setPixelsPerFrame(double pixelsPerFrame) {

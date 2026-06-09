@@ -21,19 +21,30 @@ final class TimelineViewModelProvider
         retry: null,
         name: r'timelineViewModelProvider',
         isAutoDispose: true,
-        dependencies: <ProviderOrFamily>[timelineProvider],
-        $allTransitiveDependencies: <ProviderOrFamily>[
+        dependencies: <ProviderOrFamily>[
+          timelineProvider,
+          timelineEditorProvider,
+          playbackControllerProvider,
+          timelineSelectionStateProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
           TimelineViewModelProvider.$allTransitiveDependencies0,
           TimelineViewModelProvider.$allTransitiveDependencies1,
           TimelineViewModelProvider.$allTransitiveDependencies2,
-        ],
+          TimelineViewModelProvider.$allTransitiveDependencies3,
+          TimelineViewModelProvider.$allTransitiveDependencies4,
+          TimelineViewModelProvider.$allTransitiveDependencies5,
+        },
       );
 
   static final $allTransitiveDependencies0 = timelineProvider;
   static final $allTransitiveDependencies1 =
-      CurrentTimelineProvider.$allTransitiveDependencies0;
+      TimelineNotifierProvider.$allTransitiveDependencies0;
   static final $allTransitiveDependencies2 =
-      CurrentTimelineProvider.$allTransitiveDependencies1;
+      TimelineNotifierProvider.$allTransitiveDependencies1;
+  static final $allTransitiveDependencies3 = timelineEditorProvider;
+  static final $allTransitiveDependencies4 = playbackControllerProvider;
+  static final $allTransitiveDependencies5 = timelineSelectionStateProvider;
 
   @override
   String debugGetCreateSourceHash() => _$timelineViewModelHash();
@@ -43,7 +54,7 @@ final class TimelineViewModelProvider
   TimelineViewModel create() => TimelineViewModel();
 }
 
-String _$timelineViewModelHash() => r'fa7f75bcd7337ee46187b57b80dd91c753868f74';
+String _$timelineViewModelHash() => r'9e0384c0d05dec3af4d9b623ba9a1fe3e5a18fe4';
 
 abstract class _$TimelineViewModel extends $AsyncNotifier<TimelineViewState> {
   FutureOr<TimelineViewState> build();

@@ -22,19 +22,9 @@ final class TimelineEditorProvider
         retry: null,
         name: r'timelineEditorProvider',
         isAutoDispose: true,
-        dependencies: <ProviderOrFamily>[timelineProvider],
-        $allTransitiveDependencies: <ProviderOrFamily>[
-          TimelineEditorProvider.$allTransitiveDependencies0,
-          TimelineEditorProvider.$allTransitiveDependencies1,
-          TimelineEditorProvider.$allTransitiveDependencies2,
-        ],
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
-
-  static final $allTransitiveDependencies0 = timelineProvider;
-  static final $allTransitiveDependencies1 =
-      CurrentTimelineProvider.$allTransitiveDependencies0;
-  static final $allTransitiveDependencies2 =
-      CurrentTimelineProvider.$allTransitiveDependencies1;
 
   @override
   String debugGetCreateSourceHash() => _$timelineEditorHash();
@@ -58,4 +48,4 @@ final class TimelineEditorProvider
   }
 }
 
-String _$timelineEditorHash() => r'1a52b111a27311d4576d81eb8da4c00055162031';
+String _$timelineEditorHash() => r'2a23c55c51c742a9bc5934bd67c64e55d0ddb7c5';
