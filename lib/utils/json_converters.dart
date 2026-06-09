@@ -2,56 +2,43 @@ import 'dart:ui';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:vector_math/vector_math.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/audio_clip.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/image_clip.dart';
-import 'package:voivo_movie_maker/domain/timeline_clips/text_clip.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/asset.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/audio.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/image.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/text.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/transform.dart';
 
-class TimelineClipJsonConverter
-    implements JsonConverter<TimelineClip, Map<String, Object?>> {
-  const TimelineClipJsonConverter();
+class ClipComponentJsonConverter
+    implements JsonConverter<ClipComponent, Map<String, Object?>> {
+  const ClipComponentJsonConverter();
 
   @override
-  TimelineClip fromJson(Map<String, Object?> json) {
-    return switch (const TimelineClipKindJsonConverter().fromJson(
-      json['kind'],
-    )) {
-      TimelineClipKind.text => TextClip.fromJson(json),
-      TimelineClipKind.image => ImageClip.fromJson(json),
-      TimelineClipKind.audio => AudioClip.fromJson(json),
+  ClipComponent fromJson(Map<String, Object?> json) {
+    return switch (json['type']) {
+      'asset' => AssetComponent.fromJson(json),
+      'audio' => AudioComponent.fromJson(json),
+      'image' => ImageComponent.fromJson(json),
+      'text' => TextComponent.fromJson(json),
+      'transform' => TransformComponent.fromJson(json),
+      final type => throw FormatException('Unknown clip component type: $type'),
     };
   }
 
   @override
-  Map<String, Object?> toJson(TimelineClip clip) {
-    return switch (clip) {
-      TextClip() => clip.toJson(),
-      ImageClip() => clip.toJson(),
-      AudioClip() => clip.toJson(),
-      _ => throw UnsupportedError('Unsupported clip type: ${clip.runtimeType}'),
+  Map<String, Object?> toJson(ClipComponent component) {
+    final (type, json) = switch (component) {
+      AssetComponent() => ('asset', component.toJson()),
+      AudioComponent() => ('audio', component.toJson()),
+      ImageComponent() => ('image', component.toJson()),
+      TextComponent() => ('text', component.toJson()),
+      TransformComponent() => ('transform', component.toJson()),
+      _ => throw UnsupportedError(
+        'Unsupported component type: ${component.runtimeType}',
+      ),
     };
+    return {'type': type, ...json};
   }
-}
-
-class TimelineClipKindJsonConverter
-    implements JsonConverter<TimelineClipKind, Object?> {
-  const TimelineClipKindJsonConverter();
-
-  @override
-  TimelineClipKind fromJson(Object? json) {
-    if (json is! String) {
-      throw const FormatException('Clip kind must be a string');
-    }
-    for (final kind in TimelineClipKind.values) {
-      if (kind.name == json) {
-        return kind;
-      }
-    }
-    throw FormatException('Unknown clip kind: $json');
-  }
-
-  @override
-  Object? toJson(TimelineClipKind kind) => kind.name;
 }
 
 class ColorJsonConverter implements JsonConverter<Color, int> {

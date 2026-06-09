@@ -10,16 +10,10 @@ TimelineTrack _$TimelineTrackFromJson(Map<String, dynamic> json) =>
     TimelineTrack(
       clips:
           (json['clips'] as List<dynamic>?)?.map(
-            (e) => const TimelineClipJsonConverter().fromJson(
-              e as Map<String, Object?>,
-            ),
+            (e) => TimelineClip.fromJson(e as Map<String, dynamic>),
           ) ??
           const [],
     );
 
 Map<String, dynamic> _$TimelineTrackToJson(TimelineTrack instance) =>
-    <String, dynamic>{
-      'clips': instance.clips
-          .map(const TimelineClipJsonConverter().toJson)
-          .toList(),
-    };
+    <String, dynamic>{'clips': instance.clips.map((e) => e.toJson()).toList()};
