@@ -17,10 +17,12 @@ TransformComponent _$TransformComponentFromJson(Map<String, dynamic> json) =>
         const Vector2JsonConverter().fromJson,
       ),
       rotation: (json['rotation'] as num?)?.toDouble() ?? 0,
+      id: const ClipComponentIdJsonConverter().fromJson(json['id'] as String?),
     );
 
 Map<String, dynamic> _$TransformComponentToJson(TransformComponent instance) =>
     <String, dynamic>{
+      'id': const ClipComponentIdJsonConverter().toJson(instance.id),
       'position': const Vector2JsonConverter().toJson(instance.position),
       'scale': const Vector2JsonConverter().toJson(instance.scale),
       'rotation': instance.rotation,

@@ -6,12 +6,13 @@ import 'package:voivo_movie_maker/utils/json_converters.dart';
 part 'text.g.dart';
 
 @JsonSerializable()
-class TextComponent implements ClipComponent {
+class TextComponent extends ClipComponent {
   TextComponent({
     this.text = 'Text',
     this.fontFamily = 'Noto Sans CJK JP',
     this.size = 24,
     Color? color,
+    super.id,
   }) : color = color ?? Colors.white;
 
   factory TextComponent.fromJson(Map<String, Object?> json) =>
@@ -22,6 +23,9 @@ class TextComponent implements ClipComponent {
   double size;
   @ColorJsonConverter()
   Color color;
+
+  @override
+  int get maxInstancesPerClip => 1;
 
   void update({String? text, String? fontFamily, double? size, Color? color}) {
     this.text = text ?? this.text;

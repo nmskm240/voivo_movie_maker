@@ -10,10 +10,7 @@ class AddClipComponentCommand implements TimelineEditorCommand {
 
   @override
   bool canExecute(Timeline timeline) {
-    final clip = timeline.getClipById(clipId);
-    return !clip.components.any(
-      (saved) => saved.runtimeType == component.runtimeType,
-    );
+    return timeline.getClipById(clipId).canAddComponent(component);
   }
 
   @override

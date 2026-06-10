@@ -15,10 +15,12 @@ TextComponent _$TextComponentFromJson(Map<String, dynamic> json) =>
         json['color'],
         const ColorJsonConverter().fromJson,
       ),
+      id: const ClipComponentIdJsonConverter().fromJson(json['id'] as String?),
     );
 
 Map<String, dynamic> _$TextComponentToJson(TextComponent instance) =>
     <String, dynamic>{
+      'id': const ClipComponentIdJsonConverter().toJson(instance.id),
       'text': instance.text,
       'fontFamily': instance.fontFamily,
       'size': instance.size,

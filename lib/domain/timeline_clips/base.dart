@@ -48,7 +48,7 @@ class TimelineClip {
        _startFrame = startFrame,
        _durationFrames = durationFrames,
        components = components.toList() {
-    _validateUniqueComponentTypes();
+    _validateComponents();
   }
 
   factory TimelineClip.fromJson(Map<String, Object?> json) =>
@@ -75,20 +75,46 @@ class TimelineClip {
 
   bool hasComponent<T extends ClipComponent>() => component<T>() != null;
 
+  Iterable<T> componentsOf<T extends ClipComponent>() =>
+      components.whereType<T>();
+
+  bool containsComponent(ClipComponentId componentId) =>
+      components.any((component) => component.id == componentId);
+
+  bool canAddComponent(ClipComponent component) {
+    if (containsComponent(component.id)) {
+      return false;
+    }
+
+    final maxInstances = component.maxInstancesPerClip;
+    if (maxInstances == null) {
+      return true;
+    }
+    if (maxInstances <= 0) {
+      throw StateError(
+        '${component.runtimeType}.maxInstancesPerClip must be positive or null',
+      );
+    }
+
+    final savedInstances = components
+        .where((saved) => saved.runtimeType == component.runtimeType)
+        .length;
+    return savedInstances < maxInstances;
+  }
+
   void addComponent(ClipComponent component) {
-    if (components.any((saved) => saved.runtimeType == component.runtimeType)) {
+    if (!canAddComponent(component)) {
       throw ArgumentError.value(
         component,
         'component',
-        'A component of this type already exists',
+        'This component cannot be added to the clip',
       );
     }
     components.add(component);
   }
 
-  void removeComponent<T extends ClipComponent>() {
-    components.removeWhere((component) => component is T);
-  }
+  void removeComponent(ClipComponentId componentId) =>
+      components.removeWhere((component) => component.id == componentId);
 
   bool isActiveAt(int frame) => startFrame <= frame && frame < endFrame;
 
@@ -118,16 +144,34 @@ class TimelineClip {
     _durationFrames = newEndFrame - _startFrame;
   }
 
-  void _validateUniqueComponentTypes() {
-    final types = <Type>{};
+  void _validateComponents() {
+    final componentIds = <ClipComponentId>{};
+    final instancesByType = <Type, int>{};
     for (final component in components) {
-      if (!types.add(component.runtimeType)) {
+      if (!componentIds.add(component.id)) {
         throw ArgumentError.value(
           components,
           'components',
-          'Component types must be unique',
+          'Component IDs must be unique',
         );
       }
+
+      final maxInstances = component.maxInstancesPerClip;
+      if (maxInstances != null && maxInstances <= 0) {
+        throw StateError(
+          '${component.runtimeType}.maxInstancesPerClip must be positive or null',
+        );
+      }
+
+      final instances = (instancesByType[component.runtimeType] ?? 0) + 1;
+      if (maxInstances != null && instances > maxInstances) {
+        throw ArgumentError.value(
+          components,
+          'components',
+          '${component.runtimeType} allows at most $maxInstances instances',
+        );
+      }
+      instancesByType[component.runtimeType] = instances;
     }
   }
 

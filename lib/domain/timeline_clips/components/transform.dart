@@ -6,10 +6,14 @@ import 'package:voivo_movie_maker/utils/json_converters.dart';
 part 'transform.g.dart';
 
 @JsonSerializable()
-class TransformComponent implements ClipComponent {
-  TransformComponent({Vector2? position, Vector2? scale, this.rotation = 0})
-    : position = position ?? Vector2.zero(),
-      scale = scale ?? Vector2.all(1);
+class TransformComponent extends ClipComponent {
+  TransformComponent({
+    Vector2? position,
+    Vector2? scale,
+    this.rotation = 0,
+    super.id,
+  }) : position = position ?? Vector2.zero(),
+       scale = scale ?? Vector2.all(1);
 
   factory TransformComponent.fromJson(Map<String, Object?> json) =>
       _$TransformComponentFromJson(json);
@@ -19,6 +23,9 @@ class TransformComponent implements ClipComponent {
   @Vector2JsonConverter()
   Vector2 scale;
   double rotation;
+
+  @override
+  int get maxInstancesPerClip => 1;
 
   void update({Vector2? position, Vector2? scale, double? rotation}) {
     this.position = position ?? this.position;

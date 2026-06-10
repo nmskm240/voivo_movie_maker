@@ -12,10 +12,14 @@ ImageComponent _$ImageComponentFromJson(Map<String, dynamic> json) =>
         json['size'],
         const SizeJsonConverter().fromJson,
       ),
+      id: const ClipComponentIdJsonConverter().fromJson(json['id'] as String?),
     );
 
 Map<String, dynamic> _$ImageComponentToJson(ImageComponent instance) =>
-    <String, dynamic>{'size': const SizeJsonConverter().toJson(instance.size)};
+    <String, dynamic>{
+      'id': const ClipComponentIdJsonConverter().toJson(instance.id),
+      'size': const SizeJsonConverter().toJson(instance.size),
+    };
 
 Value? _$JsonConverterFromJson<Json, Value>(
   Object? json,
