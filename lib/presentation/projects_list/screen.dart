@@ -1,6 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/usecases.dart';
 import 'package:voivo_movie_maker/presentation/projects_list/widgets/new_project_dialog.dart';
 import 'package:voivo_movie_maker/presentation/router.dart';

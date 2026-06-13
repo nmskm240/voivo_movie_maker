@@ -1,5 +1,8 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// Package imports:
 import 'package:flutter_colorpicker/flutter_colorpicker.dart' as color_picker;
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 

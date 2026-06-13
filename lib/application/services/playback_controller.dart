@@ -1,9 +1,15 @@
+// Dart imports:
 import 'dart:math';
 
+// Flutter imports:
 import 'package:flutter/scheduler.dart';
+
+// Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 
 part 'playback_controller.freezed.dart';

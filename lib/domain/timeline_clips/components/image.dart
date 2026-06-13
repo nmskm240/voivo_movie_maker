@@ -1,6 +1,10 @@
+// Dart imports:
 import 'dart:ui';
 
+// Package imports:
 import 'package:json_annotation/json_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 

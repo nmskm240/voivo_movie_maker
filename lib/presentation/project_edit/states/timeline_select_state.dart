@@ -1,5 +1,8 @@
+// Package imports:
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 
 part "timeline_select_state.freezed.dart";

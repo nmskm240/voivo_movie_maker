@@ -1,4 +1,4 @@
-
+// Project imports:
 import 'package:voivo_movie_maker/domain/project.dart';
 
 final class ProjectSummary {

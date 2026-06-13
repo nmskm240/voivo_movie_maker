@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 

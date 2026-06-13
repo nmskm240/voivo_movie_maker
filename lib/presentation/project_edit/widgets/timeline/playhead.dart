@@ -1,5 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';
 
 class Playhead extends ConsumerStatefulWidget {

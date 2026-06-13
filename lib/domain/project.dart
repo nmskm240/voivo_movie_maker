@@ -1,5 +1,8 @@
+// Package imports:
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 

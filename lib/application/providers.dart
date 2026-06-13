@@ -1,5 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 

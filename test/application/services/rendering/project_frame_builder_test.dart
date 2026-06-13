@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/rendering/project_frame_builder.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';

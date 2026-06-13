@@ -1,5 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';

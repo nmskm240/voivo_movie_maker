@@ -1,6 +1,11 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Package imports:
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_component_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/remove_clip_component_command.dart';

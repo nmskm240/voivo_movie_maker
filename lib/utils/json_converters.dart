@@ -1,7 +1,11 @@
+// Dart imports:
 import 'dart:ui';
 
+// Package imports:
 import 'package:json_annotation/json_annotation.dart';
 import 'package:vector_math/vector_math.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips/components/asset.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/audio.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';

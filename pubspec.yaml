@@ -77,6 +77,7 @@ dev_dependencies:
   json_serializable: ^6.11.3
   build_runner: ^2.15.0
   riverpod_generator: ^4.0.3
+  import_sorter: ^4.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,8 +1,14 @@
+// Dart imports:
 import 'dart:math' as math;
 
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/playhead.dart';

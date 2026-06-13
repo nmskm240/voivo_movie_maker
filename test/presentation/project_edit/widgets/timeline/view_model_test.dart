@@ -1,5 +1,8 @@
+// Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';

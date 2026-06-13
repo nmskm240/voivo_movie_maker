@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 

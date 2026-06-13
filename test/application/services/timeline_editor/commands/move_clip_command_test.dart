@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/move_clip_command.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';

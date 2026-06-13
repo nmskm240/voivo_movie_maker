@@ -1,8 +1,14 @@
-import 'dart:ui';
+// Dart imports:
 import 'dart:typed_data';
+import 'dart:ui';
 
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_test/flutter_test.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/rendering/project_frame.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_frame_renderer.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';

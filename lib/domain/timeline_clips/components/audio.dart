@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:json_annotation/json_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
 
 part 'audio.g.dart';

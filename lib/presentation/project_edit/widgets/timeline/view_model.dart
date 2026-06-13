@@ -1,5 +1,8 @@
+// Package imports:
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_info.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';

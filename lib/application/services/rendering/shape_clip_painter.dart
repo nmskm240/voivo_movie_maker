@@ -1,4 +1,7 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/rendering/clip_painter.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_paint_context.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';

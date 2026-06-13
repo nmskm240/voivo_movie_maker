@@ -1,4 +1,7 @@
+// Package imports:
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_info.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 

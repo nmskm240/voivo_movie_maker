@@ -1,5 +1,10 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/update_shape_component_command.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/fields/color_form_field.dart';

@@ -1,4 +1,7 @@
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_track.dart';
 
 class TimelineTrackHeader extends StatelessWidget {

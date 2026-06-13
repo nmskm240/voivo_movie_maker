@@ -1,8 +1,10 @@
+// Dart imports:
 import 'dart:async';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui';
 
+// Project imports:
 import 'package:voivo_movie_maker/application/services/rendering/project_frame_builder.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_frame_renderer.dart';
 import 'package:voivo_movie_maker/domain/project.dart';

@@ -1,7 +1,10 @@
+// Package imports:
 import 'package:go_router/go_router.dart';
+
+// Project imports:
 import 'package:voivo_movie_maker/domain/project.dart';
-import 'package:voivo_movie_maker/presentation/projects_list/screen.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/screen.dart';
+import 'package:voivo_movie_maker/presentation/projects_list/screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: ProjectListRoute.path,

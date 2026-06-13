@@ -1,5 +1,7 @@
+// Dart imports:
 import 'dart:ui';
 
+// Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 class ProjectFrame {
