@@ -7,7 +7,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
-import 'package:voivo_movie_maker/application/services/voice_generator.dart';
 import 'package:voivo_movie_maker/infra/project_repository.dart';
 import 'package:voivo_movie_maker/presentation/router.dart';
 
@@ -40,26 +39,19 @@ class VoivoMovieMakerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [
-        voiceGeneratorProvider.overrideWith((ref) {
-          return VoicevoxCoreSpeechService.create();
-        }),
-      ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'Voivo Movie Maker',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.lightGreen,
-            brightness: Brightness.dark,
-          ),
-          scaffoldBackgroundColor: Colors.black87,
-          fontFamily: 'Noto Sans CJK JP',
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Voivo Movie Maker',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.lightGreen,
+          brightness: Brightness.dark,
         ),
-        routerConfig: appRouter,
+        scaffoldBackgroundColor: Colors.black87,
+        fontFamily: 'Noto Sans CJK JP',
       ),
+      routerConfig: appRouter,
     );
   }
 }
