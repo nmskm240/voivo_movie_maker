@@ -1,9 +1,3 @@
-import '../../../models/timeline.dart';
-
-abstract class VideoExporter {
-  Future<ExportResult> export(Project project, String outputPath);
-}
-
 class ExportResult {
   const ExportResult({
     required this.success,

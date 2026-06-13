@@ -124,3 +124,85 @@ final class CreateProjectFamily extends $Family
   @override
   String toString() => r'createProjectProvider';
 }
+
+@ProviderFor(exportProject)
+final exportProjectProvider = ExportProjectFamily._();
+
+final class ExportProjectProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ExportResult?>,
+          ExportResult?,
+          FutureOr<ExportResult?>
+        >
+    with $FutureModifier<ExportResult?>, $FutureProvider<ExportResult?> {
+  ExportProjectProvider._({
+    required ExportProjectFamily super.from,
+    required ExportOperation super.argument,
+  }) : super(
+         retry: null,
+         name: r'exportProjectProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$exportProjectHash();
+
+  @override
+  String toString() {
+    return r'exportProjectProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ExportResult?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ExportResult?> create(Ref ref) {
+    final argument = this.argument as ExportOperation;
+    return exportProject(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExportProjectProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exportProjectHash() => r'2991fb3ed95f3ae0671649c76f412bf62f67bc8d';
+
+final class ExportProjectFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ExportResult?>, ExportOperation> {
+  ExportProjectFamily._()
+    : super(
+        retry: null,
+        name: r'exportProjectProvider',
+        dependencies: <ProviderOrFamily>[projectProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          ExportProjectProvider.$allTransitiveDependencies0,
+          ExportProjectProvider.$allTransitiveDependencies1,
+        ],
+        isAutoDispose: true,
+      );
+
+  ExportProjectProvider call(ExportOperation operation) =>
+      ExportProjectProvider._(argument: operation, from: this);
+
+  @override
+  String toString() => r'exportProjectProvider';
+}

@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 // import 'package:voivo_movie_maker/presentation/project_edit/widgets/assets/asset_list.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/export/export_button.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/clip_inspector.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/playback_button.dart';
 // import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/timeline_audio_preview_sync.dart';
-// import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/project_preview.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/project_preview.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline.dart';
 
 class EditorScreen extends StatelessWidget {
@@ -32,8 +33,13 @@ class _EditorScreenBody extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const PlaybackButton(),
-            // const Expanded(flex: 2, child: ProjectPreview()),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                children: [PlaybackButton(), Spacer(), ExportButton()],
+              ),
+            ),
+            const Expanded(flex: 2, child: ProjectPreview()),
             const Expanded(
               flex: 3,
               child: Row(

@@ -55,8 +55,7 @@ abstract class PlaybackInfo with _$PlaybackInfo {
 
 @Riverpod(dependencies: [project])
 class PlaybackController extends _$PlaybackController {
-  late final Ticker _ticker;
-  var _tickerInitialized = false;
+  late Ticker _ticker;
 
   int get currentFrame => state.currentFrame;
 
@@ -65,11 +64,8 @@ class PlaybackController extends _$PlaybackController {
     final fps = ref.watch(
       projectProvider.select((project) => project.value?.fps ?? 0),
     );
-    if (!_tickerInitialized) {
-      _ticker = Ticker(_onTick);
-      _tickerInitialized = true;
-      ref.onDispose(_ticker.dispose);
-    }
+    _ticker = Ticker(_onTick);
+    ref.onDispose(_ticker.dispose);
 
     return PlaybackInfo(fps: fps);
   }

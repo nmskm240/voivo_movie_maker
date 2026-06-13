@@ -1,0 +1,162 @@
+@startuml
+title 現在のプロジェクト描画・プレビュー・動画書き出し
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+hide empty members
+
+package domain {
+  class Project {
+    +width
+    +height
+    +fps
+    +timeline
+  }
+
+  class Timeline {
+    +getActiveClipsAt(frame)
+  }
+
+  class TimelineClip
+  abstract class ClipComponent
+  class TransformComponent
+  class ShapeComponent
+  class TextComponent
+
+  Project *-- Timeline
+  Timeline o-- TimelineClip
+  TimelineClip *-- ClipComponent
+  ClipComponent <|-- TransformComponent
+  ClipComponent <|-- ShapeComponent
+  ClipComponent <|-- TextComponent
+}
+
+package "application.rendering" {
+  class ProjectFrame {
+    +projectSize
+    +frameNumber
+    +clips
+  }
+
+  class ProjectFrameBuilder {
+    +build(project, frameNumber)
+  }
+
+  class ProjectFrameRenderer {
+    +paint(canvas, outputSize, frame)
+  }
+
+  class ProjectPaintContext {
+    +projectSize
+    +resolvePosition(position)
+  }
+
+  abstract class "ClipPainter<T>" as ClipPainter {
+    +paint(canvas, clip, component, context)
+    +tryPaint(canvas, clip, component, context)
+  }
+
+  class ShapeClipPainter
+  class TextClipPainter
+
+  ProjectFrameBuilder ..> Project
+  ProjectFrameBuilder ..> Timeline : active clips
+  ProjectFrameBuilder --> ProjectFrame : creates
+  ProjectFrame o-- TimelineClip
+  ProjectFrameRenderer --> ProjectFrame
+  ProjectFrameRenderer *-- ProjectPaintContext : creates
+  ProjectFrameRenderer o-- ClipPainter : registry
+  ClipPainter <|-- ShapeClipPainter
+  ClipPainter <|-- TextClipPainter
+  ShapeClipPainter ..> ShapeComponent
+  TextClipPainter ..> TextComponent
+  ProjectFrameRenderer ..> TimelineClip
+  ProjectFrameRenderer ..> TransformComponent
+}
+
+package "presentation.preview" {
+  class ProjectPreview <<Widget>>
+  class ProjectPreviewPainter <<CustomPainter>> {
+    +revision
+    +paint(canvas, size)
+  }
+
+  ProjectPreview ..> ProjectFrameBuilder
+  ProjectPreview --> ProjectPreviewPainter : creates
+  ProjectPreviewPainter --> ProjectFrame
+  ProjectPreviewPainter --> ProjectFrameRenderer : delegates paint
+}
+
+package "application.export" {
+  class ProjectExporter {
+    +export(project, operation)
+  }
+
+  class FfmpegProjectEncoder {
+    +encode(project, outputPath, operation)
+  }
+
+  class ProjectFrameStreamWriter {
+    +write(project, writeFrame, onProgress, checkCancelled)
+  }
+
+  class FfmpegFramePipe {
+    +path
+    +create()
+    +write(bytes)
+    +dispose()
+  }
+
+  class FfmpegCommandBuilder {
+    +addFlag(flag)
+    +addOption(option, value)
+    +addInput(path)
+    +addOutput(path)
+    +build()
+  }
+
+  class ExportOperation {
+    +progress
+    +cancel()
+    +reportProgress()
+    +reportSaving()
+  }
+
+  class ExportResult
+
+  ProjectExporter --> FfmpegProjectEncoder : encodes temporary MP4
+  ProjectExporter ..> ExportOperation
+  ProjectExporter ..> ExportResult
+
+  FfmpegProjectEncoder --> ProjectFrameStreamWriter
+  FfmpegProjectEncoder --> FfmpegFramePipe : streams RGBA frames
+  FfmpegProjectEncoder ..> FfmpegCommandBuilder : builds command
+  FfmpegProjectEncoder ..> ExportOperation
+  FfmpegProjectEncoder ..> ExportResult
+
+  ProjectFrameStreamWriter --> ProjectFrameRenderer : delegates paint
+  ProjectFrameStreamWriter --> ProjectFrameBuilder : builds each frame
+  ProjectFrameStreamWriter ..> Project
+}
+
+note bottom of ProjectFrameRenderer
+PreviewとExportで共有される描画処理。
+CanvasへTimelineClipを描画する。
+end note
+
+note bottom of ProjectFrameBuilder
+Projectとフレーム番号から、
+Preview・Export共通のProjectFrameを構築する。
+end note
+
+note bottom of ProjectFrameStreamWriter
+オフスクリーンCanvasへ描画し、
+各フレームをraw RGBAへ変換する。
+end note
+
+note bottom of FfmpegFramePipe
+名前付きパイプを介して、
+RGBAフレームをFFmpegへ逐次渡す。
+end note
+
+@enduml

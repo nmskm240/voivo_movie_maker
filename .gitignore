@@ -30,4 +30,3 @@ Thumbs.db
 
 # Local VOICEVOX runtime payloads are large and are downloaded separately.
 /voicevox/
-/third_party/*

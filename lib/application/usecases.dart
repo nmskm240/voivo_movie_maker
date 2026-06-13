@@ -1,6 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:voivo_movie_maker/application/dtos/project_summary.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
+import 'package:voivo_movie_maker/application/services/export/export_result.dart';
+import 'package:voivo_movie_maker/application/services/export/export_operation.dart';
+import 'package:voivo_movie_maker/application/services/export/project_exporter.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 
 part "usecases.g.dart";
@@ -20,3 +23,8 @@ Future<ProjectId> createProject(Ref ref, {String name = "untitled"}) async {
   return project.id;
 }
 
+@Riverpod(dependencies: [project])
+Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
+  final project = await ref.watch(projectProvider.future);
+  return const ProjectExporter().export(project, operation: operation);
+}
