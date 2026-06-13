@@ -6,6 +6,7 @@ import 'package:voivo_movie_maker/domain/timeline_clips/components/asset.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/audio.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/image.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/shape.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/text.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/transform.dart';
 
@@ -19,6 +20,7 @@ class ClipComponentJsonConverter
       'asset' => AssetComponent.fromJson(json),
       'audio' => AudioComponent.fromJson(json),
       'image' => ImageComponent.fromJson(json),
+      'shape' => ShapeComponent.fromJson(json),
       'text' => TextComponent.fromJson(json),
       'transform' => TransformComponent.fromJson(json),
       final type => throw FormatException('Unknown clip component type: $type'),
@@ -31,6 +33,7 @@ class ClipComponentJsonConverter
       AssetComponent() => ('asset', component.toJson()),
       AudioComponent() => ('audio', component.toJson()),
       ImageComponent() => ('image', component.toJson()),
+      ShapeComponent() => ('shape', component.toJson()),
       TextComponent() => ('text', component.toJson()),
       TransformComponent() => ('transform', component.toJson()),
       _ => throw UnsupportedError(

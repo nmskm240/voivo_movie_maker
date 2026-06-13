@@ -4,9 +4,9 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_component_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/remove_clip_component_command.dart';
-import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/add_component_button.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section_registry.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
@@ -44,13 +44,14 @@ class ClipInspectorPane extends ConsumerWidget {
             for (final component in clip.components)
               _ComponentTile(
                 component: component,
-                onRemove: () => _removeComponent(execute, clip.id, component),
+                onRemove: () =>
+                    execute(RemoveClipComponentCommand(clip.id, component.id)),
               ),
             const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => _addComponent(context, execute, clip),
-              icon: const Icon(Icons.add),
-              label: const Text('Add component'),
+            AddComponentButton(
+              clip: clip,
+              onAdd: (component) =>
+                  execute(AddClipComponentCommand(clip.id, component)),
             ),
             for (final section in sections) ...[
               const Divider(),
@@ -61,94 +62,6 @@ class ClipInspectorPane extends ConsumerWidget {
       ),
     );
   }
-
-  Future<void> _addComponent(
-    BuildContext context,
-    void Function(TimelineEditorCommand) execute,
-    TimelineClip clip,
-  ) async {
-    final available = _ComponentTemplate.values
-        .where((template) => !template.existsIn(clip))
-        .toList();
-    final template = await showModalBottomSheet<_ComponentTemplate>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            for (final template in available)
-              ListTile(
-                leading: Icon(template.icon),
-                title: Text(template.label),
-                onTap: () => Navigator.of(context).pop(template),
-              ),
-            if (available.isEmpty)
-              const ListTile(title: Text('All components are already added')),
-          ],
-        ),
-      ),
-    );
-    if (template == null) {
-      return;
-    }
-
-    execute(AddClipComponentCommand(clip.id, template.create()));
-  }
-
-  void _removeComponent(
-    void Function(TimelineEditorCommand) execute,
-    TimelineClipId clipId,
-    ClipComponent component,
-  ) {
-    final command = switch (component) {
-      AudioComponent() => RemoveClipComponentCommand<AudioComponent>(clipId),
-      ImageComponent() => RemoveClipComponentCommand<ImageComponent>(clipId),
-      TextComponent() => RemoveClipComponentCommand<TextComponent>(clipId),
-      TransformComponent() => RemoveClipComponentCommand<TransformComponent>(
-        clipId,
-      ),
-      AssetComponent() => RemoveClipComponentCommand<AssetComponent>(clipId),
-      _ => throw UnsupportedError(
-        'Unsupported component type: ${component.runtimeType}',
-      ),
-    };
-    execute(command);
-  }
-}
-
-enum _ComponentTemplate {
-  text,
-  transform,
-  image,
-  audio;
-
-  String get label => switch (this) {
-    text => 'Text',
-    transform => 'Transform',
-    image => 'Image',
-    audio => 'Audio',
-  };
-
-  IconData get icon => switch (this) {
-    text => Icons.text_fields,
-    transform => Icons.open_with,
-    image => Icons.image_outlined,
-    audio => Icons.graphic_eq,
-  };
-
-  bool existsIn(TimelineClip clip) => switch (this) {
-    text => clip.hasComponent<TextComponent>(),
-    transform => clip.hasComponent<TransformComponent>(),
-    image => clip.hasComponent<ImageComponent>(),
-    audio => clip.hasComponent<AudioComponent>(),
-  };
-
-  ClipComponent create() => switch (this) {
-    text => TextComponent(),
-    transform => TransformComponent(),
-    image => ImageComponent(),
-    audio => AudioComponent(),
-  };
 }
 
 class _ComponentTile extends StatelessWidget {
@@ -175,6 +88,7 @@ class _ComponentTile extends StatelessWidget {
     AssetComponent() => 'Asset',
     AudioComponent() => 'Audio',
     ImageComponent() => 'Image',
+    ShapeComponent() => 'Shape',
     TextComponent() => 'Text',
     TransformComponent() => 'Transform',
     _ => component.runtimeType.toString(),

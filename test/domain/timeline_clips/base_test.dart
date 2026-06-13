@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 void main() {
   group('TimelineClip components', () {
@@ -40,6 +41,20 @@ void main() {
 
       expect(component.id.value, isNotEmpty);
       expect(component.toJson()['id'], component.id.value);
+    });
+
+    test('serializes and restores shape components', () {
+      final converter = const ClipComponentJsonConverter();
+      final shape = ShapeComponent(shapeType: ShapeType.ellipse);
+
+      final json = converter.toJson(shape);
+      final restored = converter.fromJson(json);
+
+      expect(json['type'], 'shape');
+      expect(restored, isA<ShapeComponent>());
+      expect((restored as ShapeComponent).shapeType, ShapeType.ellipse);
+      expect(restored.size, shape.size);
+      expect(restored.color.toARGB32(), shape.color.toARGB32());
     });
   });
 }
