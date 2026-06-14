@@ -8,9 +8,12 @@ import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/infra/project_directory.dart';
 
 final class ProjectRepository implements IProjectRepository {
-  const ProjectRepository(this._projectsDirectory);
+  ProjectRepository(this._projectsDirectory);
+
+  static var _temporaryFileSequence = 0;
 
   final Directory _projectsDirectory;
+  Future<void> _saveQueue = Future.value();
 
   @override
   Future<List<Project>> findAny() async {
@@ -52,11 +55,18 @@ final class ProjectRepository implements IProjectRepository {
   }
 
   @override
-  Future<void> save(Project project) async {
+  Future<void> save(Project project) {
+    final json = const JsonEncoder.withIndent('  ').convert(project.toJson());
+    final save = _saveQueue.then((_) => _save(project.id, json));
+    _saveQueue = save.then<void>((_) {}, onError: (_, _) {});
+    return save;
+  }
+
+  Future<void> _save(ProjectId projectId, String json) async {
     await _projectsDirectory.create(recursive: true);
     final projectDirectory = ProjectDirectory.inProjects(
       _projectsDirectory,
-      project.id,
+      projectId,
     );
     if (!await projectDirectory.root.exists()) {
       await projectDirectory.root.create(recursive: true);
@@ -65,10 +75,17 @@ final class ProjectRepository implements IProjectRepository {
       await projectDirectory.assetsDirectory.create(recursive: true);
     }
 
-    const encoder = JsonEncoder.withIndent('  ');
-    final tempFile = File('${projectDirectory.projectFile.path}.tmp');
-    await tempFile.writeAsString(encoder.convert(project.toJson()));
-    await tempFile.rename(projectDirectory.projectFile.path);
+    final tempFile = File(
+      '${projectDirectory.projectFile.path}.tmp.${_temporaryFileSequence++}',
+    );
+    try {
+      await tempFile.writeAsString(json);
+      await tempFile.rename(projectDirectory.projectFile.path);
+    } finally {
+      if (await tempFile.exists()) {
+        await tempFile.delete();
+      }
+    }
   }
 
   Future<Project> _read(File file) async {
