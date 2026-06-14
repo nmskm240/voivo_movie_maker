@@ -37,6 +37,11 @@ Future<ProjectId> createProject(Ref ref, {String name = "untitled"}) async {
   return project.id;
 }
 
+@riverpod
+Future<void> deleteProject(Ref ref, ProjectId projectId) async {
+  await ref.watch(projectRepositoryProvider).delete(projectId);
+}
+
 @Riverpod(dependencies: [project, projectAssetStore])
 Future<ProjectAsset> importProjectAsset(Ref ref, File file) async {
   final project = await ref.watch(projectProvider.future);

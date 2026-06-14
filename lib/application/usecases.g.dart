@@ -125,6 +125,75 @@ final class CreateProjectFamily extends $Family
   String toString() => r'createProjectProvider';
 }
 
+@ProviderFor(deleteProject)
+final deleteProjectProvider = DeleteProjectFamily._();
+
+final class DeleteProjectProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  DeleteProjectProvider._({
+    required DeleteProjectFamily super.from,
+    required ProjectId super.argument,
+  }) : super(
+         retry: null,
+         name: r'deleteProjectProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$deleteProjectHash();
+
+  @override
+  String toString() {
+    return r'deleteProjectProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    final argument = this.argument as ProjectId;
+    return deleteProject(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DeleteProjectProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$deleteProjectHash() => r'a84556780f6ca414fd6692d02ef704c46a3962d0';
+
+final class DeleteProjectFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<void>, ProjectId> {
+  DeleteProjectFamily._()
+    : super(
+        retry: null,
+        name: r'deleteProjectProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  DeleteProjectProvider call(ProjectId projectId) =>
+      DeleteProjectProvider._(argument: projectId, from: this);
+
+  @override
+  String toString() => r'deleteProjectProvider';
+}
+
 @ProviderFor(importProjectAsset)
 final importProjectAssetProvider = ImportProjectAssetFamily._();
 

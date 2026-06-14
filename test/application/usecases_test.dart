@@ -235,4 +235,7 @@ class _ProjectRepository implements IProjectRepository {
       throw StateError('save failed');
     }
   }
+
+  @override
+  Future<void> delete(ProjectId id) async {}
 }

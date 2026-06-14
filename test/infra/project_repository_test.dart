@@ -41,4 +41,25 @@ void main() {
     final restored = await repositories.first.getById(project.id);
     expect(restored.id, project.id);
   });
+
+  test('deletes the project directory recursively and idempotently', () async {
+    final projectsDirectory = await Directory.systemTemp.createTemp(
+      'project_repository_test',
+    );
+    addTearDown(() => projectsDirectory.delete(recursive: true));
+    final repository = ProjectRepository(projectsDirectory);
+    final project = Project.empty();
+
+    await repository.save(project);
+    final projectDirectory = Directory(
+      '${projectsDirectory.path}/${project.id.value}',
+    );
+    final asset = File('${projectDirectory.path}/assets/asset');
+    await asset.writeAsString('asset');
+
+    await repository.delete(project.id);
+    await repository.delete(project.id);
+
+    expect(projectDirectory.existsSync(), isFalse);
+  });
 }

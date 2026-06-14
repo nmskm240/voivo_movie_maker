@@ -81,4 +81,5 @@ abstract interface class IProjectRepository {
   Future<List<Project>> findAny();
   Future<Project> getById(ProjectId id);
   Future<void> save(Project project);
+  Future<void> delete(ProjectId id);
 }

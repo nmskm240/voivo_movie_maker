@@ -159,4 +159,7 @@ class _ProjectRepository implements IProjectRepository {
   Future<void> save(Project project) async {
     saveCount++;
   }
+
+  @override
+  Future<void> delete(ProjectId id) async {}
 }

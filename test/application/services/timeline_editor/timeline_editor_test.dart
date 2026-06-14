@@ -115,4 +115,7 @@ class _ProjectRepository implements IProjectRepository {
     }
     activeSaves--;
   }
+
+  @override
+  Future<void> delete(ProjectId id) async {}
 }

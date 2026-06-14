@@ -62,6 +62,23 @@ final class ProjectRepository implements IProjectRepository {
     return save;
   }
 
+  @override
+  Future<void> delete(ProjectId id) {
+    final delete = _saveQueue.then((_) => _delete(id));
+    _saveQueue = delete.then<void>((_) {}, onError: (_, _) {});
+    return delete;
+  }
+
+  Future<void> _delete(ProjectId id) async {
+    final projectDirectory = ProjectDirectory.inProjects(
+      _projectsDirectory,
+      id,
+    );
+    if (await projectDirectory.root.exists()) {
+      await projectDirectory.root.delete(recursive: true);
+    }
+  }
+
   Future<void> _save(ProjectId projectId, String json) async {
     await _projectsDirectory.create(recursive: true);
     final projectDirectory = ProjectDirectory.inProjects(

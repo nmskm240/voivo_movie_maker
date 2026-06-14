@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 // Project imports:
+import 'package:voivo_movie_maker/application/dtos/project_summary.dart';
 import 'package:voivo_movie_maker/application/usecases.dart';
 import 'package:voivo_movie_maker/presentation/projects_list/widgets/new_project_dialog.dart';
 import 'package:voivo_movie_maker/presentation/router.dart';
@@ -38,6 +39,7 @@ class ProjectListScreen extends ConsumerWidget {
                         ProjectEditorRoute.name,
                         pathParameters: ProjectEditorRoute.params(project.id),
                       ),
+                      onLongPress: () => _deleteProject(context, ref, project),
                     );
                   },
                 );
@@ -71,5 +73,46 @@ class ProjectListScreen extends ConsumerWidget {
       ProjectEditorRoute.name,
       pathParameters: ProjectEditorRoute.params(projectId),
     );
+  }
+
+  Future<void> _deleteProject(
+    BuildContext context,
+    WidgetRef ref,
+    ProjectSummary project,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete project?'),
+        content: Text(
+          '"${project.name}" and all of its assets will be permanently deleted.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) {
+      return;
+    }
+
+    try {
+      await ref.read(deleteProjectProvider(project.id).future);
+      ref.invalidate(fetchProjectSummariesProvider);
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not delete project: $error')),
+      );
+    }
   }
 }
