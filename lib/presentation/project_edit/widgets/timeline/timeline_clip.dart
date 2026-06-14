@@ -47,6 +47,7 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
 
         return Stack(
           fit: StackFit.expand,
+          clipBehavior: Clip.none,
           children: [
             Draggable<TimelineClipDragData>(
               data: TimelineClipDragData(widget.clip.id),
@@ -86,6 +87,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               alignment: Alignment.centerLeft,
               child: _ResizeHandle(
                 key: ValueKey('${widget.clip.id.value}.resize-start'),
+                gripKey: ValueKey('${widget.clip.id.value}.resize-start-grip'),
+                gripAlignment: Alignment.centerLeft,
                 onDragStart: _startResize,
                 onDragUpdate: _resizeStart,
                 onDragEnd: _endResize,
@@ -95,6 +98,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               alignment: Alignment.centerRight,
               child: _ResizeHandle(
                 key: ValueKey('${widget.clip.id.value}.resize-end'),
+                gripKey: ValueKey('${widget.clip.id.value}.resize-end-grip'),
+                gripAlignment: Alignment.centerRight,
                 onDragStart: _startResize,
                 onDragUpdate: _resizeEnd,
                 onDragEnd: _endResize,
@@ -234,12 +239,16 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
 
 class _ResizeHandle extends StatelessWidget {
   const _ResizeHandle({
+    required this.gripKey,
+    required this.gripAlignment,
     required this.onDragStart,
     required this.onDragUpdate,
     required this.onDragEnd,
     super.key,
   });
 
+  final Key gripKey;
+  final Alignment gripAlignment;
   final GestureDragStartCallback onDragStart;
   final GestureDragUpdateCallback onDragUpdate;
   final GestureDragEndCallback onDragEnd;
@@ -253,23 +262,28 @@ class _ResizeHandle extends StatelessWidget {
         onHorizontalDragStart: onDragStart,
         onHorizontalDragUpdate: onDragUpdate,
         onHorizontalDragEnd: onDragEnd,
-        child: const SizedBox(
-          width: 8,
+        child: SizedBox(
+          width: 24,
           height: double.infinity,
-          child: Center(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x66000000),
-                    blurRadius: 2,
-                    offset: Offset(0, 1),
-                  ),
-                ],
+          child: Align(
+            alignment: gripAlignment,
+            child: FractionalTranslation(
+              translation: Offset(gripAlignment.x / 2, 0),
+              child: DecoratedBox(
+                key: gripKey,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x66000000),
+                      blurRadius: 2,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: const SizedBox.square(dimension: 6),
               ),
-              child: SizedBox.square(dimension: 6),
             ),
           ),
         ),

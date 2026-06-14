@@ -46,6 +46,10 @@ void main() {
     await tester.pumpAndSettle();
 
     final clip = find.byType(TimelineClipView);
+    expect(
+      tester.getSize(find.byKey(const ValueKey('playhead-drag-handle'))).width,
+      32,
+    );
     final initialLeft = tester.getTopLeft(clip).dx;
     TimelineAutoScrollUpdate(
       const Offset(790, 100),

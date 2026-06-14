@@ -27,7 +27,7 @@ void main() {
 
     expect(find.text('movie'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Delete project'));
+    await tester.longPress(find.text('movie'));
     await tester.pumpAndSettle();
 
     expect(find.text('Delete project?'), findsOneWidget);

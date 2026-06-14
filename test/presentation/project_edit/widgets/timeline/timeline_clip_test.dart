@@ -106,7 +106,7 @@ void main() {
   });
 
   testWidgets('shows a round grip on each resize handle', (tester) async {
-    await _pumpClip(tester, startFrame: 10, durationFrames: 10);
+    final fixture = await _pumpClip(tester, startFrame: 10, durationFrames: 10);
 
     final roundGrips = find.byWidgetPredicate(
       (widget) =>
@@ -116,6 +116,37 @@ void main() {
     );
 
     expect(roundGrips, findsNWidgets(2));
+    final clipBounds = tester.getRect(find.byType(TimelineClipView));
+    expect(
+      tester
+          .getCenter(
+            find.byKey(ValueKey('${fixture.clip.id.value}.resize-start-grip')),
+          )
+          .dx,
+      clipBounds.left,
+    );
+    expect(
+      tester
+          .getCenter(
+            find.byKey(ValueKey('${fixture.clip.id.value}.resize-end-grip')),
+          )
+          .dx,
+      clipBounds.right,
+    );
+    expect(
+      tester
+          .getSize(
+            find.byKey(ValueKey('${fixture.clip.id.value}.resize-start')),
+          )
+          .width,
+      24,
+    );
+    expect(
+      tester
+          .getSize(find.byKey(ValueKey('${fixture.clip.id.value}.resize-end')))
+          .width,
+      24,
+    );
   });
 }
 
