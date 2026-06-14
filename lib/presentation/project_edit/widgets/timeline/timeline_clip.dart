@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_auto_scroll.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_drag_data.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
@@ -26,8 +27,11 @@ class TimelineClipView extends ConsumerStatefulWidget {
 
 class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   double? _resizeStartGlobalX;
+  double _resizeAutoScrollOffset = 0;
+  double? _resizeGlobalX;
   int? _resizeStartFrame;
   int? _resizeDurationFrames;
+  bool _resizingStart = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +54,14 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               onDragStarted: () => ref
                   .read(timelineSelectionStateProvider.notifier)
                   .selectClip(widget.clip.id),
+              onDragUpdate: (details) {
+                TimelineAutoScrollUpdate(
+                  details.globalPosition,
+                ).dispatch(context);
+              },
+              onDragEnd: (_) => const TimelineAutoScrollEnd().dispatch(context),
+              onDraggableCanceled: (_, _) =>
+                  const TimelineAutoScrollEnd().dispatch(context),
               feedback: Material(
                 color: Colors.transparent,
                 child: SizedBox(
@@ -96,6 +108,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
 
   void _startResize(DragStartDetails details) {
     _resizeStartGlobalX = details.globalPosition.dx;
+    _resizeAutoScrollOffset = 0;
+    _resizeGlobalX = details.globalPosition.dx;
     _resizeStartFrame = widget.clip.startFrame;
     _resizeDurationFrames = widget.clip.durationFrames;
     ref
@@ -104,7 +118,17 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   }
 
   void _resizeStart(DragUpdateDetails details) {
-    final deltaFrames = _resizeDeltaFrames(details);
+    _resizingStart = true;
+    _resizeGlobalX = details.globalPosition.dx;
+    TimelineAutoScrollUpdate(
+      details.globalPosition,
+      onScroll: _applyResizeAutoScroll,
+    ).dispatch(context);
+    _applyResizeStart();
+  }
+
+  void _applyResizeStart() {
+    final deltaFrames = _resizeDeltaFrames();
     final startFrame = _resizeStartFrame;
     final durationFrames = _resizeDurationFrames;
     if (deltaFrames == null || startFrame == null || durationFrames == null) {
@@ -123,7 +147,17 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   }
 
   void _resizeEnd(DragUpdateDetails details) {
-    final deltaFrames = _resizeDeltaFrames(details);
+    _resizingStart = false;
+    _resizeGlobalX = details.globalPosition.dx;
+    TimelineAutoScrollUpdate(
+      details.globalPosition,
+      onScroll: _applyResizeAutoScroll,
+    ).dispatch(context);
+    _applyResizeEnd();
+  }
+
+  void _applyResizeEnd() {
+    final deltaFrames = _resizeDeltaFrames();
     final startFrame = _resizeStartFrame;
     final durationFrames = _resizeDurationFrames;
     if (deltaFrames == null || startFrame == null || durationFrames == null) {
@@ -143,18 +177,31 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
         );
   }
 
-  int? _resizeDeltaFrames(DragUpdateDetails details) {
+  int? _resizeDeltaFrames() {
     final resizeStartGlobalX = _resizeStartGlobalX;
-    if (resizeStartGlobalX == null) {
+    final resizeGlobalX = _resizeGlobalX;
+    if (resizeStartGlobalX == null || resizeGlobalX == null) {
       return null;
     }
-    return ((details.globalPosition.dx - resizeStartGlobalX) /
+    return ((resizeGlobalX - resizeStartGlobalX + _resizeAutoScrollOffset) /
             widget.pixelsPerFrame)
         .round();
   }
 
+  void _applyResizeAutoScroll(double delta) {
+    _resizeAutoScrollOffset += delta;
+    if (_resizingStart) {
+      _applyResizeStart();
+    } else {
+      _applyResizeEnd();
+    }
+  }
+
   void _endResize(DragEndDetails details) {
+    const TimelineAutoScrollEnd().dispatch(context);
     _resizeStartGlobalX = null;
+    _resizeAutoScrollOffset = 0;
+    _resizeGlobalX = null;
     _resizeStartFrame = null;
     _resizeDurationFrames = null;
   }

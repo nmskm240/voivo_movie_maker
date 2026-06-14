@@ -3,8 +3,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class TimelineRuler extends StatelessWidget {
-  const TimelineRuler({required this.pixelsPerFrame, super.key});
+  const TimelineRuler({
+    required this.fps,
+    required this.pixelsPerFrame,
+    super.key,
+  });
 
+  final int fps;
   final double pixelsPerFrame;
 
   static const height = 32.0;
@@ -13,7 +18,7 @@ class TimelineRuler extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
-      child: CustomPaint(painter: _TimeRulerPainter(pixelsPerFrame)),
+      child: CustomPaint(painter: _TimeRulerPainter(fps, pixelsPerFrame)),
     );
   }
 }
@@ -96,8 +101,9 @@ class _TimelineRulerGestureAreaState extends State<TimelineRulerGestureArea> {
 }
 
 class _TimeRulerPainter extends CustomPainter {
-  const _TimeRulerPainter(this.pixelsPerFrame);
+  const _TimeRulerPainter(this.fps, this.pixelsPerFrame);
 
+  final int fps;
   final double pixelsPerFrame;
 
   @override
@@ -110,12 +116,21 @@ class _TimeRulerPainter extends CustomPainter {
       textAlign: TextAlign.center,
     );
 
-    for (var i = 0; i <= 8; i++) {
-      final x = size.width * i / 8;
+    final pixelsPerFiveSeconds = fps * 5 * pixelsPerFrame;
+    if (pixelsPerFiveSeconds <= 0) {
+      return;
+    }
+
+    for (
+      var seconds = 0;
+      seconds * fps * pixelsPerFrame <= size.width;
+      seconds += 5
+    ) {
+      final x = seconds * fps * pixelsPerFrame;
       canvas.drawLine(Offset(x, 24), Offset(x, size.height), linePaint);
       textPainter.text = TextSpan(
-        text: '00:${(i * 5).toString().padLeft(2, '0')}',
-        style: TextStyle(color: Color(0xffa9b3ba), fontSize: 11),
+        text: _formatTime(seconds),
+        style: const TextStyle(color: Color(0xffa9b3ba), fontSize: 11),
       );
       textPainter.layout();
       textPainter.paint(canvas, Offset(x + 6, 6));
@@ -124,6 +139,14 @@ class _TimeRulerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _TimeRulerPainter oldDelegate) {
-    return oldDelegate.pixelsPerFrame != pixelsPerFrame;
+    return oldDelegate.fps != fps ||
+        oldDelegate.pixelsPerFrame != pixelsPerFrame;
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:'
+        '${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }
