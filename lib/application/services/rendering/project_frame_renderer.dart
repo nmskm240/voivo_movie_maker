@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/application/services/rendering/clip_painter.dart';
+import 'package:voivo_movie_maker/application/services/rendering/image_clip_painter.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_frame.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_paint_context.dart';
 import 'package:voivo_movie_maker/application/services/rendering/shape_clip_painter.dart';
@@ -17,6 +18,7 @@ class ProjectFrameRenderer {
     this.clipPainters = const {
       ShapeComponent: ShapeClipPainter(),
       TextComponent: TextClipPainter(),
+      ImageComponent: ImageClipPainter(),
     },
   });
 
@@ -29,7 +31,10 @@ class ProjectFrameRenderer {
   }) {
     canvas.drawRect(Offset.zero & outputSize, Paint()..color = Colors.black);
 
-    final context = ProjectPaintContext(projectSize: frame.projectSize);
+    final context = ProjectPaintContext(
+      projectSize: frame.projectSize,
+      imageAssets: frame.imageAssets,
+    );
     canvas.save();
     canvas.scale(
       outputSize.width / frame.projectSize.width,

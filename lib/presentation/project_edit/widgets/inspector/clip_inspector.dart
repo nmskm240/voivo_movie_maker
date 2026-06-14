@@ -27,6 +27,7 @@ class ClipInspectorPane extends ConsumerWidget {
     ref.watch(
       timelineViewModelProvider.select((state) => state.value?.revision),
     );
+    final assets = ref.watch(projectProvider).value?.assets.assets ?? const [];
     final timeline = ref.read(timelineProvider).value;
     final clip = timeline?.tracks
         .expand((track) => track.clips)
@@ -73,6 +74,7 @@ class ClipInspectorPane extends ConsumerWidget {
                     context: InspectorSectionContext(
                       clipId: clipId!,
                       execute: execute,
+                      assets: assets,
                     ),
                   ),
                 ],

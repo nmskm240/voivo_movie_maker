@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 // Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/clip_inspector.dart';
@@ -108,6 +109,33 @@ void main() {
     expect(fixture.clip.containsComponent(transform.id), isTrue);
   });
 
+  testWidgets('replaces an image asset without changing its display size', (
+    tester,
+  ) async {
+    final first = ProjectAsset(name: 'first.png', kind: ProjectAssetKind.image);
+    final second = ProjectAsset(
+      name: 'second.png',
+      kind: ProjectAssetKind.image,
+    );
+    final fixture = await _pumpInspector(
+      tester,
+      components: [
+        TransformComponent(),
+        ImageComponent(assetId: first.id, size: const Size(320, 180)),
+      ],
+      assets: [first, second],
+    );
+
+    await tester.tap(find.text('first.png'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('second.png').last);
+    await tester.pumpAndSettle();
+
+    final image = fixture.clip.component<ImageComponent>()!;
+    expect(image.assetId, second.id);
+    expect(image.size, const Size(320, 180));
+  });
+
   testWidgets('removes shape after adding shape and text then removing text', (
     tester,
   ) async {
@@ -161,8 +189,12 @@ Future<void> _addComponent(WidgetTester tester, String label) async {
 Future<({TimelineClip clip, ProviderContainer container})> _pumpInspector(
   WidgetTester tester, {
   required Iterable<ClipComponent> components,
+  Iterable<ProjectAsset> assets = const [],
 }) async {
   final project = Project.empty();
+  for (final asset in assets) {
+    project.assets.add(asset);
+  }
   final clip = TimelineClip(
     id: TimelineClipId.create(),
     startFrame: 0,

@@ -8,6 +8,7 @@ part of 'image.dart';
 
 ImageComponent _$ImageComponentFromJson(Map<String, dynamic> json) =>
     ImageComponent(
+      assetId: AssetId.fromJson(json['assetId'] as Map<String, dynamic>),
       size: _$JsonConverterFromJson<Map<String, Object?>, Size>(
         json['size'],
         const SizeJsonConverter().fromJson,
@@ -18,6 +19,7 @@ ImageComponent _$ImageComponentFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ImageComponentToJson(ImageComponent instance) =>
     <String, dynamic>{
       'id': const ClipComponentIdJsonConverter().toJson(instance.id),
+      'assetId': instance.assetId.toJson(),
       'size': const SizeJsonConverter().toJson(instance.size),
     };
 

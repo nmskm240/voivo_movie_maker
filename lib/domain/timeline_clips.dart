@@ -1,5 +1,4 @@
 export 'timeline_clips/base.dart';
-export 'timeline_clips/components/asset.dart';
 export 'timeline_clips/components/audio.dart';
 export 'timeline_clips/components/base.dart';
 export 'timeline_clips/components/image.dart';

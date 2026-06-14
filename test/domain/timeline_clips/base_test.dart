@@ -1,8 +1,12 @@
+// Dart imports:
+import 'dart:ui';
+
 // Package imports:
 import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 void main() {
@@ -59,6 +63,22 @@ void main() {
       expect((restored as ShapeComponent).shapeType, ShapeType.ellipse);
       expect(restored.size, shape.size);
       expect(restored.color.toARGB32(), shape.color.toARGB32());
+    });
+
+    test('serializes and restores image components', () {
+      final converter = const ClipComponentJsonConverter();
+      final image = ImageComponent(
+        assetId: AssetId.create(),
+        size: const Size(320, 180),
+      );
+
+      final json = converter.toJson(image);
+      final restored = converter.fromJson(json);
+
+      expect(json['type'], 'image');
+      expect(restored, isA<ImageComponent>());
+      expect((restored as ImageComponent).assetId, image.assetId);
+      expect(restored.size, image.size);
     });
   });
 }

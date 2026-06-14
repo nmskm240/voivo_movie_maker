@@ -6,7 +6,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:vector_math/vector_math.dart';
 
 // Project imports:
-import 'package:voivo_movie_maker/domain/timeline_clips/components/asset.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/audio.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/image.dart';
@@ -21,7 +20,6 @@ class ClipComponentJsonConverter
   @override
   ClipComponent fromJson(Map<String, Object?> json) {
     return switch (json['type']) {
-      'asset' => AssetComponent.fromJson(json),
       'audio' => AudioComponent.fromJson(json),
       'image' => ImageComponent.fromJson(json),
       'shape' => ShapeComponent.fromJson(json),
@@ -34,7 +32,6 @@ class ClipComponentJsonConverter
   @override
   Map<String, Object?> toJson(ClipComponent component) {
     final (type, json) = switch (component) {
-      AssetComponent() => ('asset', component.toJson()),
       AudioComponent() => ('audio', component.toJson()),
       ImageComponent() => ('image', component.toJson()),
       ShapeComponent() => ('shape', component.toJson()),

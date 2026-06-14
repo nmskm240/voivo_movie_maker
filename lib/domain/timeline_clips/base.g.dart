@@ -16,13 +16,10 @@ TimelineClip _$TimelineClipFromJson(Map<String, dynamic> json) => TimelineClip(
   id: TimelineClipId.fromJson(json['id'] as Map<String, dynamic>),
   startFrame: (json['startFrame'] as num).toInt(),
   durationFrames: (json['durationFrames'] as num?)?.toInt() ?? 10,
-  components:
-      (json['components'] as List<dynamic>?)?.map(
-        (e) => const ClipComponentJsonConverter().fromJson(
-          e as Map<String, Object?>,
-        ),
-      ) ??
-      const [],
+  components: (json['components'] as List<dynamic>?)?.map(
+    (e) =>
+        const ClipComponentJsonConverter().fromJson(e as Map<String, Object?>),
+  ),
 );
 
 Map<String, dynamic> _$TimelineClipToJson(TimelineClip instance) =>
