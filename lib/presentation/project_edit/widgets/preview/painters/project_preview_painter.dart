@@ -13,7 +13,7 @@ class ProjectPreviewPainter extends CustomPainter {
   });
 
   final ProjectFrame frame;
-  final int revision;
+  final Object revision;
   final ProjectFrameRenderer renderer;
 
   @override

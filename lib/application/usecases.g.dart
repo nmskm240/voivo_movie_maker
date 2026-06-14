@@ -125,6 +125,206 @@ final class CreateProjectFamily extends $Family
   String toString() => r'createProjectProvider';
 }
 
+@ProviderFor(importProjectAsset)
+final importProjectAssetProvider = ImportProjectAssetFamily._();
+
+final class ImportProjectAssetProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProjectAsset>,
+          ProjectAsset,
+          FutureOr<ProjectAsset>
+        >
+    with $FutureModifier<ProjectAsset>, $FutureProvider<ProjectAsset> {
+  ImportProjectAssetProvider._({
+    required ImportProjectAssetFamily super.from,
+    required File super.argument,
+  }) : super(
+         retry: null,
+         name: r'importProjectAssetProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies2 = projectAssetStoreProvider;
+
+  @override
+  String debugGetCreateSourceHash() => _$importProjectAssetHash();
+
+  @override
+  String toString() {
+    return r'importProjectAssetProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProjectAsset> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProjectAsset> create(Ref ref) {
+    final argument = this.argument as File;
+    return importProjectAsset(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ImportProjectAssetProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$importProjectAssetHash() =>
+    r'83903a9c082b94679c5fc5a7f89c358cf7e91213';
+
+final class ImportProjectAssetFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProjectAsset>, File> {
+  ImportProjectAssetFamily._()
+    : super(
+        retry: null,
+        name: r'importProjectAssetProvider',
+        dependencies: <ProviderOrFamily>[
+          projectProvider,
+          projectAssetStoreProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          ImportProjectAssetProvider.$allTransitiveDependencies0,
+          ImportProjectAssetProvider.$allTransitiveDependencies1,
+          ImportProjectAssetProvider.$allTransitiveDependencies2,
+        ],
+        isAutoDispose: true,
+      );
+
+  ImportProjectAssetProvider call(File file) =>
+      ImportProjectAssetProvider._(argument: file, from: this);
+
+  @override
+  String toString() => r'importProjectAssetProvider';
+}
+
+@ProviderFor(addImageClipToTimeline)
+final addImageClipToTimelineProvider = AddImageClipToTimelineFamily._();
+
+final class AddImageClipToTimelineProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TimelineClip?>,
+          TimelineClip?,
+          FutureOr<TimelineClip?>
+        >
+    with $FutureModifier<TimelineClip?>, $FutureProvider<TimelineClip?> {
+  AddImageClipToTimelineProvider._({
+    required AddImageClipToTimelineFamily super.from,
+    required ({int trackIndex, ProjectAsset asset, int startFrame})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'addImageClipToTimelineProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies2 = projectImageResourcesProvider;
+  static final $allTransitiveDependencies3 =
+      ProjectImageResourcesProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies4 = timelineEditorProvider;
+
+  @override
+  String debugGetCreateSourceHash() => _$addImageClipToTimelineHash();
+
+  @override
+  String toString() {
+    return r'addImageClipToTimelineProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<TimelineClip?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TimelineClip?> create(Ref ref) {
+    final argument =
+        this.argument as ({int trackIndex, ProjectAsset asset, int startFrame});
+    return addImageClipToTimeline(
+      ref,
+      trackIndex: argument.trackIndex,
+      asset: argument.asset,
+      startFrame: argument.startFrame,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AddImageClipToTimelineProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$addImageClipToTimelineHash() =>
+    r'c67c56b7e517166ef46e4606cf7ef64ffd0c9bd8';
+
+final class AddImageClipToTimelineFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<TimelineClip?>,
+          ({int trackIndex, ProjectAsset asset, int startFrame})
+        > {
+  AddImageClipToTimelineFamily._()
+    : super(
+        retry: null,
+        name: r'addImageClipToTimelineProvider',
+        dependencies: <ProviderOrFamily>[
+          projectProvider,
+          projectImageResourcesProvider,
+          timelineEditorProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
+          AddImageClipToTimelineProvider.$allTransitiveDependencies0,
+          AddImageClipToTimelineProvider.$allTransitiveDependencies1,
+          AddImageClipToTimelineProvider.$allTransitiveDependencies2,
+          AddImageClipToTimelineProvider.$allTransitiveDependencies3,
+          AddImageClipToTimelineProvider.$allTransitiveDependencies4,
+        },
+        isAutoDispose: true,
+      );
+
+  AddImageClipToTimelineProvider call({
+    required int trackIndex,
+    required ProjectAsset asset,
+    required int startFrame,
+  }) => AddImageClipToTimelineProvider._(
+    argument: (trackIndex: trackIndex, asset: asset, startFrame: startFrame),
+    from: this,
+  );
+
+  @override
+  String toString() => r'addImageClipToTimelineProvider';
+}
+
 @ProviderFor(exportProject)
 final exportProjectProvider = ExportProjectFamily._();
 
@@ -150,6 +350,9 @@ final class ExportProjectProvider
   static final $allTransitiveDependencies0 = projectProvider;
   static final $allTransitiveDependencies1 =
       ProjectProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies2 = projectImageResourcesProvider;
+  static final $allTransitiveDependencies3 =
+      ProjectImageResourcesProvider.$allTransitiveDependencies0;
 
   @override
   String debugGetCreateSourceHash() => _$exportProjectHash();
@@ -184,7 +387,7 @@ final class ExportProjectProvider
   }
 }
 
-String _$exportProjectHash() => r'2991fb3ed95f3ae0671649c76f412bf62f67bc8d';
+String _$exportProjectHash() => r'92715a7492f2bed6167d783462059518d1148eec';
 
 final class ExportProjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ExportResult?>, ExportOperation> {
@@ -192,11 +395,16 @@ final class ExportProjectFamily extends $Family
     : super(
         retry: null,
         name: r'exportProjectProvider',
-        dependencies: <ProviderOrFamily>[projectProvider],
-        $allTransitiveDependencies: <ProviderOrFamily>[
+        dependencies: <ProviderOrFamily>[
+          projectProvider,
+          projectImageResourcesProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
           ExportProjectProvider.$allTransitiveDependencies0,
           ExportProjectProvider.$allTransitiveDependencies1,
-        ],
+          ExportProjectProvider.$allTransitiveDependencies2,
+          ExportProjectProvider.$allTransitiveDependencies3,
+        },
         isAutoDispose: true,
       );
 

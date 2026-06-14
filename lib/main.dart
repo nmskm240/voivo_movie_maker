@@ -22,18 +22,19 @@ void main() async {
   MediaKit.ensureInitialized();
 
   final appDir = await getApplicationSupportDirectory();
-  final workspaceDir = Directory(p.join(appDir.path, 'voivo_movie_maker'));
+  final projectsDirectory = Directory(p.join(appDir.path, 'voivo_movie_maker'));
 
-  if (!workspaceDir.existsSync()) {
-    workspaceDir.createSync(recursive: true);
+  if (!projectsDirectory.existsSync()) {
+    projectsDirectory.createSync(recursive: true);
   }
   FlutterNativeSplash.remove();
   runApp(
     ProviderScope(
       overrides: [
         projectRepositoryProvider.overrideWithValue(
-          ProjectRepository(workspaceDir),
+          ProjectRepository(projectsDirectory),
         ),
+        projectsDirectoryProvider.overrideWithValue(projectsDirectory),
       ],
       child: const VoivoMovieMakerApp(),
     ),

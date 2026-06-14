@@ -1,3 +1,8 @@
+// Dart imports:
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
 // Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 // Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
@@ -58,6 +64,83 @@ void main() {
     expect(project.timeline.tracks.first.clips, isEmpty);
     expect(container.read(timelineSelectionStateProvider).clipId, isNull);
   });
+
+  test('adds an imported image asset using the image dimensions', () async {
+    final project = Project.empty();
+    final asset = ProjectAsset(name: 'image.png', kind: ProjectAssetKind.image);
+    project.assets.add(asset);
+    final store = _ProjectAssetStore(asset, await _pngBytes(4, 3));
+    final container = ProviderContainer(
+      overrides: [
+        projectRepositoryProvider.overrideWithValue(
+          _ProjectRepository(project),
+        ),
+        projectIdProvider.overrideWithValue(project.id),
+        projectAssetStoreProvider.overrideWithValue(store),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final subscription = container.listen(timelineViewModelProvider, (_, _) {});
+    addTearDown(subscription.close);
+    await container.read(timelineViewModelProvider.future);
+
+    final added = await container
+        .read(timelineViewModelProvider.notifier)
+        .addImageClip(0, asset, startFrame: 42);
+
+    final clip = project.timeline.tracks.first.clips.single;
+    final image = clip.component<ImageComponent>();
+    expect(added, isTrue);
+    expect(project.assets.findById(asset.id), asset);
+    expect(image?.assetId, asset.id);
+    expect(image?.size, const Size(4, 3));
+    expect(clip.startFrame, 42);
+    expect(clip.hasComponent<TransformComponent>(), isTrue);
+    expect(
+      container
+          .read(timelineViewModelProvider)
+          .value
+          ?.timeline
+          .tracks
+          .first
+          .clips,
+      hasLength(1),
+    );
+    expect(container.read(timelineViewModelProvider).value?.revision, 1);
+    expect(container.read(timelineSelectionStateProvider).trackIndex, 0);
+    expect(container.read(timelineSelectionStateProvider).clipId, clip.id);
+  });
+}
+
+Future<Uint8List> _pngBytes(int width, int height) async {
+  final recorder = PictureRecorder();
+  Canvas(recorder).drawRect(
+    Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+    Paint()..color = const Color(0xff2196f3),
+  );
+  final picture = recorder.endRecording();
+  final image = await picture.toImage(width, height);
+  picture.dispose();
+  final data = await image.toByteData(format: ImageByteFormat.png);
+  image.dispose();
+  return data!.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+}
+
+class _ProjectAssetStore implements IProjectAssetStore {
+  const _ProjectAssetStore(this.asset, this.bytes);
+
+  final ProjectAsset asset;
+  final Uint8List bytes;
+
+  @override
+  Future<void> delete(ProjectAsset asset) async {}
+
+  @override
+  Stream<List<int>> load(ProjectAsset asset) => Stream.value(bytes);
+
+  @override
+  Future<ProjectAsset> save(File file) async => asset;
 }
 
 class _ProjectRepository implements IProjectRepository {

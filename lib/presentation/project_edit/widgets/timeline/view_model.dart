@@ -12,6 +12,8 @@ import 'package:voivo_movie_maker/application/services/timeline_editor/commands/
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/resize_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
+import 'package:voivo_movie_maker/application/usecases.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 
@@ -34,6 +36,8 @@ sealed class TimelineViewState with _$TimelineViewState {
     timelineEditor,
     PlaybackController,
     TimelineSelectionState,
+    project,
+    addImageClipToTimeline,
   ],
 )
 class TimelineViewModel extends _$TimelineViewModel {
@@ -87,6 +91,29 @@ class TimelineViewModel extends _$TimelineViewModel {
 
     ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
     ref.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
+  }
+
+  Future<bool> addImageClip(
+    int trackIndex,
+    ProjectAsset asset, {
+    int? startFrame,
+  }) async {
+    final clip = await ref.read(
+      addImageClipToTimelineProvider(
+        trackIndex: trackIndex,
+        asset: asset,
+        startFrame:
+            startFrame ?? ref.read(playbackControllerProvider).currentFrame,
+      ).future,
+    );
+    if (clip == null) {
+      return false;
+    }
+
+    _refreshTimelineState();
+    ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
+    ref.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
+    return true;
   }
 
   bool moveClip(
@@ -165,6 +192,20 @@ class TimelineViewModel extends _$TimelineViewModel {
     state = AsyncData(
       current.copyWith(
         horizontalScrollOffset: offset.clamp(0.0, double.infinity),
+      ),
+    );
+  }
+
+  void _refreshTimelineState() {
+    final timeline = ref.read(timelineProvider).value;
+    final current = state.value;
+    if (timeline == null || current == null) {
+      return;
+    }
+    state = AsyncData(
+      current.copyWith(
+        timeline: TimelineInfo.fromEntity(timeline),
+        revision: current.revision + 1,
       ),
     );
   }

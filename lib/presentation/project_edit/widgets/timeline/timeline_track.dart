@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_track_info.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_clip.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_drag_data.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
 class TimelineTrackView extends ConsumerWidget {
@@ -30,8 +31,10 @@ class TimelineTrackView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return DragTarget<TimelineClipDragData>(
-      onWillAcceptWithDetails: (_) => true,
+    return DragTarget<TimelineDragData>(
+      onWillAcceptWithDetails: (details) =>
+          details.data is TimelineClipDragData ||
+          details.data is TimelineAssetDragData,
       onAcceptWithDetails: (details) {
         final renderBox = context.findRenderObject()! as RenderBox;
         final localOffset = renderBox.globalToLocal(details.offset);
@@ -40,13 +43,17 @@ class TimelineTrackView extends ConsumerWidget {
           (localOffset.dx / pixelsPerFrame).round(),
         );
 
-        ref
-            .read(timelineViewModelProvider.notifier)
-            .moveClip(
-              details.data.clipId,
+        final viewModel = ref.read(timelineViewModelProvider.notifier);
+        switch (details.data) {
+          case TimelineClipDragData(:final clipId):
+            viewModel.moveClip(
+              clipId,
               targetTrackIndex: trackIndex,
               startFrame: startFrame,
             );
+          case TimelineAssetDragData(:final asset):
+            viewModel.addImageClip(trackIndex, asset, startFrame: startFrame);
+        }
       },
       builder: (context, candidateData, rejectedData) {
         return ColoredBox(

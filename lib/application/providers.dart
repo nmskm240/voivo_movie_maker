@@ -1,3 +1,6 @@
+// Dart imports:
+import 'dart:io';
+
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -5,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
+import 'package:voivo_movie_maker/application/services/rendering/project_image_resources.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
 
 part "providers.g.dart";
@@ -16,7 +21,17 @@ IProjectRepository projectRepository(Ref ref) {
 }
 
 @riverpod
+Directory projectsDirectory(Ref ref) {
+  throw UnimplementedError();
+}
+
+@riverpod
 ProjectId projectId(Ref ref) {
+  throw UnimplementedError();
+}
+
+@riverpod
+IProjectAssetStore projectAssetStore(Ref ref) {
   throw UnimplementedError();
 }
 
@@ -26,6 +41,18 @@ Future<Project> project(Ref ref) async {
   final id = ref.watch(projectIdProvider);
   debugPrint('Loading project for projectId: $id');
   return repository.getById(id);
+}
+
+@Riverpod(keepAlive: true, dependencies: [projectAssetStore])
+ProjectImageResources projectImageResources(Ref ref) {
+  final resources = ProjectImageResources(ref.watch(projectAssetStoreProvider));
+  ref.onDispose(resources.dispose);
+  return resources;
+}
+
+@Riverpod(dependencies: [projectImageResources])
+Stream<int> projectImageResourcesRevision(Ref ref) {
+  return ref.watch(projectImageResourcesProvider).revisions;
 }
 
 @Riverpod(dependencies: [project])
