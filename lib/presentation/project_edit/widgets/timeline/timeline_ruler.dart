@@ -116,15 +116,16 @@ class _TimeRulerPainter extends CustomPainter {
       textAlign: TextAlign.center,
     );
 
-    final pixelsPerFiveSeconds = fps * 5 * pixelsPerFrame;
-    if (pixelsPerFiveSeconds <= 0) {
+    final pixelsPerSecond = fps * pixelsPerFrame;
+    if (pixelsPerSecond <= 0) {
       return;
     }
+    final intervalSeconds = _intervalSeconds(pixelsPerSecond);
 
     for (
       var seconds = 0;
       seconds * fps * pixelsPerFrame <= size.width;
-      seconds += 5
+      seconds += intervalSeconds
     ) {
       final x = seconds * fps * pixelsPerFrame;
       canvas.drawLine(Offset(x, 24), Offset(x, size.height), linePaint);
@@ -148,5 +149,13 @@ class _TimeRulerPainter extends CustomPainter {
     final remainingSeconds = seconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:'
         '${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  int _intervalSeconds(double pixelsPerSecond) {
+    const intervals = [1, 2, 5, 10, 30, 60, 120, 300, 600];
+    return intervals.firstWhere(
+      (seconds) => seconds * pixelsPerSecond >= 72,
+      orElse: () => intervals.last,
+    );
   }
 }

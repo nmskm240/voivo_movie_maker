@@ -16,6 +16,7 @@ import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_sele
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/playhead.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_auto_scroll.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_ruler.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_scale_control.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_track.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_track_header.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
@@ -41,8 +42,9 @@ class _TimelineViewState extends ConsumerState<TimelineView>
   late final ScrollController _bodyHorizontalScrollController;
   late final ScrollController _trackHeaderVerticalScrollController;
   late final ScrollController _bodyVerticalScrollController;
-  double _minimumTimelineWidth = 0;
-  double _extensionChunkWidth = 0;
+  double _minimumTimelineFrames = 0;
+  double _extensionChunkFrames = 0;
+  double _pixelsPerFrame = 1;
   Offset? _dragGlobalPosition;
   ValueChanged<double>? _onAutoScroll;
   Duration? _lastAutoScrollElapsed;
@@ -99,9 +101,13 @@ class _TimelineViewState extends ConsumerState<TimelineView>
           final pixelsPerFrame = timelineState.pixelsPerFrame;
           final availableTimelineWidth =
               constraints.maxWidth - TimelineTrackHeader.width;
-          final minimumTimelineWidth =
-              fps * timelineExtensionDuration.inSeconds * pixelsPerFrame;
-          _extensionChunkWidth = minimumTimelineWidth;
+          _pixelsPerFrame = pixelsPerFrame;
+          _extensionChunkFrames =
+              fps * timelineExtensionDuration.inSeconds.toDouble();
+          _minimumTimelineFrames = math.max(
+            _minimumTimelineFrames,
+            _extensionChunkFrames,
+          );
           final durationFrames = timeline.tracks
               .expand((track) => track.clips)
               .fold(
@@ -113,7 +119,7 @@ class _TimelineViewState extends ConsumerState<TimelineView>
             availableTimelineWidth,
             math.max(
               durationFrames * pixelsPerFrame + 64,
-              math.max(minimumTimelineWidth, _minimumTimelineWidth),
+              _minimumTimelineFrames * pixelsPerFrame,
             ),
           );
 
@@ -125,9 +131,15 @@ class _TimelineViewState extends ConsumerState<TimelineView>
               children: [
                 Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                       width: TimelineTrackHeader.width,
                       height: TimelineRuler.height,
+                      child: TimelineScaleControl(
+                        value: pixelsPerFrame,
+                        min: TimelineViewModel.minPixelsPerFrame,
+                        max: TimelineViewModel.maxPixelsPerFrame,
+                        onChanged: _setPixelsPerFrame,
+                      ),
                     ),
                     const VerticalDivider(),
                     Expanded(
@@ -140,9 +152,7 @@ class _TimelineViewState extends ConsumerState<TimelineView>
                           child: TimelineRulerGestureArea(
                             pixelsPerFrame: pixelsPerFrame,
                             onSeek: playbackController.seek,
-                            onZoom: ref
-                                .read(timelineViewModelProvider.notifier)
-                                .setPixelsPerFrame,
+                            onZoom: _setPixelsPerFrame,
                             child: TimelineRuler(
                               fps: fps,
                               pixelsPerFrame: pixelsPerFrame,
@@ -243,23 +253,67 @@ class _TimelineViewState extends ConsumerState<TimelineView>
 
   void _extendTimelineIfNeeded() {
     if (!_bodyHorizontalScrollController.hasClients ||
-        _extensionChunkWidth <= 0) {
+        _extensionChunkFrames <= 0 ||
+        _pixelsPerFrame <= 0) {
       return;
     }
 
     final position = _bodyHorizontalScrollController.position;
-    if (position.extentAfter > _extensionChunkWidth / 20) {
+    if (position.extentAfter > _extensionChunkFrames * _pixelsPerFrame / 20) {
       return;
     }
 
     final nextWidth =
         position.maxScrollExtent +
         position.viewportDimension +
-        _extensionChunkWidth;
-    if (nextWidth <= _minimumTimelineWidth) {
+        _extensionChunkFrames * _pixelsPerFrame;
+    final minimumTimelineFrames = nextWidth / _pixelsPerFrame;
+    if (minimumTimelineFrames <= _minimumTimelineFrames) {
       return;
     }
-    setState(() => _minimumTimelineWidth = nextWidth);
+    setState(() => _minimumTimelineFrames = minimumTimelineFrames);
+  }
+
+  void _setPixelsPerFrame(double pixelsPerFrame) {
+    final nextPixelsPerFrame = pixelsPerFrame.clamp(
+      TimelineViewModel.minPixelsPerFrame,
+      TimelineViewModel.maxPixelsPerFrame,
+    );
+    final currentPixelsPerFrame = ref
+        .read(timelineViewModelProvider)
+        .value
+        ?.pixelsPerFrame;
+    if (currentPixelsPerFrame == null ||
+        currentPixelsPerFrame == nextPixelsPerFrame) {
+      return;
+    }
+
+    double? centerFrame;
+    if (_bodyHorizontalScrollController.hasClients) {
+      final position = _bodyHorizontalScrollController.position;
+      centerFrame =
+          (_bodyHorizontalScrollController.offset +
+              position.viewportDimension / 2) /
+          currentPixelsPerFrame;
+    }
+
+    ref
+        .read(timelineViewModelProvider.notifier)
+        .setPixelsPerFrame(nextPixelsPerFrame);
+    if (centerFrame == null) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_bodyHorizontalScrollController.hasClients) {
+        return;
+      }
+      final position = _bodyHorizontalScrollController.position;
+      final nextOffset =
+          (centerFrame! * nextPixelsPerFrame - position.viewportDimension / 2)
+              .clamp(position.minScrollExtent, position.maxScrollExtent);
+      _bodyHorizontalScrollController.jumpTo(nextOffset);
+    });
   }
 
   bool _handleAutoScrollUpdate(TimelineAutoScrollUpdate notification) {
