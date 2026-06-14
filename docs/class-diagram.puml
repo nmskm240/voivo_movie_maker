@@ -1,0 +1,467 @@
+@startuml
+title voivo_movie_maker 現在の全体クラス図
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+legend left
+  |= 記号 |= 意味 |
+  | *-- | 所有・ライフサイクルを含む構成 |
+  | o-- | 集約・参照 |
+  | --> | 実行時の依存 |
+  | ..> | 生成・一時利用 |
+  | <<Provider>> | Riverpod Provider / Notifier |
+  | <<UseCase>> | application/usecases.dart の操作 |
+endlegend
+
+package domain {
+  class ProjectId
+  class AssetId
+  class TimelineClipId
+  class ClipComponentId
+
+  class Project {
+    +ProjectId id
+    +String name
+    +double width
+    +double height
+    +int fps
+    +int sampleRate
+    +ProjectAssetCatalog assets
+    +Timeline timeline
+  }
+
+  interface IProjectRepository {
+    +findAny()
+    +getById(id)
+    +save(project)
+    +delete(id)
+  }
+
+  class ProjectAssetCatalog {
+    +assets
+    +findById(assetId)
+    +add(asset)
+    +remove(assetId)
+  }
+
+  class ProjectAsset {
+    +AssetId id
+    +String name
+    +ProjectAssetKind kind
+    +String fileName
+  }
+
+  enum ProjectAssetKind {
+    image
+    video
+    audio
+  }
+
+  interface IProjectAssetStore {
+    +load(asset)
+    +save(file)
+    +delete(asset)
+  }
+
+  class Timeline {
+    +tracks
+    +moveClipToTrack(clipId, trackIndex, startFrame)
+    +getActiveClipsAt(frame)
+    +getClipById(clipId)
+    +getTrackByClipId(clipId)
+  }
+
+  class TimelineTrack {
+    +clips
+    +addClip(clip)
+    +removeClip(clipId)
+    +canPlaceClip(clip, startFrame, durationFrames)
+  }
+
+  class TimelineClip {
+    +TimelineClipId id
+    +int startFrame
+    +int durationFrames
+    +int endFrame
+    +components
+    +addComponent(component)
+    +removeComponent(componentId)
+    +moveTo(startFrame)
+    +trimStartTo(startFrame)
+    +trimEndTo(endFrame)
+  }
+
+  abstract class ClipComponent {
+    +ClipComponentId id
+    +String label
+    +bool isRemovable
+  }
+
+  class TransformComponent {
+    +Vector2 position
+    +Vector2 scale
+    +double rotation
+  }
+
+  class ShapeComponent {
+    +ShapeType shapeType
+    +Size size
+    +Color color
+  }
+
+  class TextComponent {
+    +String text
+    +double size
+    +Color color
+  }
+
+  class ImageComponent {
+    +AssetId assetId
+    +Size size
+  }
+
+  class AudioComponent
+  enum ShapeType
+
+  Project *-- ProjectId
+  Project *-- ProjectAssetCatalog
+  Project *-- Timeline
+  ProjectAssetCatalog *-- ProjectAsset
+  ProjectAsset *-- AssetId
+  ProjectAsset --> ProjectAssetKind
+  Timeline *-- TimelineTrack
+  TimelineTrack *-- TimelineClip
+  TimelineClip *-- TimelineClipId
+  TimelineClip *-- ClipComponent
+  ClipComponent *-- ClipComponentId
+  ClipComponent <|-- TransformComponent
+  ClipComponent <|-- ShapeComponent
+  ClipComponent <|-- TextComponent
+  ClipComponent <|-- ImageComponent
+  ClipComponent <|-- AudioComponent
+  ImageComponent --> AssetId
+  ShapeComponent --> ShapeType
+}
+
+package "application.providers / usecases" {
+  class ProjectProvider <<Provider>>
+  class TimelineNotifier <<Provider>>
+  class ProjectImageResourcesProvider <<Provider>>
+
+  class FetchProjectSummaries <<UseCase>>
+  class CreateProject <<UseCase>>
+  class DeleteProject <<UseCase>>
+  class ImportProjectAsset <<UseCase>>
+  class AddImageClipToTimeline <<UseCase>>
+  class ExportProject <<UseCase>>
+
+  class ProjectSummary <<DTO>>
+  class ProjectInfo <<DTO>>
+  class TimelineInfo <<DTO>>
+  class TimelineTrackInfo <<DTO>>
+  class TimelineClipInfo <<DTO>>
+
+  ProjectProvider --> IProjectRepository
+  ProjectProvider --> Project
+  TimelineNotifier --> ProjectProvider
+  TimelineNotifier --> Timeline
+  ProjectImageResourcesProvider --> ProjectImageResources
+
+  FetchProjectSummaries --> IProjectRepository
+  FetchProjectSummaries ..> ProjectSummary
+  CreateProject --> IProjectRepository
+  CreateProject ..> Project
+  DeleteProject --> IProjectRepository
+  ImportProjectAsset --> IProjectAssetStore
+  ImportProjectAsset --> IProjectRepository
+  ImportProjectAsset --> ProjectAssetCatalog
+  AddImageClipToTimeline --> ProjectImageResources
+  AddImageClipToTimeline --> TimelineEditor
+  AddImageClipToTimeline ..> AddClipCommand
+  ExportProject --> ProjectImageResources
+  ExportProject --> ProjectExporter
+
+  ProjectInfo ..> Project
+  TimelineInfo ..> Timeline
+  TimelineTrackInfo ..> TimelineTrack
+  TimelineClipInfo ..> TimelineClip
+}
+
+package "application.timeline_editor" {
+  class TimelineEditor {
+    +execute(project, command)
+  }
+
+  interface TimelineEditorCommand {
+    +canExecute(timeline)
+    +execute(timeline)
+  }
+
+  class AddClipCommand
+  class MoveClipCommand
+  class RemoveClipCommand
+  class ResizeClipCommand
+  class AddClipComponentCommand
+  class RemoveClipComponentCommand
+  class UpdateClipTransformCommand
+  class UpdateShapeComponentCommand
+  class UpdateTextClipCommand
+  class UpdateImageComponentCommand
+
+  TimelineEditor --> IProjectRepository : saves after command
+  TimelineEditor --> TimelineEditorCommand
+  TimelineEditorCommand --> Timeline
+
+  TimelineEditorCommand <|.. AddClipCommand
+  TimelineEditorCommand <|.. MoveClipCommand
+  TimelineEditorCommand <|.. RemoveClipCommand
+  TimelineEditorCommand <|.. ResizeClipCommand
+  TimelineEditorCommand <|.. AddClipComponentCommand
+  TimelineEditorCommand <|.. RemoveClipComponentCommand
+  TimelineEditorCommand <|.. UpdateClipTransformCommand
+  TimelineEditorCommand <|.. UpdateShapeComponentCommand
+  TimelineEditorCommand <|.. UpdateTextClipCommand
+  TimelineEditorCommand <|.. UpdateImageComponentCommand
+
+  AddClipCommand --> TimelineClip
+  AddClipComponentCommand --> ClipComponent
+  RemoveClipComponentCommand --> ClipComponentId
+  UpdateClipTransformCommand ..> TransformComponent
+  UpdateShapeComponentCommand ..> ShapeComponent
+  UpdateTextClipCommand ..> TextComponent
+  UpdateImageComponentCommand ..> ImageComponent
+}
+
+package "application.rendering" {
+  class ProjectImageResources {
+    +images
+    +revisions
+    +load(asset)
+    +loadAll(assets)
+    +dispose()
+  }
+
+  class ProjectFrame {
+    +Size projectSize
+    +int frameNumber
+    +clips
+    +imageAssets
+  }
+
+  class ProjectFrameBuilder {
+    +build(project, frameNumber)
+  }
+
+  class ProjectFrameRenderer {
+    +paint(canvas, outputSize, frame)
+  }
+
+  class ProjectPaintContext {
+    +resolvePosition(position)
+    +resolveImage(assetId)
+  }
+
+  abstract class "ClipPainter<T>" as ClipPainter
+  class ShapeClipPainter
+  class TextClipPainter
+  class ImageClipPainter
+
+  ProjectImageResources --> IProjectAssetStore
+  ProjectImageResources --> ProjectAsset
+  ProjectImageResources o-- AssetId
+  ProjectFrameBuilder --> Project
+  ProjectFrameBuilder ..> ProjectFrame
+  ProjectFrame o-- TimelineClip
+  ProjectFrameRenderer --> ProjectFrame
+  ProjectFrameRenderer o-- ClipPainter : painter registry
+  ProjectFrameRenderer ..> ProjectPaintContext
+  ClipPainter <|-- ShapeClipPainter
+  ClipPainter <|-- TextClipPainter
+  ClipPainter <|-- ImageClipPainter
+  ShapeClipPainter ..> ShapeComponent
+  TextClipPainter ..> TextComponent
+  ImageClipPainter ..> ImageComponent
+}
+
+package "application.export" {
+  class ProjectExporter {
+    +export(project, operation)
+  }
+
+  class FfmpegProjectEncoder {
+    +encode(project, outputPath, operation)
+  }
+
+  class ProjectFrameStreamWriter {
+    +write(project, writeFrame, onProgress, checkCancelled)
+  }
+
+  class FfmpegFramePipe
+  class FfmpegCommandBuilder
+  class ExportOperation
+  class ExportResult
+
+  ProjectExporter --> FfmpegProjectEncoder
+  ProjectExporter --> ExportOperation
+  ProjectExporter ..> ExportResult
+  FfmpegProjectEncoder --> ProjectFrameStreamWriter
+  FfmpegProjectEncoder --> FfmpegFramePipe
+  FfmpegProjectEncoder ..> FfmpegCommandBuilder
+  FfmpegProjectEncoder --> ExportOperation
+  ProjectFrameStreamWriter --> ProjectFrameBuilder
+  ProjectFrameStreamWriter --> ProjectFrameRenderer
+}
+
+package "application.playback / voice" {
+  class PlaybackController <<Provider>>
+  class PlaybackInfo <<DTO>>
+  interface IVoiceGenerator
+  class VoicevoxCoreSpeechService
+  class SpeakerStyle <<DTO>>
+
+  PlaybackController --> ProjectProvider
+  PlaybackController --> PlaybackInfo
+  IVoiceGenerator <|.. VoicevoxCoreSpeechService
+  IVoiceGenerator ..> SpeakerStyle
+}
+
+package infra {
+  class ProjectDirectory {
+    +Directory root
+    +File projectFile
+    +Directory assetsDirectory
+  }
+
+  class ProjectRepository
+  class DirectoryAssetStore
+  class ProjectAssetFactory
+
+  IProjectRepository <|.. ProjectRepository
+  IProjectAssetStore <|.. DirectoryAssetStore
+  ProjectRepository --> ProjectDirectory
+  ProjectRepository --> Project
+  DirectoryAssetStore --> ProjectAssetFactory
+  ProjectAssetFactory ..> ProjectAsset
+}
+
+package presentation {
+  class VoivoMovieMakerApp <<Widget>>
+  class ProjectListRoute
+  class ProjectEditorRoute
+  class ProjectListScreen <<Widget>>
+  class NewProjectDialog <<Widget>>
+  class EditorScreen <<Widget>>
+  class AssetPanel <<Widget>>
+  class ProjectPreview <<Widget>>
+  class ProjectPreviewPainter <<CustomPainter>>
+  class PlaybackButton <<Widget>>
+  class TimelineView <<Widget>>
+  class TimelineTrackView <<Widget>>
+  class TimelineClipView <<Widget>>
+  class Playhead <<Widget>>
+  class TimelineRuler <<Widget>>
+  class TimelineScaleControl <<Widget>>
+  abstract class TimelineDragData
+  class TimelineClipDragData
+  class TimelineAssetDragData
+  class ClipInspectorPane <<Widget>>
+  class AddComponentButton <<Widget>>
+  abstract class "InspectorSection<T>" as InspectorSection
+  class TransformTraitSection
+  class ShapeClipSection
+  class TextClipSection
+  class ImageClipSection
+  class ComponentInspectorRegistry
+  class ExportButton <<Widget>>
+  class ExportProgressDialog <<Widget>>
+  class VoiceEditor <<Widget>>
+
+  class ProjectEditViewModel <<Provider>>
+  class TimelineViewModel <<Provider>>
+  class TimelineSelectionState <<Provider>>
+
+  VoivoMovieMakerApp --> ProjectListRoute
+  ProjectListRoute --> ProjectListScreen
+  ProjectListRoute --> ProjectEditorRoute
+  ProjectEditorRoute --> EditorScreen
+  VoivoMovieMakerApp --> ProjectListScreen
+  ProjectListScreen --> NewProjectDialog
+  ProjectListScreen --> FetchProjectSummaries
+  ProjectListScreen --> CreateProject
+  ProjectListScreen --> DeleteProject
+  EditorScreen --> ProjectDirectory
+  EditorScreen --> DirectoryAssetStore
+  EditorScreen *-- AssetPanel
+  EditorScreen *-- ProjectPreview
+  EditorScreen *-- PlaybackButton
+  EditorScreen *-- TimelineView
+  EditorScreen *-- ClipInspectorPane
+  EditorScreen *-- ExportButton
+
+  ProjectEditViewModel --> ProjectProvider
+  ProjectEditViewModel ..> ProjectInfo
+  TimelineViewModel --> TimelineNotifier
+  TimelineViewModel --> TimelineEditor
+  TimelineViewModel --> PlaybackController
+  TimelineViewModel --> TimelineSelectionState
+  TimelineViewModel --> AddImageClipToTimeline
+  TimelineViewModel ..> TimelineInfo
+
+  AssetPanel --> ImportProjectAsset
+  AssetPanel ..> TimelineAssetDragData
+  ProjectPreview --> ProjectFrameBuilder
+  ProjectPreview --> ProjectFrameRenderer
+  ProjectPreview --> PlaybackController
+  ProjectPreview --> ProjectPreviewPainter
+  ProjectPreviewPainter --> ProjectFrame
+  ProjectPreviewPainter --> ProjectFrameRenderer
+  TimelineView --> TimelineViewModel
+  TimelineView *-- TimelineTrackView
+  TimelineView *-- Playhead
+  TimelineView *-- TimelineRuler
+  TimelineTrackView *-- TimelineClipView
+  TimelineClipView ..> TimelineClipDragData
+  TimelineView *-- TimelineScaleControl
+  TimelineDragData <|-- TimelineClipDragData
+  TimelineDragData <|-- TimelineAssetDragData
+  ClipInspectorPane --> TimelineSelectionState
+  ClipInspectorPane --> TimelineViewModel
+  ClipInspectorPane --> ComponentInspectorRegistry
+  ClipInspectorPane *-- AddComponentButton
+  ComponentInspectorRegistry ..> InspectorSection
+  InspectorSection <|-- TransformTraitSection
+  InspectorSection <|-- ShapeClipSection
+  InspectorSection <|-- TextClipSection
+  InspectorSection <|-- ImageClipSection
+  InspectorSection ..> TimelineEditorCommand
+  ExportButton --> ExportProject
+  ExportButton *-- ExportProgressDialog
+  VoiceEditor --> IVoiceGenerator
+}
+
+note bottom of TimelineClip
+同じruntimeTypeのComponentは1つまで。
+TransformComponentは削除不可。
+end note
+
+note bottom of EditorScreen
+編集画面スコープでprojectIdProviderと
+projectAssetStoreProviderをoverrideする。
+end note
+
+note bottom of ProjectRepository
+projects/{projectId}/project.json と assets/ を管理。
+save/deleteは同一キューで直列化する。
+end note
+
+note bottom of ProjectFrameRenderer
+PreviewとExportが共有するCanvas描画処理。
+end note
+
+note "生成コード (*.g.dart, *.freezed.dart)、private State、\nフォーム・ジェスチャー等の局所的UI補助クラス、JSON Converterは省略。" as Omitted
+
+@enduml
