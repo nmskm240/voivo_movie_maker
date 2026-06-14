@@ -5,13 +5,11 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 // Project imports:
-import 'package:voivo_movie_maker/constants.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/infra/asset_factory.dart';
 
 final class DirectoryAssetStore implements IProjectAssetStore {
-  DirectoryAssetStore(Directory directory)
-    : _assetDirectory = Directory(p.join(directory.path, assetDirectoryName)) {
+  DirectoryAssetStore(this._assetDirectory) {
     if (!_assetDirectory.existsSync()) {
       _assetDirectory.createSync(recursive: true);
     }
@@ -35,5 +33,13 @@ final class DirectoryAssetStore implements IProjectAssetStore {
     final destination = File(p.join(_assetDirectory.path, asset.fileName));
     await file.copy(destination.path);
     return asset;
+  }
+
+  @override
+  Future<void> delete(ProjectAsset asset) async {
+    final file = File(p.join(_assetDirectory.path, asset.fileName));
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 }

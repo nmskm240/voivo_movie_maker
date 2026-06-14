@@ -22,7 +22,8 @@ class AssetId {
     }
     return AssetId(value);
   }
-  factory AssetId.fromJson(Map<String, Object?> value) => _$AssetIdFromJson(value);
+  factory AssetId.fromJson(Map<String, Object?> value) =>
+      _$AssetIdFromJson(value);
 
   final String value;
 
@@ -101,15 +102,5 @@ class ProjectAssetCatalog {
 abstract interface class IProjectAssetStore {
   Stream<List<int>> load(ProjectAsset asset);
   Future<ProjectAsset> save(File file);
-}
-
-abstract interface class ProjectAssetStorage {
-  // Iterable<ProjectAsset> get assets;
-
-  // ProjectAsset? findById(AssetId assetId);
-  // ProjectAsset getById(AssetId assetId);
-  // Stream<List<int>> getBytes(ProjectAsset asset);
-  // Stream<List<int>> getBytesById(AssetId assetId);
-  // Future<void> add(ProjectAsset asset, Stream<List<int>> bytes);
-  // Future<void> remove(AssetId assetId);
+  Future<void> delete(ProjectAsset asset);
 }

@@ -3,30 +3,28 @@ import 'dart:convert';
 import 'dart:io';
 
 // Package imports:
-import 'package:path/path.dart' as p;
-
 // Project imports:
-import 'package:voivo_movie_maker/constants.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/infra/project_directory.dart';
 
 final class ProjectRepository implements IProjectRepository {
-  const ProjectRepository(this.root);
+  const ProjectRepository(this._projectsDirectory);
 
-  final Directory root;
+  final Directory _projectsDirectory;
 
   @override
   Future<List<Project>> findAny() async {
     final projects = <Project>[];
-    if (!await root.exists()) {
+    if (!await _projectsDirectory.exists()) {
       return projects;
     }
 
-    await for (final entity in root.list()) {
+    await for (final entity in _projectsDirectory.list()) {
       if (entity is! Directory) {
         continue;
       }
 
-      final projectFile = _projectFileIn(entity);
+      final projectFile = ProjectDirectory(entity).projectFile;
       if (!await projectFile.exists()) {
         continue;
       }
@@ -38,7 +36,10 @@ final class ProjectRepository implements IProjectRepository {
 
   @override
   Future<Project> getById(ProjectId id) async {
-    final projectFile = _projectFileIn(_projectDirectoryFor(id));
+    final projectFile = ProjectDirectory.inProjects(
+      _projectsDirectory,
+      id,
+    ).projectFile;
     if (!await projectFile.exists()) {
       throw ArgumentError.value(
         id.value,
@@ -52,28 +53,22 @@ final class ProjectRepository implements IProjectRepository {
 
   @override
   Future<void> save(Project project) async {
-    await root.create(recursive: true);
-    final projectDir = _projectDirectoryFor(project.id);
-    if (!await projectDir.exists()) {
-      await projectDir.create(recursive: true);
+    await _projectsDirectory.create(recursive: true);
+    final projectDirectory = ProjectDirectory.inProjects(
+      _projectsDirectory,
+      project.id,
+    );
+    if (!await projectDirectory.root.exists()) {
+      await projectDirectory.root.create(recursive: true);
     }
-    final assetsDir = Directory(p.join(projectDir.path, assetDirectoryName));
-    if (!await assetsDir.exists()) {
-      await assetsDir.create(recursive: true);
+    if (!await projectDirectory.assetsDirectory.exists()) {
+      await projectDirectory.assetsDirectory.create(recursive: true);
     }
 
     const encoder = JsonEncoder.withIndent('  ');
-    final tempFile = File(p.join(projectDir.path, ".$projectFileName.tmp"));
+    final tempFile = File('${projectDirectory.projectFile.path}.tmp');
     await tempFile.writeAsString(encoder.convert(project.toJson()));
-    await tempFile.rename(_projectFileIn(projectDir).path);
-  }
-
-  Directory _projectDirectoryFor(ProjectId id) {
-    return Directory(p.join(root.path, id.value));
-  }
-
-  File _projectFileIn(Directory directory) {
-    return File(p.join(directory.path, projectFileName));
+    await tempFile.rename(projectDirectory.projectFile.path);
   }
 
   Future<Project> _read(File file) async {
