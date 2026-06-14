@@ -10,48 +10,38 @@ import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/fields/color_form_field.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section.dart';
 
-class TextClipSection implements InspectorSection {
+class TextClipSection extends InspectorSection<TextComponent> {
+  const TextClipSection(super.component, super.context, {super.key});
+
   @override
-  Widget build(
-    BuildContext context,
-    ExecuteTimelineCommand execute,
-    TimelineClip? clip,
-  ) {
-    final text = clip?.component<TextComponent>();
-    if (clip == null || text == null) {
-      throw Error();
-    }
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        FormBuilderTextField(
+          name: '${this.context.clipId.value}.text',
+          initialValue: component.text,
+          maxLines: 4,
+          onChanged: (text) {
+            this.context.execute(
+              UpdateTextClipCommand(this.context.clipId, text: text),
+            );
+          },
+        ),
+        ColorFormField(
+          name: '${this.context.clipId.value}.color',
+          initialValue: component.color,
+          decoration: const InputDecoration(labelText: 'Color'),
+          onChanged: (color) {
+            if (color == null) {
+              return;
+            }
 
-    return Card(
-      child: Column(
-        children: [
-          FormBuilderTextField(
-            name: '${clip.id.value}.text',
-            initialValue: text.text,
-            maxLines: 4,
-            onChanged: (text) {
-              execute(UpdateTextClipCommand(clip.id, text: text));
-            },
-          ),
-          ColorFormField(
-            name: '${clip.id.value}.color',
-            initialValue: text.color,
-            decoration: const InputDecoration(labelText: 'Color'),
-            onChanged: (color) {
-              if (color == null) {
-                return;
-              }
-
-              execute(UpdateTextClipCommand(clip.id, textColor: color));
-            },
-          ),
-        ],
-      ),
+            this.context.execute(
+              UpdateTextClipCommand(this.context.clipId, textColor: color),
+            );
+          },
+        ),
+      ],
     );
-  }
-
-  @override
-  bool isSupports(TimelineClip clip) {
-    return clip.hasComponent<TextComponent>();
   }
 }

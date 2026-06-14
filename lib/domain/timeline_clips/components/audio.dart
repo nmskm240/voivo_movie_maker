@@ -18,7 +18,7 @@ class AudioComponent extends ClipComponent {
   bool muted;
 
   @override
-  int get maxInstancesPerClip => 1;
+  String get label => 'Audio';
 
   Map<String, Object?> toJson() => _$AudioComponentToJson(this);
 }

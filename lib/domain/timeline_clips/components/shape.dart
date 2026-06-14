@@ -32,7 +32,7 @@ class ShapeComponent extends ClipComponent {
   Color color;
 
   @override
-  int get maxInstancesPerClip => 1;
+  String get label => 'Shape';
 
   void update({ShapeType? shapeType, Size? size, Color? color}) {
     this.shapeType = shapeType ?? this.shapeType;

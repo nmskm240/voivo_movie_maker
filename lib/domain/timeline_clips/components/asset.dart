@@ -17,7 +17,7 @@ class AssetComponent extends ClipComponent {
   AssetId assetId;
 
   @override
-  int get maxInstancesPerClip => 1;
+  String get label => 'Asset';
 
   Map<String, Object?> toJson() => _$AssetComponentToJson(this);
 }

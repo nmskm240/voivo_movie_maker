@@ -7,36 +7,28 @@ import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 void main() {
   group('TimelineClip components', () {
-    test('uses the component definition to limit instances', () {
+    test('rejects another component of the same type', () {
       final clip = _clip(components: [TextComponent()]);
 
       expect(clip.canAddComponent(TextComponent()), isFalse);
       expect(() => clip.addComponent(TextComponent()), throwsArgumentError);
     });
 
-    test(
-      'allows multiple instances when the component definition allows it',
-      () {
-        final first = _MultipleComponent();
-        final second = _MultipleComponent();
-        final clip = _clip(components: [first]);
-
-        expect(clip.canAddComponent(second), isTrue);
-
-        clip.addComponent(second);
-
-        expect(clip.componentsOf<_MultipleComponent>(), [first, second]);
-      },
-    );
+    test('rejects duplicate component types when creating a clip', () {
+      expect(
+        () => _clip(components: [TextComponent(), TextComponent()]),
+        throwsArgumentError,
+      );
+    });
 
     test('removes only the component with the specified ID', () {
-      final first = _MultipleComponent();
-      final second = _MultipleComponent();
+      final first = TextComponent();
+      final second = ShapeComponent();
       final clip = _clip(components: [first, second]);
 
       clip.removeComponent(first.id);
 
-      expect(clip.componentsOf<_MultipleComponent>(), [second]);
+      expect(clip.components, [second]);
     });
 
     test('assigns an ID when reading legacy component JSON', () {
@@ -68,9 +60,4 @@ TimelineClip _clip({Iterable<ClipComponent> components = const []}) {
     startFrame: 0,
     components: components,
   );
-}
-
-class _MultipleComponent extends ClipComponent {
-  @override
-  int? get maxInstancesPerClip => null;
 }

@@ -30,7 +30,7 @@ class TextComponent extends ClipComponent {
   Color color;
 
   @override
-  int get maxInstancesPerClip => 1;
+  String get label => 'Text';
 
   void update({String? text, String? fontFamily, double? size, Color? color}) {
     this.text = text ?? this.text;

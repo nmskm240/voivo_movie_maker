@@ -28,7 +28,7 @@ class TransformComponent extends ClipComponent {
   double rotation;
 
   @override
-  int get maxInstancesPerClip => 1;
+  String get label => 'Transform';
 
   void update({Vector2? position, Vector2? scale, double? rotation}) {
     this.position = position ?? this.position;

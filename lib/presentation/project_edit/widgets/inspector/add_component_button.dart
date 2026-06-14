@@ -24,29 +24,38 @@ class AddComponentButton extends StatelessWidget {
   }
 
   Future<void> _showComponentPicker(BuildContext context) async {
-    final available = _ComponentTemplate.values
-        .where((template) => clip.canAddComponent(template.create()))
-        .toList();
-    final template = await showModalBottomSheet<_ComponentTemplate>(
+    final candidates = _ComponentTemplate.values.map((template) {
+      final component = template.create();
+      return (
+        template: template,
+        component: component,
+        enabled: clip.canAddComponent(component),
+      );
+    }).toList();
+    final component = await showModalBottomSheet<ClipComponent>(
       context: context,
       builder: (context) => SafeArea(
         child: ListView(
           shrinkWrap: true,
           children: [
-            for (final template in available)
+            for (final candidate in candidates)
               ListTile(
-                leading: Icon(template.icon),
-                title: Text(template.label),
-                onTap: () => Navigator.of(context).pop(template),
+                leading: Icon(candidate.template.icon),
+                title: Text(candidate.component.label),
+                subtitle: candidate.enabled
+                    ? null
+                    : const Text('Already added'),
+                enabled: candidate.enabled,
+                onTap: candidate.enabled
+                    ? () => Navigator.of(context).pop(candidate.component)
+                    : null,
               ),
-            if (available.isEmpty)
-              const ListTile(title: Text('All components are already added')),
           ],
         ),
       ),
     );
-    if (template != null) {
-      onAdd(template.create());
+    if (component != null) {
+      onAdd(component);
     }
   }
 }
@@ -55,12 +64,6 @@ enum _ComponentTemplate {
   shape,
   text,
   transform;
-
-  String get label => switch (this) {
-    shape => 'Shape',
-    text => 'Text',
-    transform => 'Transform',
-  };
 
   IconData get icon => switch (this) {
     shape => Icons.category_outlined,

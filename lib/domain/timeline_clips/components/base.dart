@@ -47,6 +47,5 @@ abstract class ClipComponent {
   @ClipComponentIdJsonConverter()
   final ClipComponentId id;
 
-  /// `null` allows any number of instances on a clip.
-  int? get maxInstancesPerClip;
+  String get label;
 }

@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:vector_math/vector_math.dart';
 
+// Project imports:
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/fields/scrubbable_number_region.dart';
+
 class Vector2FormField extends FormBuilderFieldDecoration<Vector2> {
   Vector2FormField({
     super.key,
@@ -23,6 +26,9 @@ class Vector2FormField extends FormBuilderFieldDecoration<Vector2> {
     super.errorBuilder,
     this.xLabel = 'X',
     this.yLabel = 'Y',
+    this.stepPerPixel = 1,
+    this.min,
+    this.max,
     this.textInputAction = TextInputAction.next,
   }) : super(
          builder: (field) {
@@ -33,6 +39,9 @@ class Vector2FormField extends FormBuilderFieldDecoration<Vector2> {
 
   final String xLabel;
   final String yLabel;
+  final double stepPerPixel;
+  final double? min;
+  final double? max;
   final TextInputAction textInputAction;
 
   @override
@@ -77,38 +86,52 @@ class _Vector2FormFieldState
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _xController,
-              focusNode: effectiveFocusNode,
-              enabled: enabled,
-              decoration: InputDecoration(
-                isDense: true,
-                labelText: widget.xLabel,
+            child: ScrubbableNumberRegion(
+              value: () => _valueFor(_xController),
+              stepPerPixel: widget.stepPerPixel,
+              min: widget.min,
+              max: widget.max,
+              onChanged: (x) => _didScrub(x: x),
+              child: TextField(
+                controller: _xController,
+                focusNode: effectiveFocusNode,
+                enabled: enabled,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: widget.xLabel,
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
+                textInputAction: widget.textInputAction,
+                onChanged: (_) => _didChange(),
               ),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              textInputAction: widget.textInputAction,
-              onChanged: (_) => _didChange(),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: TextField(
-              controller: _yController,
-              focusNode: _yFocusNode,
-              enabled: enabled,
-              decoration: InputDecoration(
-                isDense: true,
-                labelText: widget.yLabel,
+            child: ScrubbableNumberRegion(
+              value: () => _valueFor(_yController),
+              stepPerPixel: widget.stepPerPixel,
+              min: widget.min,
+              max: widget.max,
+              onChanged: (y) => _didScrub(y: y),
+              child: TextField(
+                controller: _yController,
+                focusNode: _yFocusNode,
+                enabled: enabled,
+                decoration: InputDecoration(
+                  isDense: true,
+                  labelText: widget.yLabel,
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
+                textInputAction: widget.textInputAction,
+                onChanged: (_) => _didChange(),
               ),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              textInputAction: widget.textInputAction,
-              onChanged: (_) => _didChange(),
             ),
           ),
         ],
@@ -123,6 +146,15 @@ class _Vector2FormFieldState
     didChange(x == null || y == null ? null : Vector2(x, y));
     _isEditing = false;
   }
+
+  void _didScrub({double? x, double? y}) {
+    didChange(
+      Vector2(x ?? _valueFor(_xController), y ?? _valueFor(_yController)),
+    );
+  }
+
+  double _valueFor(TextEditingController controller) =>
+      double.tryParse(controller.text) ?? 0;
 
   @override
   void didChange(Vector2? value) {

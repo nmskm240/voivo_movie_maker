@@ -21,7 +21,7 @@ class ImageComponent extends ClipComponent {
   Size size;
 
   @override
-  int get maxInstancesPerClip => 1;
+  String get label => 'Image';
 
   Map<String, Object?> toJson() => _$ImageComponentToJson(this);
 }

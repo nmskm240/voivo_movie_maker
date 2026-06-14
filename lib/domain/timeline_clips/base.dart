@@ -1,9 +1,9 @@
 // Package imports:
 import 'package:cuid2/cuid2.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 // Project imports:
-import 'package:voivo_movie_maker/domain/timeline_clips/components/base.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 part 'base.g.dart';
@@ -45,12 +45,12 @@ class TimelineClip {
     required this.id,
     required int startFrame,
     int durationFrames = 10,
-    Iterable<ClipComponent> components = const [],
+    Iterable<ClipComponent>? components,
   }) : assert(startFrame >= 0),
        assert(durationFrames > 0),
        _startFrame = startFrame,
        _durationFrames = durationFrames,
-       components = components.toList() {
+       components = (components ?? [TransformComponent()]).toList() {
     _validateComponents();
   }
 
@@ -78,31 +78,12 @@ class TimelineClip {
 
   bool hasComponent<T extends ClipComponent>() => component<T>() != null;
 
-  Iterable<T> componentsOf<T extends ClipComponent>() =>
-      components.whereType<T>();
-
   bool containsComponent(ClipComponentId componentId) =>
       components.any((component) => component.id == componentId);
 
   bool canAddComponent(ClipComponent component) {
-    if (containsComponent(component.id)) {
-      return false;
-    }
-
-    final maxInstances = component.maxInstancesPerClip;
-    if (maxInstances == null) {
-      return true;
-    }
-    if (maxInstances <= 0) {
-      throw StateError(
-        '${component.runtimeType}.maxInstancesPerClip must be positive or null',
-      );
-    }
-
-    final savedInstances = components
-        .where((saved) => saved.runtimeType == component.runtimeType)
-        .length;
-    return savedInstances < maxInstances;
+    return !containsComponent(component.id) &&
+        !components.any((saved) => saved.runtimeType == component.runtimeType);
   }
 
   void addComponent(ClipComponent component) {
@@ -149,7 +130,7 @@ class TimelineClip {
 
   void _validateComponents() {
     final componentIds = <ClipComponentId>{};
-    final instancesByType = <Type, int>{};
+    final componentTypes = <Type>{};
     for (final component in components) {
       if (!componentIds.add(component.id)) {
         throw ArgumentError.value(
@@ -159,22 +140,13 @@ class TimelineClip {
         );
       }
 
-      final maxInstances = component.maxInstancesPerClip;
-      if (maxInstances != null && maxInstances <= 0) {
-        throw StateError(
-          '${component.runtimeType}.maxInstancesPerClip must be positive or null',
-        );
-      }
-
-      final instances = (instancesByType[component.runtimeType] ?? 0) + 1;
-      if (maxInstances != null && instances > maxInstances) {
+      if (!componentTypes.add(component.runtimeType)) {
         throw ArgumentError.value(
           components,
           'components',
-          '${component.runtimeType} allows at most $maxInstances instances',
+          'Component types must be unique',
         );
       }
-      instancesByType[component.runtimeType] = instances;
     }
   }
 

@@ -8,108 +8,96 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/update_shape_component_command.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/fields/color_form_field.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/fields/scrubbable_number_form_field.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section.dart';
 
-class ShapeClipSection implements InspectorSection {
-  @override
-  Widget build(
-    BuildContext context,
-    ExecuteTimelineCommand execute,
-    TimelineClip? clip,
-  ) {
-    final shape = clip?.component<ShapeComponent>();
-    if (clip == null || shape == null) {
-      throw Error();
-    }
+class ShapeClipSection extends InspectorSection<ShapeComponent> {
+  const ShapeClipSection(super.component, super.context, {super.key});
 
+  @override
+  Widget build(BuildContext context) {
     void updateSize({double? width, double? height}) {
-      final nextWidth = width ?? shape.size.width;
-      final nextHeight = height ?? shape.size.height;
+      final nextWidth = width ?? component.size.width;
+      final nextHeight = height ?? component.size.height;
       if (nextWidth <= 0 || nextHeight <= 0) {
         return;
       }
-      execute(
-        UpdateShapeComponentCommand(clip.id, size: Size(nextWidth, nextHeight)),
+      this.context.execute(
+        UpdateShapeComponentCommand(
+          this.context.clipId,
+          size: Size(nextWidth, nextHeight),
+        ),
       );
     }
 
-    return Card(
-      child: Column(
-        children: [
-          FormBuilderDropdown<ShapeType>(
-            name: '${clip.id.value}.shape.type',
-            initialValue: shape.shapeType,
-            decoration: const InputDecoration(labelText: 'Shape'),
-            items: const [
-              DropdownMenuItem(
-                value: ShapeType.rectangle,
-                child: Text('Rectangle'),
-              ),
-              DropdownMenuItem(
-                value: ShapeType.ellipse,
-                child: Text('Ellipse'),
-              ),
-            ],
-            onChanged: (type) {
-              if (type != null) {
-                execute(UpdateShapeComponentCommand(clip.id, shapeType: type));
-              }
-            },
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: FormBuilderTextField(
-                  name: '${clip.id.value}.shape.width',
-                  initialValue: shape.size.width.toString(),
-                  decoration: const InputDecoration(labelText: 'Width'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  onChanged: (value) {
-                    final width = double.tryParse(value ?? '');
-                    if (width != null) {
-                      updateSize(width: width);
-                    }
-                  },
+    return Column(
+      children: [
+        FormBuilderDropdown<ShapeType>(
+          name: '${this.context.clipId.value}.shape.type',
+          initialValue: component.shapeType,
+          decoration: const InputDecoration(labelText: 'Shape'),
+          items: const [
+            DropdownMenuItem(
+              value: ShapeType.rectangle,
+              child: Text('Rectangle'),
+            ),
+            DropdownMenuItem(value: ShapeType.ellipse, child: Text('Ellipse')),
+          ],
+          onChanged: (type) {
+            if (type != null) {
+              this.context.execute(
+                UpdateShapeComponentCommand(
+                  this.context.clipId,
+                  shapeType: type,
                 ),
+              );
+            }
+          },
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: ScrubbableNumberFormField(
+                name: '${this.context.clipId.value}.shape.width',
+                label: 'Width',
+                initialValue: component.size.width,
+                min: 0.01,
+                onChanged: (width) {
+                  if (width != null) {
+                    updateSize(width: width);
+                  }
+                },
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FormBuilderTextField(
-                  name: '${clip.id.value}.shape.height',
-                  initialValue: shape.size.height.toString(),
-                  decoration: const InputDecoration(labelText: 'Height'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  onChanged: (value) {
-                    final height = double.tryParse(value ?? '');
-                    if (height != null) {
-                      updateSize(height: height);
-                    }
-                  },
-                ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ScrubbableNumberFormField(
+                name: '${this.context.clipId.value}.shape.height',
+                label: 'Height',
+                initialValue: component.size.height,
+                min: 0.01,
+                onChanged: (height) {
+                  if (height != null) {
+                    updateSize(height: height);
+                  }
+                },
               ),
-            ],
-          ),
-          ColorFormField(
-            name: '${clip.id.value}.shape.color',
-            initialValue: shape.color,
-            decoration: const InputDecoration(labelText: 'Color'),
-            onChanged: (color) {
-              if (color != null) {
-                execute(UpdateShapeComponentCommand(clip.id, color: color));
-              }
-            },
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+        ColorFormField(
+          name: '${this.context.clipId.value}.shape.color',
+          initialValue: component.color,
+          decoration: const InputDecoration(labelText: 'Color'),
+          onChanged: (color) {
+            if (color != null) {
+              this.context.execute(
+                UpdateShapeComponentCommand(this.context.clipId, color: color),
+              );
+            }
+          },
+        ),
+      ],
     );
-  }
-
-  @override
-  bool isSupports(TimelineClip clip) {
-    return clip.hasComponent<ShapeComponent>();
   }
 }
