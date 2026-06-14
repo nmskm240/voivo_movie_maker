@@ -9,6 +9,7 @@ import 'package:voivo_movie_maker/application/services/playback_controller.dart'
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/move_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/remove_clip_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/resize_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
@@ -119,6 +120,24 @@ class TimelineViewModel extends _$TimelineViewModel {
       ref.read(timelineSelectionStateProvider.notifier).clearClip();
     }
     return true;
+  }
+
+  bool resizeClip(
+    TimelineClipId clipId, {
+    required int startFrame,
+    required int durationFrames,
+  }) {
+    final resized = execute(
+      ResizeClipCommand(
+        clipId,
+        startFrame: startFrame,
+        durationFrames: durationFrames,
+      ),
+    );
+    if (resized) {
+      ref.read(timelineSelectionStateProvider.notifier).selectClip(clipId);
+    }
+    return resized;
   }
 
   void setPixelsPerFrame(double pixelsPerFrame) {

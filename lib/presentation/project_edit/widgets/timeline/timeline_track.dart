@@ -68,6 +68,7 @@ class TimelineTrackView extends ConsumerWidget {
                     child: TimelineClipView(
                       key: GlobalObjectKey(clip.id),
                       clip: clip,
+                      pixelsPerFrame: pixelsPerFrame,
                     ),
                   ),
               ],

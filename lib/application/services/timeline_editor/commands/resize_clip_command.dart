@@ -16,7 +16,16 @@ class ResizeClipCommand implements TimelineEditorCommand {
 
   @override
   bool canExecute(Timeline timeline) {
+    if (startFrame < 0 || durationFrames <= 0) {
+      return false;
+    }
+
     final clip = timeline.getClipById(clipId);
+    final endFrame = startFrame + durationFrames;
+    if (startFrame >= clip.endFrame || endFrame <= clip.startFrame) {
+      return false;
+    }
+
     final track = timeline.getTrackByClipId(clipId);
     return track.canPlaceClip(
       clip,

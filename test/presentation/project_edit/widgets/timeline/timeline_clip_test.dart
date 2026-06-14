@@ -40,7 +40,10 @@ void main() {
             body: SizedBox(
               width: 200,
               height: 48,
-              child: TimelineClipView(clip: TimelineClipInfo.fromEntity(clip)),
+              child: TimelineClipView(
+                clip: TimelineClipInfo.fromEntity(clip),
+                pixelsPerFrame: 10,
+              ),
             ),
           ),
         ),
@@ -57,6 +60,90 @@ void main() {
 
     expect(project.timeline.tracks.first.clips, isEmpty);
   });
+
+  testWidgets('resizes a clip by dragging its end handle', (tester) async {
+    final fixture = await _pumpClip(tester, startFrame: 10, durationFrames: 10);
+
+    await tester.drag(
+      find.byKey(ValueKey('${fixture.clip.id.value}.resize-end')),
+      const Offset(30, 0),
+    );
+    await tester.pumpAndSettle();
+
+    expect(fixture.clip.startFrame, 10);
+    expect(fixture.clip.durationFrames, 13);
+  });
+
+  testWidgets('trims a clip by dragging its start handle', (tester) async {
+    final fixture = await _pumpClip(tester, startFrame: 10, durationFrames: 10);
+
+    await tester.drag(
+      find.byKey(ValueKey('${fixture.clip.id.value}.resize-start')),
+      const Offset(20, 0),
+    );
+    await tester.pumpAndSettle();
+
+    expect(fixture.clip.startFrame, 12);
+    expect(fixture.clip.durationFrames, 8);
+  });
+
+  testWidgets('shows a round grip on each resize handle', (tester) async {
+    await _pumpClip(tester, startFrame: 10, durationFrames: 10);
+
+    final roundGrips = find.byWidgetPredicate(
+      (widget) =>
+          widget is DecoratedBox &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).shape == BoxShape.circle,
+    );
+
+    expect(roundGrips, findsNWidgets(2));
+  });
+}
+
+Future<({TimelineClip clip, ProviderContainer container})> _pumpClip(
+  WidgetTester tester, {
+  required int startFrame,
+  required int durationFrames,
+}) async {
+  final project = Project.empty();
+  final clip = TimelineClip(
+    id: TimelineClipId.create(),
+    startFrame: startFrame,
+    durationFrames: durationFrames,
+  );
+  project.timeline.tracks.first.addClip(clip);
+  final container = ProviderContainer(
+    overrides: [
+      projectRepositoryProvider.overrideWithValue(_ProjectRepository(project)),
+      projectIdProvider.overrideWithValue(project.id),
+    ],
+  );
+  addTearDown(container.dispose);
+
+  final subscription = container.listen(timelineViewModelProvider, (_, _) {});
+  addTearDown(subscription.close);
+  await container.read(timelineViewModelProvider.future);
+
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: durationFrames * 10,
+            height: 48,
+            child: TimelineClipView(
+              clip: TimelineClipInfo.fromEntity(clip),
+              pixelsPerFrame: 10,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  return (clip: clip, container: container);
 }
 
 class _ProjectRepository implements IProjectRepository {
