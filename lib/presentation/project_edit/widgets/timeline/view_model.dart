@@ -8,6 +8,7 @@ import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/move_clip_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/remove_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/timeline_editor_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
@@ -105,6 +106,18 @@ class TimelineViewModel extends _$TimelineViewModel {
         .read(timelineSelectionStateProvider.notifier)
         .selectTrack(targetTrackIndex);
     ref.read(timelineSelectionStateProvider.notifier).selectClip(clipId);
+    return true;
+  }
+
+  bool removeClip(TimelineClipId clipId) {
+    if (!execute(RemoveClipCommand(clipId))) {
+      return false;
+    }
+
+    final selection = ref.read(timelineSelectionStateProvider);
+    if (selection.clipId == clipId) {
+      ref.read(timelineSelectionStateProvider.notifier).clearClip();
+    }
     return true;
   }
 

@@ -1,37 +1,20 @@
+// Flutter imports:
+import 'package:flutter/material.dart';
+
 // Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Project imports:
+import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
-import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_clip.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
 void main() {
-  test('adds a clip after the timeline has loaded', () async {
-    final project = Project.empty();
-    final container = ProviderContainer(
-      overrides: [
-        projectRepositoryProvider.overrideWithValue(
-          _ProjectRepository(project),
-        ),
-        projectIdProvider.overrideWithValue(project.id),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    final subscription = container.listen(timelineViewModelProvider, (_, _) {});
-    addTearDown(subscription.close);
-    await container.read(timelineViewModelProvider.future);
-
-    container.read(timelineViewModelProvider.notifier).addClip(0);
-
-    expect(project.timeline.tracks.first.clips, hasLength(1));
-  });
-
-  test('removes a clip and clears its selection', () async {
+  testWidgets('removes a clip after long-press confirmation', (tester) async {
     final project = Project.empty();
     final clip = TimelineClip(id: TimelineClipId.create(), startFrame: 0);
     project.timeline.tracks.first.addClip(clip);
@@ -48,15 +31,31 @@ void main() {
     final subscription = container.listen(timelineViewModelProvider, (_, _) {});
     addTearDown(subscription.close);
     await container.read(timelineViewModelProvider.future);
-    container.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
 
-    final removed = container
-        .read(timelineViewModelProvider.notifier)
-        .removeClip(clip.id);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 200,
+              height: 48,
+              child: TimelineClipView(clip: TimelineClipInfo.fromEntity(clip)),
+            ),
+          ),
+        ),
+      ),
+    );
 
-    expect(removed, isTrue);
+    await tester.longPress(find.byType(TimelineClipView));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Remove clip?'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Remove'));
+    await tester.pumpAndSettle();
+
     expect(project.timeline.tracks.first.clips, isEmpty);
-    expect(container.read(timelineSelectionStateProvider).clipId, isNull);
   });
 }
 

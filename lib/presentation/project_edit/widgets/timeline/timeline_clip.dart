@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/base.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
 class TimelineClipDragData {
   const TimelineClipDragData(this.clipId);
@@ -56,6 +57,7 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
             onTap: () => ref
                 .read(timelineSelectionStateProvider.notifier)
                 .selectClip(widget.clip.id),
+            onLongPress: () => _confirmRemoveClip(context),
             child: MouseRegion(
               cursor: SystemMouseCursors.grab,
               child: clipBody,
@@ -64,6 +66,31 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
         );
       },
     );
+  }
+
+  Future<void> _confirmRemoveClip(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove clip?'),
+        content: Text(
+          'Clip ${widget.clip.id.value} will be removed from the timeline.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(timelineViewModelProvider.notifier).removeClip(widget.clip.id);
+    }
   }
 }
 
