@@ -33,14 +33,6 @@ class _AssetPanelState extends ConsumerState<AssetPanel> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Text(
-                'Assets',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const Divider(height: 1),
             Expanded(
               child: project.when(
                 loading: () => const Center(child: CircularProgressIndicator()),

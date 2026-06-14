@@ -63,13 +63,13 @@ class _EditorScreenBody extends ConsumerWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: const Row(
+        child: Row(
           children: [
             Expanded(
               flex: 3,
               child: Column(
                 children: [
-                  Expanded(flex: 3, child: ProjectPreview()),
+                  Expanded(flex: 3, child: Container(color: const Color.fromARGB(255, 50, 50, 50), child: ProjectPreview())),
                   Expanded(flex: 2, child: TimelineView()),
                 ],
               ),
@@ -82,14 +82,14 @@ class _EditorScreenBody extends ConsumerWidget {
                   children: [
                     TabBar(
                       tabs: [
-                        Tab(text: 'Assets'),
                         Tab(text: 'Inspector'),
+                        Tab(text: 'Assets'),
                       ],
                     ),
                     Expanded(
                       child: TabBarView(
                         physics: NeverScrollableScrollPhysics(),
-                        children: [AssetPanel(), ClipInspectorPane()],
+                        children: [ClipInspectorPane(), AssetPanel()],
                       ),
                     ),
                   ],
