@@ -48,4 +48,6 @@ abstract class ClipComponent {
   final ClipComponentId id;
 
   String get label;
+
+  bool get isRemovable => true;
 }

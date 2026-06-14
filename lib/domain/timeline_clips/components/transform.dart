@@ -30,6 +30,9 @@ class TransformComponent extends ClipComponent {
   @override
   String get label => 'Transform';
 
+  @override
+  bool get isRemovable => false;
+
   void update({Vector2? position, Vector2? scale, double? rotation}) {
     this.position = position ?? this.position;
     this.scale = scale ?? this.scale;

@@ -35,7 +35,7 @@ class ShapeClipSection extends InspectorSection<ShapeComponent> {
         FormBuilderDropdown<ShapeType>(
           name: '${this.context.clipId.value}.shape.type',
           initialValue: component.shapeType,
-          decoration: const InputDecoration(labelText: 'Shape'),
+          decoration: const InputDecoration(labelText: 'Type'),
           items: const [
             DropdownMenuItem(
               value: ShapeType.rectangle,

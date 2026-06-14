@@ -11,7 +11,7 @@ class RemoveClipComponentCommand implements TimelineEditorCommand {
 
   @override
   bool canExecute(Timeline timeline) {
-    return timeline.getClipById(clipId).containsComponent(componentId);
+    return timeline.getClipById(clipId).canRemoveComponent(componentId);
   }
 
   @override

@@ -31,6 +31,15 @@ void main() {
       expect(clip.components, [second]);
     });
 
+    test('does not remove a non-removable component', () {
+      final transform = TransformComponent();
+      final clip = _clip(components: [transform]);
+
+      expect(clip.canRemoveComponent(transform.id), isFalse);
+      expect(() => clip.removeComponent(transform.id), throwsArgumentError);
+      expect(clip.components, [transform]);
+    });
+
     test('assigns an ID when reading legacy component JSON', () {
       final component = TextComponent.fromJson(const {});
 

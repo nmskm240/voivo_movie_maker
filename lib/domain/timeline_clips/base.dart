@@ -81,6 +81,10 @@ class TimelineClip {
   bool containsComponent(ClipComponentId componentId) =>
       components.any((component) => component.id == componentId);
 
+  bool canRemoveComponent(ClipComponentId componentId) => components.any(
+    (component) => component.id == componentId && component.isRemovable,
+  );
+
   bool canAddComponent(ClipComponent component) {
     return !containsComponent(component.id) &&
         !components.any((saved) => saved.runtimeType == component.runtimeType);
@@ -97,8 +101,16 @@ class TimelineClip {
     components.add(component);
   }
 
-  void removeComponent(ClipComponentId componentId) =>
-      components.removeWhere((component) => component.id == componentId);
+  void removeComponent(ClipComponentId componentId) {
+    if (!canRemoveComponent(componentId)) {
+      throw ArgumentError.value(
+        componentId,
+        'componentId',
+        'This component cannot be removed from the clip',
+      );
+    }
+    components.removeWhere((component) => component.id == componentId);
+  }
 
   bool isActiveAt(int frame) => startFrame <= frame && frame < endFrame;
 

@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_component_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/remove_clip_component_command.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/add_component_button.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/sections/inspector_section.dart';
@@ -42,14 +44,29 @@ class ClipInspectorPane extends ConsumerWidget {
         key: ValueKey(clip.id.value),
         child: ListView(
           children: [
-            Text("Components", style: Theme.of(context).textTheme.titleLarge,),
+            Text('Components', style: Theme.of(context).textTheme.titleLarge),
             for (final component in clip.components)
               ExpansionTile(
                 key: ValueKey('${clip.id.value}.${component.id.value}'),
                 initiallyExpanded: true,
                 tilePadding: EdgeInsets.zero,
                 childrenPadding: const EdgeInsets.only(bottom: 8),
-                title: Text(component.label),
+                title: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onLongPress: clip.canRemoveComponent(component.id)
+                      ? () => _confirmRemoveComponent(
+                          context,
+                          component: component,
+                          onConfirm: () => execute(
+                            RemoveClipComponentCommand(clip.id, component.id),
+                          ),
+                        )
+                      : null,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Text(component.label),
+                  ),
+                ),
                 children: [
                   ComponentInspectorRegistry.resolve(
                     component,
@@ -69,5 +86,32 @@ class ClipInspectorPane extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmRemoveComponent(
+    BuildContext context, {
+    required ClipComponent component,
+    required VoidCallback onConfirm,
+  }) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Remove ${component.label}?'),
+        content: const Text('This component will be removed from the clip.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      onConfirm();
+    }
   }
 }
