@@ -18,11 +18,10 @@ import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/vie
 void main() {
   test('adds a clip after the timeline has loaded', () async {
     final project = Project.empty();
+    final repository = _ProjectRepository(project);
     final container = ProviderContainer(
       overrides: [
-        projectRepositoryProvider.overrideWithValue(
-          _ProjectRepository(project),
-        ),
+        projectRepositoryProvider.overrideWithValue(repository),
         projectIdProvider.overrideWithValue(project.id),
       ],
     );
@@ -32,20 +31,20 @@ void main() {
     addTearDown(subscription.close);
     await container.read(timelineViewModelProvider.future);
 
-    container.read(timelineViewModelProvider.notifier).addClip(0);
+    await container.read(timelineViewModelProvider.notifier).addClip(0);
 
     expect(project.timeline.tracks.first.clips, hasLength(1));
+    expect(repository.saveCount, 1);
   });
 
   test('removes a clip and clears its selection', () async {
     final project = Project.empty();
     final clip = TimelineClip(id: TimelineClipId.create(), startFrame: 0);
     project.timeline.tracks.first.addClip(clip);
+    final repository = _ProjectRepository(project);
     final container = ProviderContainer(
       overrides: [
-        projectRepositoryProvider.overrideWithValue(
-          _ProjectRepository(project),
-        ),
+        projectRepositoryProvider.overrideWithValue(repository),
         projectIdProvider.overrideWithValue(project.id),
       ],
     );
@@ -56,13 +55,14 @@ void main() {
     await container.read(timelineViewModelProvider.future);
     container.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
 
-    final removed = container
+    final removed = await container
         .read(timelineViewModelProvider.notifier)
         .removeClip(clip.id);
 
     expect(removed, isTrue);
     expect(project.timeline.tracks.first.clips, isEmpty);
     expect(container.read(timelineSelectionStateProvider).clipId, isNull);
+    expect(repository.saveCount, 1);
   });
 
   test('adds an imported image asset using the image dimensions', () async {
@@ -70,11 +70,10 @@ void main() {
     final asset = ProjectAsset(name: 'image.png', kind: ProjectAssetKind.image);
     project.assets.add(asset);
     final store = _ProjectAssetStore(asset, await _pngBytes(4, 3));
+    final repository = _ProjectRepository(project);
     final container = ProviderContainer(
       overrides: [
-        projectRepositoryProvider.overrideWithValue(
-          _ProjectRepository(project),
-        ),
+        projectRepositoryProvider.overrideWithValue(repository),
         projectIdProvider.overrideWithValue(project.id),
         projectAssetStoreProvider.overrideWithValue(store),
       ],
@@ -110,6 +109,7 @@ void main() {
     expect(container.read(timelineViewModelProvider).value?.revision, 1);
     expect(container.read(timelineSelectionStateProvider).trackIndex, 0);
     expect(container.read(timelineSelectionStateProvider).clipId, clip.id);
+    expect(repository.saveCount, 1);
   });
 }
 
@@ -144,9 +144,10 @@ class _ProjectAssetStore implements IProjectAssetStore {
 }
 
 class _ProjectRepository implements IProjectRepository {
-  const _ProjectRepository(this.project);
+  _ProjectRepository(this.project);
 
   final Project project;
+  int saveCount = 0;
 
   @override
   Future<List<Project>> findAny() async => [project];
@@ -155,5 +156,7 @@ class _ProjectRepository implements IProjectRepository {
   Future<Project> getById(ProjectId id) async => project;
 
   @override
-  Future<void> save(Project project) async {}
+  Future<void> save(Project project) async {
+    saveCount++;
+  }
 }

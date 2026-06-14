@@ -96,7 +96,7 @@ Future<TimelineClip?> addImageClipToTimeline(
     return null;
   }
 
-  timelineEditor.execute(project.timeline, command);
+  await timelineEditor.execute(project, command);
   return clip;
 }
 

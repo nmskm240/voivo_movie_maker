@@ -117,7 +117,7 @@ void main() {
         expect(clip?.component<ImageComponent>()?.assetId, asset.id);
         expect(clip?.component<ImageComponent>()?.size, const Size(4, 3));
         expect(clip?.hasComponent<TransformComponent>(), isTrue);
-        expect(repository.saveCount, 0);
+        expect(repository.saveCount, 1);
       },
     );
 

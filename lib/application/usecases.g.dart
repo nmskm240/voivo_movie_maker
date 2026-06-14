@@ -186,7 +186,7 @@ final class ImportProjectAssetProvider
 }
 
 String _$importProjectAssetHash() =>
-    r'83903a9c082b94679c5fc5a7f89c358cf7e91213';
+    r'9111c1cfd3c0276de21a95609ccecec64aee06c0';
 
 final class ImportProjectAssetFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProjectAsset>, File> {
@@ -243,6 +243,8 @@ final class AddImageClipToTimelineProvider
   static final $allTransitiveDependencies3 =
       ProjectImageResourcesProvider.$allTransitiveDependencies0;
   static final $allTransitiveDependencies4 = timelineEditorProvider;
+  static final $allTransitiveDependencies5 =
+      TimelineEditorProvider.$allTransitiveDependencies0;
 
   @override
   String debugGetCreateSourceHash() => _$addImageClipToTimelineHash();
@@ -285,7 +287,7 @@ final class AddImageClipToTimelineProvider
 }
 
 String _$addImageClipToTimelineHash() =>
-    r'c67c56b7e517166ef46e4606cf7ef64ffd0c9bd8';
+    r'ea9d713b1a56f0f5c30eec98600798f19d518af5';
 
 final class AddImageClipToTimelineFamily extends $Family
     with
@@ -308,6 +310,7 @@ final class AddImageClipToTimelineFamily extends $Family
           AddImageClipToTimelineProvider.$allTransitiveDependencies2,
           AddImageClipToTimelineProvider.$allTransitiveDependencies3,
           AddImageClipToTimelineProvider.$allTransitiveDependencies4,
+          AddImageClipToTimelineProvider.$allTransitiveDependencies5,
         },
         isAutoDispose: true,
       );

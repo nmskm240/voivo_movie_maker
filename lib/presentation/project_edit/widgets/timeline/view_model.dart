@@ -56,7 +56,8 @@ class TimelineViewModel extends _$TimelineViewModel {
     );
   }
 
-  bool execute(TimelineEditorCommand command) {
+  Future<bool> execute(TimelineEditorCommand command) async {
+    final project = await ref.read(projectProvider.future);
     final timeline = ref.read(timelineProvider).value;
     final current = state.value;
     if (timeline == null || current == null) {
@@ -66,23 +67,24 @@ class TimelineViewModel extends _$TimelineViewModel {
       return false;
     }
 
-    ref.read(timelineEditorProvider).execute(timeline, command);
+    final save = ref.read(timelineEditorProvider).execute(project, command);
     state = AsyncData(
       current.copyWith(
         timeline: TimelineInfo.fromEntity(timeline),
         revision: current.revision + 1,
       ),
     );
+    await save;
     return true;
   }
 
-  void addClip(int trackIndex) {
+  Future<void> addClip(int trackIndex) async {
     final clip = TimelineClip(
       id: TimelineClipId.create(),
       startFrame: ref.read(playbackControllerProvider).currentFrame,
       durationFrames: 90,
     );
-    final added = execute(
+    final added = await execute(
       AddClipCommand(targetTrackIndex: trackIndex, clip: clip),
     );
     if (!added) {
@@ -116,17 +118,17 @@ class TimelineViewModel extends _$TimelineViewModel {
     return true;
   }
 
-  bool moveClip(
+  Future<bool> moveClip(
     TimelineClipId clipId, {
     required int targetTrackIndex,
     required int startFrame,
-  }) {
+  }) async {
     final command = MoveClipCommand(
       clipId,
       targetTrackIndex: targetTrackIndex,
       startFrame: startFrame,
     );
-    if (!execute(command)) {
+    if (!await execute(command)) {
       return false;
     }
 
@@ -137,8 +139,8 @@ class TimelineViewModel extends _$TimelineViewModel {
     return true;
   }
 
-  bool removeClip(TimelineClipId clipId) {
-    if (!execute(RemoveClipCommand(clipId))) {
+  Future<bool> removeClip(TimelineClipId clipId) async {
+    if (!await execute(RemoveClipCommand(clipId))) {
       return false;
     }
 
@@ -149,12 +151,12 @@ class TimelineViewModel extends _$TimelineViewModel {
     return true;
   }
 
-  bool resizeClip(
+  Future<bool> resizeClip(
     TimelineClipId clipId, {
     required int startFrame,
     required int durationFrames,
-  }) {
-    final resized = execute(
+  }) async {
+    final resized = await execute(
       ResizeClipCommand(
         clipId,
         startFrame: startFrame,
