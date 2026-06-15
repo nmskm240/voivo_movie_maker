@@ -171,17 +171,32 @@ class _TimelineViewState extends ConsumerState<TimelineView>
                         child: ListView.separated(
                           controller: _trackHeaderVerticalScrollController,
                           physics: const ClampingScrollPhysics(),
-                          itemCount: timeline.tracks.length,
-                          itemBuilder: (context, index) => TimelineTrackHeader(
-                            index: index,
-                            selected: selectedTrackIndex == index,
-                            onSelected: () => ref
-                                .read(timelineSelectionStateProvider.notifier)
-                                .selectTrack(index),
-                            onAddClip: () => ref
-                                .read(timelineViewModelProvider.notifier)
-                                .addClip(index),
-                          ),
+                          itemCount: timeline.tracks.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == timeline.tracks.length) {
+                              return SizedBox(
+                                height: TimelineTrackView.height,
+                                child: TextButton.icon(
+                                  key: const ValueKey('add-timeline-track'),
+                                  onPressed: () => ref
+                                      .read(timelineViewModelProvider.notifier)
+                                      .addTrack(),
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('Add track'),
+                                ),
+                              );
+                            }
+                            return TimelineTrackHeader(
+                              index: index,
+                              selected: selectedTrackIndex == index,
+                              onSelected: () => ref
+                                  .read(timelineSelectionStateProvider.notifier)
+                                  .selectTrack(index),
+                              onAddClip: () => ref
+                                  .read(timelineViewModelProvider.notifier)
+                                  .addClip(index),
+                            );
+                          },
                           separatorBuilder: (context, index) => const Divider(),
                         ),
                       ),
@@ -213,8 +228,16 @@ class _TimelineViewState extends ConsumerState<TimelineView>
                                                 _bodyVerticalScrollController,
                                             physics:
                                                 const ClampingScrollPhysics(),
-                                            itemCount: timeline.tracks.length,
+                                            itemCount:
+                                                timeline.tracks.length + 1,
                                             itemBuilder: (context, index) {
+                                              if (index ==
+                                                  timeline.tracks.length) {
+                                                return const SizedBox(
+                                                  height:
+                                                      TimelineTrackView.height,
+                                                );
+                                              }
                                               final track =
                                                   timeline.tracks[index];
                                               return TimelineTrackView(

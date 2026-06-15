@@ -69,6 +69,7 @@ package domain {
 
   class Timeline {
     +tracks
+    +addTrack()
     +moveClipToTrack(clipId, trackIndex, startFrame)
     +getActiveClipsAt(frame)
     +getClipById(clipId)
@@ -202,6 +203,7 @@ package "application.timeline_editor" {
   }
 
   class AddClipCommand
+  class AddTrackCommand
   class MoveClipCommand
   class RemoveClipCommand
   class ResizeClipCommand
@@ -217,6 +219,7 @@ package "application.timeline_editor" {
   TimelineEditorCommand --> Timeline
 
   TimelineEditorCommand <|.. AddClipCommand
+  TimelineEditorCommand <|.. AddTrackCommand
   TimelineEditorCommand <|.. MoveClipCommand
   TimelineEditorCommand <|.. RemoveClipCommand
   TimelineEditorCommand <|.. ResizeClipCommand

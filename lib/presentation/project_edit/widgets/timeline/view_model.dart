@@ -7,6 +7,7 @@ import 'package:voivo_movie_maker/application/dtos/timeline_info.dart';
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_command.dart';
+import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_track_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/move_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/remove_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/resize_clip_command.dart';
@@ -90,6 +91,20 @@ class TimelineViewModel extends _$TimelineViewModel {
 
     ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
     ref.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
+  }
+
+  Future<bool> addTrack() async {
+    if (!await execute(const AddTrackCommand())) {
+      return false;
+    }
+
+    final timeline = ref.read(timelineProvider).value;
+    if (timeline != null) {
+      ref
+          .read(timelineSelectionStateProvider.notifier)
+          .selectTrack(timeline.tracks.length - 1);
+    }
+    return true;
   }
 
   Future<bool> addImageClip(

@@ -9,6 +9,8 @@ part 'timeline.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Timeline {
+  static const initialTrackCount = 5;
+
   Timeline({Iterable<TimelineTrack> tracks = const []})
     : _tracks = tracks.toList();
 
@@ -16,7 +18,9 @@ class Timeline {
       _$TimelineFromJson(json);
 
   factory Timeline.empty() {
-    return Timeline(tracks: List.generate(50, (index) => TimelineTrack()));
+    return Timeline(
+      tracks: List.generate(initialTrackCount, (index) => TimelineTrack()),
+    );
   }
 
   @JsonKey(name: 'tracks')
@@ -25,6 +29,10 @@ class Timeline {
   Iterable<TimelineTrack> get tracks => _tracks;
 
   Map<String, Object?> toJson() => _$TimelineToJson(this);
+
+  void addTrack() {
+    _tracks.add(TimelineTrack());
+  }
 
   void moveClipToTrack(
     TimelineClipId clipId,

@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 // Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
+import 'package:voivo_movie_maker/domain/timeline.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_auto_scroll.dart';
@@ -15,6 +16,36 @@ import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/tim
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
 void main() {
+  testWidgets('adds a timeline track from the track list footer', (
+    tester,
+  ) async {
+    final project = Project.empty();
+    final container = ProviderContainer(
+      overrides: [
+        projectRepositoryProvider.overrideWithValue(
+          _ProjectRepository(project),
+        ),
+        projectIdProvider.overrideWithValue(project.id),
+      ],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: Scaffold(body: SizedBox(width: 800, child: TimelineView())),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('add-timeline-track')));
+    await tester.pumpAndSettle();
+
+    expect(project.timeline.tracks, hasLength(Timeline.initialTrackCount + 1));
+    expect(find.text('Track 6'), findsOneWidget);
+  });
+
   testWidgets('auto-scrolls while dragging a clip near the right edge', (
     tester,
   ) async {
