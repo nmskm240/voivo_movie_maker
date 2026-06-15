@@ -69,6 +69,7 @@ class ProjectListScreen extends ConsumerWidget {
       return;
     }
 
+    ref.invalidate(fetchProjectSummariesProvider);
     context.goNamed(
       ProjectEditorRoute.name,
       pathParameters: ProjectEditorRoute.params(projectId),
