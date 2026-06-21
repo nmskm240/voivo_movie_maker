@@ -51,6 +51,23 @@ void main() {
     expect(store.loadCount, 2);
     expect(reloaded, [4, 5]);
   });
+
+  test('project video cache loads an asset only once', () async {
+    final asset = ProjectAsset(name: 'movie.mp4', kind: ProjectAssetKind.video);
+    final store = _ProjectAssetStore(Uint8List.fromList([1, 2, 3]));
+    final container = ProviderContainer(
+      overrides: [projectAssetStoreProvider.overrideWithValue(store)],
+    );
+    addTearDown(container.dispose);
+
+    final cache = container.read(projectVideoCacheProvider);
+    final videos = await Future.wait([cache.load(asset), cache.load(asset)]);
+
+    expect(store.loadCount, 1);
+    expect(identical(videos.first, videos.last), isTrue);
+    expect(cache.findById(asset.id), same(videos.first));
+    expect(videos.first, [1, 2, 3]);
+  });
 }
 
 Future<Uint8List> _pngBytes(int width, int height) async {

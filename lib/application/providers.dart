@@ -82,6 +82,23 @@ Stream<int> projectAudioCacheRevision(Ref ref) {
   return ref.watch(projectAudioCacheProvider).revisions;
 }
 
+@Riverpod(keepAlive: true, dependencies: [projectAssetStore])
+ProjectAssetCache<Uint8List> projectVideoCache(Ref ref) {
+  final cache = ProjectAssetCache<Uint8List>(
+    ref.watch(projectAssetStoreProvider),
+    kind: ProjectAssetKind.video,
+    loadAsset: loadProjectAssetBytes,
+    label: 'video',
+  );
+  ref.onDispose(cache.dispose);
+  return cache;
+}
+
+@Riverpod(dependencies: [projectVideoCache])
+Stream<int> projectVideoCacheRevision(Ref ref) {
+  return ref.watch(projectVideoCacheProvider).revisions;
+}
+
 @Riverpod(dependencies: [project])
 class TimelineNotifier extends _$TimelineNotifier {
   @override

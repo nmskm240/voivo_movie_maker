@@ -20,10 +20,12 @@ class FfmpegProjectEncoder {
   const FfmpegProjectEncoder({
     this.frameStreamWriter = const ProjectFrameStreamWriter(),
     this.audioAssets = const {},
+    this.videoAssets = const {},
   });
 
   final ProjectFrameStreamWriter frameStreamWriter;
   final Map<AssetId, Uint8List> audioAssets;
+  final Map<AssetId, Uint8List> videoAssets;
 
   Future<ExportResult> encode(
     Project project,
@@ -36,12 +38,14 @@ class FfmpegProjectEncoder {
     operation?.throwIfCancelled();
 
     final framePipe = await FfmpegFramePipe.create();
+    final videoInputs = await _createVideoInputs(project, outputPath);
     final audioInputs = await _createAudioInputs(project, outputPath);
     try {
       final command = _buildCommand(
         project,
         framePipe.path,
         outputPath,
+        videoInputs,
         audioInputs,
       );
       final session = FFmpegKit.createSession(command);
@@ -90,6 +94,7 @@ class FfmpegProjectEncoder {
     } finally {
       operation?.detachCancel();
       await framePipe.dispose();
+      await _deleteMediaInputs(videoInputs);
       await _deleteAudioInputs(audioInputs);
       if (operation?.isCancelled ?? false) {
         final outputFile = File(outputPath);
@@ -104,6 +109,7 @@ class FfmpegProjectEncoder {
     Project project,
     String framePipePath,
     String outputPath,
+    List<_VideoInput> videoInputs,
     List<_AudioInput> audioInputs,
   ) {
     final builder = FfmpegCommandBuilder()
@@ -117,16 +123,24 @@ class FfmpegProjectEncoder {
         .addOption('-framerate', project.fps)
         .addInput(framePipePath);
 
+    for (final input in videoInputs) {
+      builder.addInput(input.path);
+    }
     for (final input in audioInputs) {
       builder.addInput(input.path);
     }
 
+    final filter = _buildFilter(project, videoInputs, audioInputs);
+    if (filter.isNotEmpty) {
+      builder.addOption('-filter_complex', filter);
+    }
+    final videoOutput = videoInputs.isEmpty ? '0:v:0' : '[$_mixedVideoLabel]';
+
     if (audioInputs.isEmpty) {
-      builder.addFlag('-an');
+      builder.addOption('-map', videoOutput).addFlag('-an');
     } else {
       builder
-          .addOption('-filter_complex', _buildAudioFilter(audioInputs))
-          .addOption('-map', '0:v:0')
+          .addOption('-map', videoOutput)
           .addOption('-map', '[$_mixedAudioLabel]')
           .addOption('-c:a', 'aac')
           .addOption('-t', _seconds(_durationFrames(project), project.fps));
@@ -139,6 +153,49 @@ class FfmpegProjectEncoder {
         .addOption('-movflags', '+faststart')
         .addOutput(outputPath)
         .build();
+  }
+
+  Future<List<_VideoInput>> _createVideoInputs(
+    Project project,
+    String outputPath,
+  ) async {
+    final clips = project.timeline.tracks.expand((track) => track.clips);
+    final inputs = <_VideoInput>[];
+    Directory? directory;
+    for (final clip in clips) {
+      final component = clip.component<VideoComponent>();
+      if (component == null) {
+        continue;
+      }
+      final asset = project.assets.findById(component.assetId);
+      final bytes = videoAssets[component.assetId];
+      if (asset == null || asset.kind != ProjectAssetKind.video) {
+        continue;
+      }
+      if (bytes == null) {
+        throw StateError('Video asset ${component.assetId} is not loaded.');
+      }
+
+      directory ??= await File(
+        outputPath,
+      ).parent.createTemp('voivo_export_video_');
+      final extension = path.extension(asset.name).isEmpty
+          ? '.mp4'
+          : path.extension(asset.name);
+      final file = File(
+        path.join(directory.path, '${clip.id.value}$extension'),
+      );
+      await file.writeAsBytes(bytes);
+      inputs.add(
+        _VideoInput(
+          path: file.path,
+          startSeconds: clip.startFrame / project.fps,
+          durationSeconds: _seconds(clip.durationFrames, project.fps),
+          temporaryDirectory: directory,
+        ),
+      );
+    }
+    return inputs;
   }
 
   Future<List<_AudioInput>> _createAudioInputs(
@@ -185,10 +242,8 @@ class FfmpegProjectEncoder {
     return inputs;
   }
 
-  Future<void> _deleteAudioInputs(List<_AudioInput> audioInputs) async {
-    final directories = audioInputs
-        .map((input) => input.temporaryDirectory)
-        .toSet();
+  Future<void> _deleteMediaInputs(List<_MediaInput> inputs) async {
+    final directories = inputs.map((input) => input.temporaryDirectory).toSet();
     for (final directory in directories) {
       if (await directory.exists()) {
         await directory.delete(recursive: true);
@@ -196,11 +251,60 @@ class FfmpegProjectEncoder {
     }
   }
 
-  String _buildAudioFilter(List<_AudioInput> audioInputs) {
+  Future<void> _deleteAudioInputs(List<_AudioInput> audioInputs) {
+    return _deleteMediaInputs(audioInputs);
+  }
+
+  String _buildFilter(
+    Project project,
+    List<_VideoInput> videoInputs,
+    List<_AudioInput> audioInputs,
+  ) {
+    return [
+      if (videoInputs.isNotEmpty) _buildVideoFilter(project, videoInputs),
+      if (audioInputs.isNotEmpty)
+        _buildAudioFilter(audioInputs, firstInputIndex: videoInputs.length + 1),
+    ].join(';');
+  }
+
+  String _buildVideoFilter(Project project, List<_VideoInput> videoInputs) {
+    final width = project.width.round();
+    final height = project.height.round();
+    final filters = <String>[];
+    var base = '0:v';
+    for (var index = 0; index < videoInputs.length; index++) {
+      final input = videoInputs[index];
+      final inputIndex = index + 1;
+      final videoLabel = 'v$index';
+      final outputLabel = index == videoInputs.length - 1
+          ? _mixedVideoLabel
+          : 'base$index';
+      filters.add(
+        '[$inputIndex:v]'
+        'trim=0:${input.durationSeconds},'
+        'setpts=PTS-STARTPTS+${input.startSeconds}/TB,'
+        'scale=$width:$height:force_original_aspect_ratio=decrease,'
+        'pad=$width:$height:(ow-iw)/2:(oh-ih)/2:color=black'
+        '[$videoLabel]',
+      );
+      filters.add(
+        '[$base][$videoLabel]'
+        'overlay=0:0:eof_action=pass'
+        '[$outputLabel]',
+      );
+      base = outputLabel;
+    }
+    return filters.join(';');
+  }
+
+  String _buildAudioFilter(
+    List<_AudioInput> audioInputs, {
+    required int firstInputIndex,
+  }) {
     final filters = <String>[];
     for (var index = 0; index < audioInputs.length; index++) {
       final input = audioInputs[index];
-      final inputIndex = index + 1;
+      final inputIndex = firstInputIndex + index;
       final delayMs = (input.startSeconds * 1000).round();
       filters.add(
         '[$inputIndex:a]'
@@ -270,19 +374,37 @@ class FfmpegProjectEncoder {
 }
 
 const _mixedAudioLabel = 'mixed_audio';
+const _mixedVideoLabel = 'mixed_video';
 
-final class _AudioInput {
+abstract final class _MediaInput {
+  const _MediaInput({required this.path, required this.temporaryDirectory});
+
+  final String path;
+  final Directory temporaryDirectory;
+}
+
+final class _VideoInput extends _MediaInput {
+  const _VideoInput({
+    required super.path,
+    required this.startSeconds,
+    required this.durationSeconds,
+    required super.temporaryDirectory,
+  });
+
+  final double startSeconds;
+  final String durationSeconds;
+}
+
+final class _AudioInput extends _MediaInput {
   const _AudioInput({
-    required this.path,
+    required super.path,
     required this.startSeconds,
     required this.durationSeconds,
     required this.volume,
-    required this.temporaryDirectory,
+    required super.temporaryDirectory,
   });
 
-  final String path;
   final double startSeconds;
   final String durationSeconds;
   final double volume;
-  final Directory temporaryDirectory;
 }

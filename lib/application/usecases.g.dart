@@ -307,6 +307,7 @@ final class ImportProjectAssetProvider
           projectAssetImporterProvider,
           projectImageCacheProvider,
           projectAudioCacheProvider,
+          projectVideoCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           ImportProjectAssetProvider.$allTransitiveDependencies0,
@@ -315,6 +316,7 @@ final class ImportProjectAssetProvider
           ImportProjectAssetProvider.$allTransitiveDependencies3,
           ImportProjectAssetProvider.$allTransitiveDependencies4,
           ImportProjectAssetProvider.$allTransitiveDependencies5,
+          ImportProjectAssetProvider.$allTransitiveDependencies6,
         },
       );
 
@@ -326,6 +328,7 @@ final class ImportProjectAssetProvider
       ProjectAssetImporterProvider.$allTransitiveDependencies0;
   static final $allTransitiveDependencies4 = projectImageCacheProvider;
   static final $allTransitiveDependencies5 = projectAudioCacheProvider;
+  static final $allTransitiveDependencies6 = projectVideoCacheProvider;
 
   @override
   String debugGetCreateSourceHash() => _$importProjectAssetHash();
@@ -343,7 +346,7 @@ final class ImportProjectAssetProvider
 }
 
 String _$importProjectAssetHash() =>
-    r'd7e6cd9c70bd27fde98be2f44f44c25de41b9e6d';
+    r'81f96a800d4ac33069d8d8a6b013a70bb3cfa7f1';
 
 @ProviderFor(createVoiceAsset)
 final createVoiceAssetProvider = CreateVoiceAssetFamily._();
@@ -832,6 +835,7 @@ final class ExportProjectProvider
   static final $allTransitiveDependencies3 =
       ProjectImageCacheProvider.$allTransitiveDependencies0;
   static final $allTransitiveDependencies4 = projectAudioCacheProvider;
+  static final $allTransitiveDependencies5 = projectVideoCacheProvider;
 
   @override
   String debugGetCreateSourceHash() => _$exportProjectHash();
@@ -866,7 +870,7 @@ final class ExportProjectProvider
   }
 }
 
-String _$exportProjectHash() => r'7681e3f53daf32c8cc95e78ad6fa880927e287b7';
+String _$exportProjectHash() => r'3bd692c8f65808a2740da3f2db9054e7734c6e96';
 
 final class ExportProjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ExportResult?>, ExportOperation> {
@@ -878,6 +882,7 @@ final class ExportProjectFamily extends $Family
           projectProvider,
           projectImageCacheProvider,
           projectAudioCacheProvider,
+          projectVideoCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           ExportProjectProvider.$allTransitiveDependencies0,
@@ -885,6 +890,7 @@ final class ExportProjectFamily extends $Family
           ExportProjectProvider.$allTransitiveDependencies2,
           ExportProjectProvider.$allTransitiveDependencies3,
           ExportProjectProvider.$allTransitiveDependencies4,
+          ExportProjectProvider.$allTransitiveDependencies5,
         },
         isAutoDispose: true,
       );

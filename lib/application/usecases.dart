@@ -76,6 +76,7 @@ Future<void> renameProjectAsset(
     projectAssetImporter,
     projectImageCache,
     projectAudioCache,
+    projectVideoCache,
   ],
 )
 Future<ProjectAsset?> importProjectAsset(Ref ref) async {
@@ -85,10 +86,11 @@ Future<ProjectAsset?> importProjectAsset(Ref ref) async {
   final evictAssetCache = _assetCacheEvictor(
     evictImageCache: ref.read(projectImageCacheProvider).evict,
     evictAudioCache: ref.read(projectAudioCacheProvider).evict,
+    evictVideoCache: ref.read(projectVideoCacheProvider).evict,
   );
   final picked = await FilePicker.pickFiles(
     type: FileType.custom,
-    allowedExtensions: const ['jpg', 'jpeg', 'png', 'mp3', 'wav'],
+    allowedExtensions: const ['jpg', 'jpeg', 'png', 'mp3', 'wav', 'mp4', 'avi'],
   );
   final path = picked?.files.single.path;
   if (path == null) {
@@ -156,6 +158,7 @@ Future<ProjectAsset> createVoiceAsset(
 void Function(ProjectAsset asset) _assetCacheEvictor({
   required void Function(AssetId assetId) evictImageCache,
   required void Function(AssetId assetId) evictAudioCache,
+  required void Function(AssetId assetId) evictVideoCache,
 }) {
   return (asset) {
     switch (asset.kind) {
@@ -166,6 +169,7 @@ void Function(ProjectAsset asset) _assetCacheEvictor({
         evictAudioCache(asset.id);
         break;
       case ProjectAssetKind.video:
+        evictVideoCache(asset.id);
         break;
     }
   };
@@ -271,10 +275,18 @@ Future<TimelineClip?> addVideoClipToTimeline(
   return clip;
 }
 
-@Riverpod(dependencies: [project, projectImageCache, projectAudioCache])
+@Riverpod(
+  dependencies: [
+    project,
+    projectImageCache,
+    projectAudioCache,
+    projectVideoCache,
+  ],
+)
 Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
   final imageCache = ref.read(projectImageCacheProvider);
   final audioCache = ref.read(projectAudioCacheProvider);
+  final videoCache = ref.read(projectVideoCacheProvider);
   final project = await ref.watch(projectProvider.future);
   await imageCache.loadAll(
     project.assets.assets.where(
@@ -286,9 +298,15 @@ Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
       (asset) => asset.kind == ProjectAssetKind.audio,
     ),
   );
+  await videoCache.loadAll(
+    project.assets.assets.where(
+      (asset) => asset.kind == ProjectAssetKind.video,
+    ),
+  );
   final exporter = ProjectExporter(
     encoder: FfmpegProjectEncoder(
       audioAssets: audioCache.values,
+      videoAssets: videoCache.values,
       frameStreamWriter: ProjectFrameStreamWriter(
         frameBuilder: ProjectFrameBuilder(imageAssets: imageCache.values),
       ),

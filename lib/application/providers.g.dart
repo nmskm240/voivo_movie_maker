@@ -406,6 +406,98 @@ final class ProjectAudioCacheRevisionProvider
 String _$projectAudioCacheRevisionHash() =>
     r'9d01167172e12699e39aded2f4a877014f826bca';
 
+@ProviderFor(projectVideoCache)
+final projectVideoCacheProvider = ProjectVideoCacheProvider._();
+
+final class ProjectVideoCacheProvider
+    extends
+        $FunctionalProvider<
+          ProjectAssetCache<Uint8List>,
+          ProjectAssetCache<Uint8List>,
+          ProjectAssetCache<Uint8List>
+        >
+    with $Provider<ProjectAssetCache<Uint8List>> {
+  ProjectVideoCacheProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'projectVideoCacheProvider',
+        isAutoDispose: false,
+        dependencies: <ProviderOrFamily>[projectAssetStoreProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          ProjectVideoCacheProvider.$allTransitiveDependencies0,
+        ],
+      );
+
+  static final $allTransitiveDependencies0 = projectAssetStoreProvider;
+
+  @override
+  String debugGetCreateSourceHash() => _$projectVideoCacheHash();
+
+  @$internal
+  @override
+  $ProviderElement<ProjectAssetCache<Uint8List>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ProjectAssetCache<Uint8List> create(Ref ref) {
+    return projectVideoCache(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProjectAssetCache<Uint8List> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProjectAssetCache<Uint8List>>(value),
+    );
+  }
+}
+
+String _$projectVideoCacheHash() => r'7bcec133da7944362eec70ca69301ff3cc0845a0';
+
+@ProviderFor(projectVideoCacheRevision)
+final projectVideoCacheRevisionProvider = ProjectVideoCacheRevisionProvider._();
+
+final class ProjectVideoCacheRevisionProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, Stream<int>>
+    with $FutureModifier<int>, $StreamProvider<int> {
+  ProjectVideoCacheRevisionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'projectVideoCacheRevisionProvider',
+        isAutoDispose: true,
+        dependencies: <ProviderOrFamily>[projectVideoCacheProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          ProjectVideoCacheRevisionProvider.$allTransitiveDependencies0,
+          ProjectVideoCacheRevisionProvider.$allTransitiveDependencies1,
+        ],
+      );
+
+  static final $allTransitiveDependencies0 = projectVideoCacheProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectVideoCacheProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$projectVideoCacheRevisionHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<int> create(Ref ref) {
+    return projectVideoCacheRevision(ref);
+  }
+}
+
+String _$projectVideoCacheRevisionHash() =>
+    r'b75c30a5d98d59f5c47729543c81fc591bcda50a';
+
 @ProviderFor(TimelineNotifier)
 final timelineProvider = TimelineNotifierProvider._();
 
