@@ -722,6 +722,7 @@ final class ExportProjectProvider
   static final $allTransitiveDependencies2 = projectImageCacheProvider;
   static final $allTransitiveDependencies3 =
       ProjectImageCacheProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies4 = projectAudioCacheProvider;
 
   @override
   String debugGetCreateSourceHash() => _$exportProjectHash();
@@ -756,7 +757,7 @@ final class ExportProjectProvider
   }
 }
 
-String _$exportProjectHash() => r'f0cd27e03ec7a406e01dcfa01ec958037e7cf021';
+String _$exportProjectHash() => r'7681e3f53daf32c8cc95e78ad6fa880927e287b7';
 
 final class ExportProjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ExportResult?>, ExportOperation> {
@@ -767,12 +768,14 @@ final class ExportProjectFamily extends $Family
         dependencies: <ProviderOrFamily>[
           projectProvider,
           projectImageCacheProvider,
+          projectAudioCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           ExportProjectProvider.$allTransitiveDependencies0,
           ExportProjectProvider.$allTransitiveDependencies1,
           ExportProjectProvider.$allTransitiveDependencies2,
           ExportProjectProvider.$allTransitiveDependencies3,
+          ExportProjectProvider.$allTransitiveDependencies4,
         },
         isAutoDispose: true,
       );

@@ -239,17 +239,24 @@ Future<TimelineClip?> addAudioClipToTimeline(
   return clip;
 }
 
-@Riverpod(dependencies: [project, projectImageCache])
+@Riverpod(dependencies: [project, projectImageCache, projectAudioCache])
 Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
   final imageCache = ref.read(projectImageCacheProvider);
+  final audioCache = ref.read(projectAudioCacheProvider);
   final project = await ref.watch(projectProvider.future);
   await imageCache.loadAll(
     project.assets.assets.where(
       (asset) => asset.kind == ProjectAssetKind.image,
     ),
   );
+  await audioCache.loadAll(
+    project.assets.assets.where(
+      (asset) => asset.kind == ProjectAssetKind.audio,
+    ),
+  );
   final exporter = ProjectExporter(
     encoder: FfmpegProjectEncoder(
+      audioAssets: audioCache.values,
       frameStreamWriter: ProjectFrameStreamWriter(
         frameBuilder: ProjectFrameBuilder(imageAssets: imageCache.values),
       ),
