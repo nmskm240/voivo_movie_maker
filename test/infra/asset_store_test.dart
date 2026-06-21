@@ -26,6 +26,15 @@ void main() {
     final storedFile = File(p.join(assetsDirectory.path, asset.fileName));
 
     expect(await storedFile.readAsBytes(), _pngBytes);
+
+    final replacement = File(
+      p.join(temporaryDirectory.path, 'replacement.png'),
+    );
+    final replacementBytes = Uint8List.fromList([..._pngBytes, 1, 2, 3]);
+    await replacement.writeAsBytes(replacementBytes);
+    await store.replace(asset, replacement);
+    expect(await storedFile.readAsBytes(), replacementBytes);
+
     await store.delete(asset);
     await store.delete(asset);
     expect(await storedFile.exists(), isFalse);

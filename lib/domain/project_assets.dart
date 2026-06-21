@@ -125,8 +125,9 @@ class ProjectAssetCatalog {
   Map<String, Object?> toJson() => _$ProjectAssetCatalogToJson(this);
 }
 
-abstract interface class IProjectAssetStore {
+abstract class IProjectAssetStore {
   Stream<List<int>> load(ProjectAsset asset);
   Future<ProjectAsset> save(File file);
+  Future<void> replace(ProjectAsset asset, File file);
   Future<void> delete(ProjectAsset asset);
 }
