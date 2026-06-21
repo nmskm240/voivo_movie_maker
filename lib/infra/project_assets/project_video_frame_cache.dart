@@ -37,6 +37,28 @@ final class ProjectVideoFrameCache {
     return _values[_VideoFrameKey(asset.id, frameNumber)];
   }
 
+  Image? findNearest(
+    ProjectAsset asset,
+    int frameNumber, {
+    required int maxDistance,
+  }) {
+    for (var distance = 0; distance <= maxDistance; distance++) {
+      final previous =
+          _values[_VideoFrameKey(asset.id, frameNumber - distance)];
+      if (previous != null) {
+        return previous;
+      }
+      if (distance == 0) {
+        continue;
+      }
+      final next = _values[_VideoFrameKey(asset.id, frameNumber + distance)];
+      if (next != null) {
+        return next;
+      }
+    }
+    return null;
+  }
+
   Future<Image> load(
     ProjectAsset asset, {
     required int frameNumber,

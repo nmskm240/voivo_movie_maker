@@ -15,6 +15,7 @@ import 'package:voivo_movie_maker/application/services/rendering/project_frame_b
 import 'package:voivo_movie_maker/application/services/timeline_audio_player.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
+import 'package:voivo_movie_maker/infra/project_assets/project_video_frame_cache.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/project_preview_painter.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
@@ -26,6 +27,9 @@ class ProjectPreview extends ConsumerStatefulWidget {
 }
 
 class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
+  static const _videoPreviewAheadFrames = 8;
+  static const _videoPreviewFallbackFrames = 3;
+
   late final TimelineAudioPlayer _timelineAudioPlayer;
 
   @override
@@ -105,28 +109,23 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
             continue;
           }
           final localFrame = currentFrame - clip.startFrame;
-          final image = videoFrameCache.find(asset, localFrame);
+          final image =
+              videoFrameCache.find(asset, localFrame) ??
+              videoFrameCache.findNearest(
+                asset,
+                localFrame,
+                maxDistance: _videoPreviewFallbackFrames,
+              );
           if (image != null) {
             videoFrames[clip.id] = image;
-            continue;
           }
-          unawaited(
-            videoFrameCache
-                .load(
-                  asset,
-                  frameNumber: localFrame,
-                  position: Duration(
-                    microseconds: (localFrame / project.fps * 1000000).round(),
-                  ),
-                )
-                .then<void>(
-                  (_) {},
-                  onError: (Object error, StackTrace stackTrace) {
-                    debugPrint(
-                      'Could not decode video frame ${asset.name}: $error',
-                    );
-                  },
-                ),
+          _preloadVideoFrames(
+            videoFrameCache,
+            asset: asset,
+            localFrame: localFrame,
+            fps: project.fps,
+            durationFrames: clip.durationFrames,
+            isPlaying: playback.isPlaying,
           );
         }
         final frame = ProjectFrameBuilder(
@@ -157,5 +156,46 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
         );
       },
     );
+  }
+
+  void _preloadVideoFrames(
+    ProjectVideoFrameCache videoFrameCache, {
+    required ProjectAsset asset,
+    required int localFrame,
+    required int fps,
+    required int durationFrames,
+    required bool isPlaying,
+  }) {
+    if (fps <= 0) {
+      return;
+    }
+    final aheadFrames = isPlaying ? _videoPreviewAheadFrames : 0;
+    for (var offset = 0; offset <= aheadFrames; offset++) {
+      final frameNumber = localFrame + offset;
+      if (frameNumber < 0 || frameNumber >= durationFrames) {
+        continue;
+      }
+      if (videoFrameCache.find(asset, frameNumber) != null) {
+        continue;
+      }
+      unawaited(
+        videoFrameCache
+            .load(
+              asset,
+              frameNumber: frameNumber,
+              position: Duration(
+                microseconds: (frameNumber / fps * 1000000).round(),
+              ),
+            )
+            .then<void>(
+              (_) {},
+              onError: (Object error, StackTrace stackTrace) {
+                debugPrint(
+                  'Could not decode video frame ${asset.name}: $error',
+                );
+              },
+            ),
+      );
+    }
   }
 }
