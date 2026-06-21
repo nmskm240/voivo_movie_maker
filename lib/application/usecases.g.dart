@@ -305,12 +305,16 @@ final class ImportProjectAssetProvider
         dependencies: <ProviderOrFamily>[
           projectProvider,
           projectAssetImporterProvider,
+          projectImageCacheProvider,
+          projectAudioCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           ImportProjectAssetProvider.$allTransitiveDependencies0,
           ImportProjectAssetProvider.$allTransitiveDependencies1,
           ImportProjectAssetProvider.$allTransitiveDependencies2,
           ImportProjectAssetProvider.$allTransitiveDependencies3,
+          ImportProjectAssetProvider.$allTransitiveDependencies4,
+          ImportProjectAssetProvider.$allTransitiveDependencies5,
         },
       );
 
@@ -320,6 +324,8 @@ final class ImportProjectAssetProvider
   static final $allTransitiveDependencies2 = projectAssetImporterProvider;
   static final $allTransitiveDependencies3 =
       ProjectAssetImporterProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies4 = projectImageCacheProvider;
+  static final $allTransitiveDependencies5 = projectAudioCacheProvider;
 
   @override
   String debugGetCreateSourceHash() => _$importProjectAssetHash();
@@ -337,7 +343,7 @@ final class ImportProjectAssetProvider
 }
 
 String _$importProjectAssetHash() =>
-    r'2eda3c695aea4493939db3c2eaf772a3a8283f06';
+    r'd7e6cd9c70bd27fde98be2f44f44c25de41b9e6d';
 
 @ProviderFor(createVoiceAsset)
 final createVoiceAssetProvider = CreateVoiceAssetFamily._();
@@ -368,6 +374,7 @@ final class CreateVoiceAssetProvider
   static final $allTransitiveDependencies2 = projectAssetImporterProvider;
   static final $allTransitiveDependencies3 =
       ProjectAssetImporterProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies4 = projectAudioCacheProvider;
 
   @override
   String debugGetCreateSourceHash() => _$createVoiceAssetHash();
@@ -413,7 +420,7 @@ final class CreateVoiceAssetProvider
   }
 }
 
-String _$createVoiceAssetHash() => r'658fda49b2b2bb16c505abe3e61e7907c259d653';
+String _$createVoiceAssetHash() => r'59d9e6038f2b4ff9cdeb8332b6eb1bbb6214d371';
 
 final class CreateVoiceAssetFamily extends $Family
     with
@@ -428,12 +435,14 @@ final class CreateVoiceAssetFamily extends $Family
         dependencies: <ProviderOrFamily>[
           projectProvider,
           projectAssetImporterProvider,
+          projectAudioCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           CreateVoiceAssetProvider.$allTransitiveDependencies0,
           CreateVoiceAssetProvider.$allTransitiveDependencies1,
           CreateVoiceAssetProvider.$allTransitiveDependencies2,
           CreateVoiceAssetProvider.$allTransitiveDependencies3,
+          CreateVoiceAssetProvider.$allTransitiveDependencies4,
         },
         isAutoDispose: true,
       );
@@ -481,9 +490,9 @@ final class AddImageClipToTimelineProvider
   static final $allTransitiveDependencies0 = projectProvider;
   static final $allTransitiveDependencies1 =
       ProjectProvider.$allTransitiveDependencies0;
-  static final $allTransitiveDependencies2 = projectImageResourcesProvider;
+  static final $allTransitiveDependencies2 = projectImageCacheProvider;
   static final $allTransitiveDependencies3 =
-      ProjectImageResourcesProvider.$allTransitiveDependencies0;
+      ProjectImageCacheProvider.$allTransitiveDependencies0;
   static final $allTransitiveDependencies4 = timelineEditorProvider;
   static final $allTransitiveDependencies5 =
       TimelineEditorProvider.$allTransitiveDependencies0;
@@ -529,7 +538,7 @@ final class AddImageClipToTimelineProvider
 }
 
 String _$addImageClipToTimelineHash() =>
-    r'be72fab301b6249cb65a874c221799bb6b507460';
+    r'49cca3ba0dc7e60e0281f94425d5077168555a81';
 
 final class AddImageClipToTimelineFamily extends $Family
     with
@@ -543,7 +552,7 @@ final class AddImageClipToTimelineFamily extends $Family
         name: r'addImageClipToTimelineProvider',
         dependencies: <ProviderOrFamily>[
           projectProvider,
-          projectImageResourcesProvider,
+          projectImageCacheProvider,
           timelineEditorProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
@@ -596,8 +605,11 @@ final class AddAudioClipToTimelineProvider
   static final $allTransitiveDependencies0 = projectProvider;
   static final $allTransitiveDependencies1 =
       ProjectProvider.$allTransitiveDependencies0;
-  static final $allTransitiveDependencies2 = timelineEditorProvider;
+  static final $allTransitiveDependencies2 = projectAudioCacheProvider;
   static final $allTransitiveDependencies3 =
+      ProjectAudioCacheProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies4 = timelineEditorProvider;
+  static final $allTransitiveDependencies5 =
       TimelineEditorProvider.$allTransitiveDependencies0;
 
   @override
@@ -641,7 +653,7 @@ final class AddAudioClipToTimelineProvider
 }
 
 String _$addAudioClipToTimelineHash() =>
-    r'ea5e3f3c6e6784398dce5c7605e18af589e9d10e';
+    r'cbf0ec9cfe169a89b91a993951ea1f2f7f42d866';
 
 final class AddAudioClipToTimelineFamily extends $Family
     with
@@ -655,6 +667,7 @@ final class AddAudioClipToTimelineFamily extends $Family
         name: r'addAudioClipToTimelineProvider',
         dependencies: <ProviderOrFamily>[
           projectProvider,
+          projectAudioCacheProvider,
           timelineEditorProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
@@ -662,6 +675,8 @@ final class AddAudioClipToTimelineFamily extends $Family
           AddAudioClipToTimelineProvider.$allTransitiveDependencies1,
           AddAudioClipToTimelineProvider.$allTransitiveDependencies2,
           AddAudioClipToTimelineProvider.$allTransitiveDependencies3,
+          AddAudioClipToTimelineProvider.$allTransitiveDependencies4,
+          AddAudioClipToTimelineProvider.$allTransitiveDependencies5,
         },
         isAutoDispose: true,
       );
@@ -704,9 +719,9 @@ final class ExportProjectProvider
   static final $allTransitiveDependencies0 = projectProvider;
   static final $allTransitiveDependencies1 =
       ProjectProvider.$allTransitiveDependencies0;
-  static final $allTransitiveDependencies2 = projectImageResourcesProvider;
+  static final $allTransitiveDependencies2 = projectImageCacheProvider;
   static final $allTransitiveDependencies3 =
-      ProjectImageResourcesProvider.$allTransitiveDependencies0;
+      ProjectImageCacheProvider.$allTransitiveDependencies0;
 
   @override
   String debugGetCreateSourceHash() => _$exportProjectHash();
@@ -741,7 +756,7 @@ final class ExportProjectProvider
   }
 }
 
-String _$exportProjectHash() => r'9d79f575eb4b2bd9d35bd958372e0f391f15a754';
+String _$exportProjectHash() => r'f0cd27e03ec7a406e01dcfa01ec958037e7cf021';
 
 final class ExportProjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ExportResult?>, ExportOperation> {
@@ -751,7 +766,7 @@ final class ExportProjectFamily extends $Family
         name: r'exportProjectProvider',
         dependencies: <ProviderOrFamily>[
           projectProvider,
-          projectImageResourcesProvider,
+          projectImageCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           ExportProjectProvider.$allTransitiveDependencies0,

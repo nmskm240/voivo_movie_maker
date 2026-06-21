@@ -222,85 +222,83 @@ final class ProjectProvider
 
 String _$projectHash() => r'4c03c5d06ae894c6e9cac1db985d3eb172da7373';
 
-@ProviderFor(projectImageResources)
-final projectImageResourcesProvider = ProjectImageResourcesProvider._();
+@ProviderFor(projectImageCache)
+final projectImageCacheProvider = ProjectImageCacheProvider._();
 
-final class ProjectImageResourcesProvider
+final class ProjectImageCacheProvider
     extends
         $FunctionalProvider<
-          ProjectImageResources,
-          ProjectImageResources,
-          ProjectImageResources
+          ProjectAssetCache<ui.Image>,
+          ProjectAssetCache<ui.Image>,
+          ProjectAssetCache<ui.Image>
         >
-    with $Provider<ProjectImageResources> {
-  ProjectImageResourcesProvider._()
+    with $Provider<ProjectAssetCache<ui.Image>> {
+  ProjectImageCacheProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'projectImageResourcesProvider',
+        name: r'projectImageCacheProvider',
         isAutoDispose: false,
         dependencies: <ProviderOrFamily>[projectAssetStoreProvider],
         $allTransitiveDependencies: <ProviderOrFamily>[
-          ProjectImageResourcesProvider.$allTransitiveDependencies0,
+          ProjectImageCacheProvider.$allTransitiveDependencies0,
         ],
       );
 
   static final $allTransitiveDependencies0 = projectAssetStoreProvider;
 
   @override
-  String debugGetCreateSourceHash() => _$projectImageResourcesHash();
+  String debugGetCreateSourceHash() => _$projectImageCacheHash();
 
   @$internal
   @override
-  $ProviderElement<ProjectImageResources> $createElement(
+  $ProviderElement<ProjectAssetCache<ui.Image>> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  ProjectImageResources create(Ref ref) {
-    return projectImageResources(ref);
+  ProjectAssetCache<ui.Image> create(Ref ref) {
+    return projectImageCache(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ProjectImageResources value) {
+  Override overrideWithValue(ProjectAssetCache<ui.Image> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ProjectImageResources>(value),
+      providerOverride: $SyncValueProvider<ProjectAssetCache<ui.Image>>(value),
     );
   }
 }
 
-String _$projectImageResourcesHash() =>
-    r'1f7ba4cb1c43c50016b54a572dce3644027522b7';
+String _$projectImageCacheHash() => r'3e155db21fa5b4c173e19e24f55333bb1070d684';
 
-@ProviderFor(projectImageResourcesRevision)
-final projectImageResourcesRevisionProvider =
-    ProjectImageResourcesRevisionProvider._();
+@ProviderFor(projectImageCacheRevision)
+final projectImageCacheRevisionProvider = ProjectImageCacheRevisionProvider._();
 
-final class ProjectImageResourcesRevisionProvider
+final class ProjectImageCacheRevisionProvider
     extends $FunctionalProvider<AsyncValue<int>, int, Stream<int>>
     with $FutureModifier<int>, $StreamProvider<int> {
-  ProjectImageResourcesRevisionProvider._()
+  ProjectImageCacheRevisionProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'projectImageResourcesRevisionProvider',
+        name: r'projectImageCacheRevisionProvider',
         isAutoDispose: true,
-        dependencies: <ProviderOrFamily>[projectImageResourcesProvider],
+        dependencies: <ProviderOrFamily>[projectImageCacheProvider],
         $allTransitiveDependencies: <ProviderOrFamily>[
-          ProjectImageResourcesRevisionProvider.$allTransitiveDependencies0,
-          ProjectImageResourcesRevisionProvider.$allTransitiveDependencies1,
+          ProjectImageCacheRevisionProvider.$allTransitiveDependencies0,
+          ProjectImageCacheRevisionProvider.$allTransitiveDependencies1,
         ],
       );
 
-  static final $allTransitiveDependencies0 = projectImageResourcesProvider;
+  static final $allTransitiveDependencies0 = projectImageCacheProvider;
   static final $allTransitiveDependencies1 =
-      ProjectImageResourcesProvider.$allTransitiveDependencies0;
+      ProjectImageCacheProvider.$allTransitiveDependencies0;
 
   @override
-  String debugGetCreateSourceHash() => _$projectImageResourcesRevisionHash();
+  String debugGetCreateSourceHash() => _$projectImageCacheRevisionHash();
 
   @$internal
   @override
@@ -309,12 +307,104 @@ final class ProjectImageResourcesRevisionProvider
 
   @override
   Stream<int> create(Ref ref) {
-    return projectImageResourcesRevision(ref);
+    return projectImageCacheRevision(ref);
   }
 }
 
-String _$projectImageResourcesRevisionHash() =>
-    r'b0862a8db424ee67505e48a83d8cc1618a484556';
+String _$projectImageCacheRevisionHash() =>
+    r'1935f80b8c7265e2f71dd5848b9ab871cbaecac3';
+
+@ProviderFor(projectAudioCache)
+final projectAudioCacheProvider = ProjectAudioCacheProvider._();
+
+final class ProjectAudioCacheProvider
+    extends
+        $FunctionalProvider<
+          ProjectAssetCache<Uint8List>,
+          ProjectAssetCache<Uint8List>,
+          ProjectAssetCache<Uint8List>
+        >
+    with $Provider<ProjectAssetCache<Uint8List>> {
+  ProjectAudioCacheProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'projectAudioCacheProvider',
+        isAutoDispose: false,
+        dependencies: <ProviderOrFamily>[projectAssetStoreProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          ProjectAudioCacheProvider.$allTransitiveDependencies0,
+        ],
+      );
+
+  static final $allTransitiveDependencies0 = projectAssetStoreProvider;
+
+  @override
+  String debugGetCreateSourceHash() => _$projectAudioCacheHash();
+
+  @$internal
+  @override
+  $ProviderElement<ProjectAssetCache<Uint8List>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ProjectAssetCache<Uint8List> create(Ref ref) {
+    return projectAudioCache(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProjectAssetCache<Uint8List> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProjectAssetCache<Uint8List>>(value),
+    );
+  }
+}
+
+String _$projectAudioCacheHash() => r'1e9560e87614652372d1dda10a9d69cd10849928';
+
+@ProviderFor(projectAudioCacheRevision)
+final projectAudioCacheRevisionProvider = ProjectAudioCacheRevisionProvider._();
+
+final class ProjectAudioCacheRevisionProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, Stream<int>>
+    with $FutureModifier<int>, $StreamProvider<int> {
+  ProjectAudioCacheRevisionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'projectAudioCacheRevisionProvider',
+        isAutoDispose: true,
+        dependencies: <ProviderOrFamily>[projectAudioCacheProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          ProjectAudioCacheRevisionProvider.$allTransitiveDependencies0,
+          ProjectAudioCacheRevisionProvider.$allTransitiveDependencies1,
+        ],
+      );
+
+  static final $allTransitiveDependencies0 = projectAudioCacheProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectAudioCacheProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$projectAudioCacheRevisionHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<int> create(Ref ref) {
+    return projectAudioCacheRevision(ref);
+  }
+}
+
+String _$projectAudioCacheRevisionHash() =>
+    r'9d01167172e12699e39aded2f4a877014f826bca';
 
 @ProviderFor(TimelineNotifier)
 final timelineProvider = TimelineNotifierProvider._();

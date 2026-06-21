@@ -12,6 +12,7 @@ sealed class TimelineClipInfo with _$TimelineClipInfo {
     required TimelineClipId id,
     required int startFrame,
     required int durationFrames,
+    @Default(false) bool hasAudio,
   }) = _TimelineClipInfo;
 
   factory TimelineClipInfo.fromEntity(TimelineClip entity) {
@@ -19,6 +20,7 @@ sealed class TimelineClipInfo with _$TimelineClipInfo {
       id: entity.id,
       startFrame: entity.startFrame,
       durationFrames: entity.durationFrames,
+      hasAudio: entity.hasComponent<AudioComponent>(),
     );
   }
 }

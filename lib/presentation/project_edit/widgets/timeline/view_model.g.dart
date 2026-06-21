@@ -42,6 +42,7 @@ final class TimelineViewModelProvider
           TimelineViewModelProvider.$allTransitiveDependencies8,
           TimelineViewModelProvider.$allTransitiveDependencies9,
           TimelineViewModelProvider.$allTransitiveDependencies10,
+          TimelineViewModelProvider.$allTransitiveDependencies11,
         },
       );
 
@@ -56,11 +57,13 @@ final class TimelineViewModelProvider
   static final $allTransitiveDependencies5 = playbackControllerProvider;
   static final $allTransitiveDependencies6 = timelineSelectionStateProvider;
   static final $allTransitiveDependencies7 = addAudioClipToTimelineProvider;
-  static final $allTransitiveDependencies8 = addImageClipToTimelineProvider;
+  static final $allTransitiveDependencies8 =
+      AddAudioClipToTimelineProvider.$allTransitiveDependencies2;
   static final $allTransitiveDependencies9 =
+      AddAudioClipToTimelineProvider.$allTransitiveDependencies3;
+  static final $allTransitiveDependencies10 = addImageClipToTimelineProvider;
+  static final $allTransitiveDependencies11 =
       AddImageClipToTimelineProvider.$allTransitiveDependencies2;
-  static final $allTransitiveDependencies10 =
-      AddImageClipToTimelineProvider.$allTransitiveDependencies3;
 
   @override
   String debugGetCreateSourceHash() => _$timelineViewModelHash();

@@ -70,11 +70,22 @@ Future<void> renameProjectAsset(
   }
 }
 
-@Riverpod(dependencies: [project, projectAssetImporter])
+@Riverpod(
+  dependencies: [
+    project,
+    projectAssetImporter,
+    projectImageCache,
+    projectAudioCache,
+  ],
+)
 Future<ProjectAsset?> importProjectAsset(Ref ref) async {
   final importer = ref.read(projectAssetImporterProvider);
   final repository = ref.read(projectRepositoryProvider);
   final projectFuture = ref.watch(projectProvider.future);
+  final evictAssetCache = _assetCacheEvictor(
+    evictImageCache: ref.read(projectImageCacheProvider).evict,
+    evictAudioCache: ref.read(projectAudioCacheProvider).evict,
+  );
   final picked = await FilePicker.pickFiles(
     type: FileType.custom,
     allowedExtensions: const ['jpg', 'jpeg', 'png', 'mp3', 'wav'],
@@ -89,6 +100,7 @@ Future<ProjectAsset?> importProjectAsset(Ref ref) async {
   final result = await importer.importFile(project, file);
   try {
     await repository.save(project);
+    evictAssetCache(result.asset);
     return result.asset;
   } catch (_) {
     await result.rollback();
@@ -96,7 +108,7 @@ Future<ProjectAsset?> importProjectAsset(Ref ref) async {
   }
 }
 
-@Riverpod(dependencies: [project, projectAssetImporter])
+@Riverpod(dependencies: [project, projectAssetImporter, projectAudioCache])
 Future<ProjectAsset> createVoiceAsset(
   Ref ref, {
   required String dialogue,
@@ -105,8 +117,10 @@ Future<ProjectAsset> createVoiceAsset(
 }) async {
   final importer = ref.read(projectAssetImporterProvider);
   final repository = ref.read(projectRepositoryProvider);
-  final voiceGenerator = await ref.watch(voiceGeneratorProvider.future);
+  final evictAudioCache = ref.read(projectAudioCacheProvider).evict;
+  final voiceGeneratorFuture = ref.watch(voiceGeneratorProvider.future);
   final project = await ref.watch(projectProvider.future);
+  final voiceGenerator = await voiceGeneratorFuture;
   final speakerStyle = voiceGenerator.speakerStyles.firstWhere(
     (style) => style.id == speakerId,
   );
@@ -126,6 +140,7 @@ Future<ProjectAsset> createVoiceAsset(
     final result = await importer.importFile(project, file);
     try {
       await repository.save(project);
+      evictAudioCache(result.asset.id);
       return result.asset;
     } catch (_) {
       await result.rollback();
@@ -138,14 +153,32 @@ Future<ProjectAsset> createVoiceAsset(
   }
 }
 
-@Riverpod(dependencies: [project, projectImageResources, timelineEditor])
+void Function(ProjectAsset asset) _assetCacheEvictor({
+  required void Function(AssetId assetId) evictImageCache,
+  required void Function(AssetId assetId) evictAudioCache,
+}) {
+  return (asset) {
+    switch (asset.kind) {
+      case ProjectAssetKind.image:
+        evictImageCache(asset.id);
+        break;
+      case ProjectAssetKind.audio:
+        evictAudioCache(asset.id);
+        break;
+      case ProjectAssetKind.video:
+        break;
+    }
+  };
+}
+
+@Riverpod(dependencies: [project, projectImageCache, timelineEditor])
 Future<TimelineClip?> addImageClipToTimeline(
   Ref ref, {
   required int trackIndex,
   required ProjectAsset asset,
   required int startFrame,
 }) async {
-  final imageResources = ref.watch(projectImageResourcesProvider);
+  final imageCache = ref.watch(projectImageCacheProvider);
   final timelineEditor = ref.read(timelineEditorProvider);
   final project = await ref.watch(projectProvider.future);
   if (asset.kind != ProjectAssetKind.image ||
@@ -153,7 +186,7 @@ Future<TimelineClip?> addImageClipToTimeline(
     return null;
   }
 
-  final image = await imageResources.load(asset);
+  final image = await imageCache.load(asset);
   final clip = TimelineClip(
     id: TimelineClipId.create(),
     startFrame: startFrame,
@@ -175,7 +208,7 @@ Future<TimelineClip?> addImageClipToTimeline(
   return clip;
 }
 
-@Riverpod(dependencies: [project, timelineEditor])
+@Riverpod(dependencies: [project, projectAudioCache, timelineEditor])
 Future<TimelineClip?> addAudioClipToTimeline(
   Ref ref, {
   required int trackIndex,
@@ -183,12 +216,14 @@ Future<TimelineClip?> addAudioClipToTimeline(
   required int startFrame,
 }) async {
   final timelineEditor = ref.read(timelineEditorProvider);
+  final audioCache = ref.watch(projectAudioCacheProvider);
   final project = await ref.watch(projectProvider.future);
   if (asset.kind != ProjectAssetKind.audio ||
       project.assets.findById(asset.id) == null) {
     return null;
   }
 
+  await audioCache.load(asset);
   final clip = TimelineClip(
     id: TimelineClipId.create(),
     startFrame: startFrame,
@@ -204,11 +239,11 @@ Future<TimelineClip?> addAudioClipToTimeline(
   return clip;
 }
 
-@Riverpod(dependencies: [project, projectImageResources])
+@Riverpod(dependencies: [project, projectImageCache])
 Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
-  final imageResources = ref.read(projectImageResourcesProvider);
+  final imageCache = ref.read(projectImageCacheProvider);
   final project = await ref.watch(projectProvider.future);
-  await imageResources.loadAll(
+  await imageCache.loadAll(
     project.assets.assets.where(
       (asset) => asset.kind == ProjectAssetKind.image,
     ),
@@ -216,7 +251,7 @@ Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
   final exporter = ProjectExporter(
     encoder: FfmpegProjectEncoder(
       frameStreamWriter: ProjectFrameStreamWriter(
-        frameBuilder: ProjectFrameBuilder(imageAssets: imageResources.images),
+        frameBuilder: ProjectFrameBuilder(imageAssets: imageCache.values),
       ),
     ),
   );

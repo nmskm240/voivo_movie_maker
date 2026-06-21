@@ -31,6 +31,7 @@ final class VoiceEditorViewModelProvider
           VoiceEditorViewModelProvider.$allTransitiveDependencies2,
           VoiceEditorViewModelProvider.$allTransitiveDependencies3,
           VoiceEditorViewModelProvider.$allTransitiveDependencies4,
+          VoiceEditorViewModelProvider.$allTransitiveDependencies5,
         },
       );
 
@@ -43,6 +44,8 @@ final class VoiceEditorViewModelProvider
       CreateVoiceAssetProvider.$allTransitiveDependencies2;
   static final $allTransitiveDependencies4 =
       CreateVoiceAssetProvider.$allTransitiveDependencies3;
+  static final $allTransitiveDependencies5 =
+      CreateVoiceAssetProvider.$allTransitiveDependencies4;
 
   @override
   String debugGetCreateSourceHash() => _$voiceEditorViewModelHash();

@@ -1,34 +1,57 @@
-// Dart imports:
 import 'dart:async';
-import 'dart:ui';
 
 // Project imports:
 import 'package:voivo_movie_maker/domain/project_assets.dart';
-import 'package:voivo_movie_maker/infra/project_assets/project_image_decoder.dart';
 
-class ProjectImageResources {
-  ProjectImageResources(this._store);
+typedef ProjectAssetLoader<T> =
+    Future<T> Function(IProjectAssetStore store, ProjectAsset asset);
+typedef ProjectAssetDisposer<T> = void Function(T value);
+
+class ProjectAssetCache<T> {
+  ProjectAssetCache(
+    this._store, {
+    required ProjectAssetKind kind,
+    required ProjectAssetLoader<T> loadAsset,
+    ProjectAssetDisposer<T>? disposeAsset,
+    String? label,
+  }) : _kind = kind,
+       _loadAsset = loadAsset,
+       _disposeAsset = disposeAsset,
+       _label = label ?? kind.name;
 
   final IProjectAssetStore _store;
-  final _images = <AssetId, Image>{};
-  final _pending = <AssetId, Future<Image>>{};
+  final ProjectAssetKind _kind;
+  final ProjectAssetLoader<T> _loadAsset;
+  final ProjectAssetDisposer<T>? _disposeAsset;
+  final String _label;
+  final _values = <AssetId, T>{};
+  final _pending = <AssetId, Future<T>>{};
   final _revisions = StreamController<int>.broadcast(sync: true);
   var _revision = 0;
   var _disposed = false;
 
-  Map<AssetId, Image> get images => Map.unmodifiable(_images);
+  Map<AssetId, T> get values => Map.unmodifiable(_values);
   Stream<int> get revisions => _revisions.stream;
 
-  Image? findById(AssetId assetId) => _images[assetId];
+  T? findById(AssetId assetId) => _values[assetId];
 
-  Future<Image> load(ProjectAsset asset) {
+  void evict(AssetId assetId) {
+    final value = _values.remove(assetId);
+    if (value == null) {
+      return;
+    }
+    _disposeAsset?.call(value);
+    _revisions.add(++_revision);
+  }
+
+  Future<T> load(ProjectAsset asset) {
     if (_disposed) {
-      throw StateError('Project image resources are disposed');
+      throw StateError('Project $_label cache is disposed');
     }
-    if (asset.kind != ProjectAssetKind.image) {
-      throw ArgumentError.value(asset, 'asset', 'Asset is not an image');
+    if (asset.kind != _kind) {
+      throw ArgumentError.value(asset, 'asset', 'Asset is not a $_label asset');
     }
-    final cached = _images[asset.id];
+    final cached = _values[asset.id];
     if (cached != null) {
       return Future.value(cached);
     }
@@ -44,23 +67,25 @@ class ProjectImageResources {
       return;
     }
     _disposed = true;
-    for (final image in _images.values) {
-      image.dispose();
+    if (_disposeAsset != null) {
+      for (final value in _values.values) {
+        _disposeAsset(value);
+      }
     }
-    _images.clear();
+    _values.clear();
     _revisions.close();
   }
 
-  Future<Image> _load(ProjectAsset asset) async {
+  Future<T> _load(ProjectAsset asset) async {
     try {
-      final image = await decodeProjectImage(_store, asset);
+      final value = await _loadAsset(_store, asset);
       if (_disposed) {
-        image.dispose();
-        throw StateError('Project image resources were disposed while loading');
+        _disposeAsset?.call(value);
+        throw StateError('Project $_label cache was disposed while loading');
       }
-      _images[asset.id] = image;
+      _values[asset.id] = value;
       _revisions.add(++_revision);
-      return image;
+      return value;
     } finally {
       _pending.remove(asset.id);
     }

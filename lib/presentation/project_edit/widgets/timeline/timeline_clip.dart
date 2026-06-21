@@ -1,3 +1,6 @@
+// Dart imports:
+import 'dart:math' as math;
+
 // Flutter imports:
 import 'package:flutter/material.dart';
 
@@ -300,31 +303,88 @@ class _ClipBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = clip.hasAudio ? const Color(0xff79d7ff) : Colors.greenAccent;
+    final textColor = clip.hasAudio
+        ? const Color(0xff082332)
+        : const Color(0xff10210c);
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.greenAccent,
+        color: color,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: isSelected ? Colors.white : Colors.greenAccent,
+          color: isSelected ? Colors.white : color,
           width: isSelected ? 2 : 1,
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            clip.id.value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Color(0xff10210c),
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (clip.hasAudio)
+              CustomPaint(
+                painter: _AudioWaveformPainter(
+                  color: textColor.withValues(alpha: 0.2),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  clip.id.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
+  }
+}
+
+class _AudioWaveformPainter extends CustomPainter {
+  const _AudioWaveformPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) {
+      return;
+    }
+    final paint = Paint()
+      ..color = color
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2;
+    const spacing = 6.0;
+    final centerY = size.height / 2;
+    final maxAmplitude = size.height * 0.34;
+    for (var x = 8.0; x < size.width - 8; x += spacing) {
+      final progress = x / size.width;
+      final wave =
+          0.35 +
+          0.45 * (0.5 + 0.5 * math.sin(progress * 18.8495559215)) +
+          0.20 * (0.5 + 0.5 * math.sin(progress * 43.9822971503));
+      final amplitude = (wave.clamp(0.18, 1.0)) * maxAmplitude;
+      canvas.drawLine(
+        Offset(x, centerY - amplitude),
+        Offset(x, centerY + amplitude),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _AudioWaveformPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }

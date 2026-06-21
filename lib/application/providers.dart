@@ -1,5 +1,7 @@
 // Dart imports:
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 // Flutter imports:
 import 'package:flutter/material.dart';
@@ -11,7 +13,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
+import 'package:voivo_movie_maker/infra/project_assets/project_asset_bytes_loader.dart';
 import 'package:voivo_movie_maker/infra/project_assets/project_asset_cache.dart';
+import 'package:voivo_movie_maker/infra/project_assets/project_image_decoder.dart';
 
 part "providers.g.dart";
 
@@ -44,15 +48,38 @@ Future<Project> project(Ref ref) async {
 }
 
 @Riverpod(keepAlive: true, dependencies: [projectAssetStore])
-ProjectImageResources projectImageResources(Ref ref) {
-  final resources = ProjectImageResources(ref.watch(projectAssetStoreProvider));
-  ref.onDispose(resources.dispose);
-  return resources;
+ProjectAssetCache<ui.Image> projectImageCache(Ref ref) {
+  final cache = ProjectAssetCache<ui.Image>(
+    ref.watch(projectAssetStoreProvider),
+    kind: ProjectAssetKind.image,
+    loadAsset: decodeProjectImage,
+    disposeAsset: (image) => image.dispose(),
+    label: 'image',
+  );
+  ref.onDispose(cache.dispose);
+  return cache;
 }
 
-@Riverpod(dependencies: [projectImageResources])
-Stream<int> projectImageResourcesRevision(Ref ref) {
-  return ref.watch(projectImageResourcesProvider).revisions;
+@Riverpod(dependencies: [projectImageCache])
+Stream<int> projectImageCacheRevision(Ref ref) {
+  return ref.watch(projectImageCacheProvider).revisions;
+}
+
+@Riverpod(keepAlive: true, dependencies: [projectAssetStore])
+ProjectAssetCache<Uint8List> projectAudioCache(Ref ref) {
+  final cache = ProjectAssetCache<Uint8List>(
+    ref.watch(projectAssetStoreProvider),
+    kind: ProjectAssetKind.audio,
+    loadAsset: loadProjectAssetBytes,
+    label: 'audio',
+  );
+  ref.onDispose(cache.dispose);
+  return cache;
+}
+
+@Riverpod(dependencies: [projectAudioCache])
+Stream<int> projectAudioCacheRevision(Ref ref) {
+  return ref.watch(projectAudioCacheProvider).revisions;
 }
 
 @Riverpod(dependencies: [project])
