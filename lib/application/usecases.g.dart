@@ -194,6 +194,96 @@ final class DeleteProjectFamily extends $Family
   String toString() => r'deleteProjectProvider';
 }
 
+@ProviderFor(renameProjectAsset)
+final renameProjectAssetProvider = RenameProjectAssetFamily._();
+
+final class RenameProjectAssetProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  RenameProjectAssetProvider._({
+    required RenameProjectAssetFamily super.from,
+    required ({AssetId assetId, String name}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'renameProjectAssetProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$renameProjectAssetHash();
+
+  @override
+  String toString() {
+    return r'renameProjectAssetProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    final argument = this.argument as ({AssetId assetId, String name});
+    return renameProjectAsset(
+      ref,
+      assetId: argument.assetId,
+      name: argument.name,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RenameProjectAssetProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$renameProjectAssetHash() =>
+    r'dae73f6542e01b4b1b905deaf70e7bc91012112e';
+
+final class RenameProjectAssetFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<void>,
+          ({AssetId assetId, String name})
+        > {
+  RenameProjectAssetFamily._()
+    : super(
+        retry: null,
+        name: r'renameProjectAssetProvider',
+        dependencies: <ProviderOrFamily>[projectProvider],
+        $allTransitiveDependencies: <ProviderOrFamily>[
+          RenameProjectAssetProvider.$allTransitiveDependencies0,
+          RenameProjectAssetProvider.$allTransitiveDependencies1,
+        ],
+        isAutoDispose: true,
+      );
+
+  RenameProjectAssetProvider call({
+    required AssetId assetId,
+    required String name,
+  }) => RenameProjectAssetProvider._(
+    argument: (assetId: assetId, name: name),
+    from: this,
+  );
+
+  @override
+  String toString() => r'renameProjectAssetProvider';
+}
+
 @ProviderFor(importProjectAsset)
 final importProjectAssetProvider = ImportProjectAssetFamily._();
 

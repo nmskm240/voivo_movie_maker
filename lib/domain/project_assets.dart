@@ -43,16 +43,21 @@ class AssetId {
 
 @JsonSerializable()
 class ProjectAsset {
-  ProjectAsset({required this.name, required this.kind, AssetId? id})
-    : id = id ?? AssetId.create();
+  ProjectAsset({required String name, required this.kind, AssetId? id})
+    : id = id ?? AssetId.create(),
+      name = name.isNotEmpty ? name : throw ArgumentError.value(name);
 
   factory ProjectAsset.fromJson(Map<String, Object?> json) =>
       _$ProjectAssetFromJson(json);
 
   final AssetId id;
-  final String name;
+  String name;
   final ProjectAssetKind kind;
   String get fileName => id.value;
+
+  void rename(String name) {
+    this.name = name.isNotEmpty ? name : throw ArgumentError.value(name);
+  }
 
   Map<String, Object?> toJson() => _$ProjectAssetToJson(this);
 }
@@ -78,6 +83,14 @@ class ProjectAssetCatalog {
     }
   }
 
+  ProjectAsset? findByName(String name) {
+    try {
+      return _assets.firstWhere((asset) => asset.name == name);
+    } catch (e) {
+      return null;
+    }
+  }
+
   void add(ProjectAsset asset) {
     if (_assets.any((saved) => saved.id == asset.id)) {
       throw ArgumentError.value(asset.id, 'asset.id', 'Duplicate asset ID');
@@ -90,6 +103,19 @@ class ProjectAssetCatalog {
       );
     }
     _assets.add(asset);
+  }
+
+  void rename(AssetId assetId, String name) {
+    final asset = findById(assetId);
+    if (asset == null) {
+      throw ArgumentError.value(assetId, 'assetId', 'Asset not found');
+    }
+    final duplicate = findByName(name);
+    if (duplicate != null && duplicate.id != assetId) {
+      throw ArgumentError.value(name, 'name', 'Duplicate asset name');
+    }
+
+    asset.rename(name);
   }
 
   void remove(AssetId assetId) {

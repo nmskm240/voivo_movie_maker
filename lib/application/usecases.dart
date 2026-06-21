@@ -42,21 +42,28 @@ Future<void> deleteProject(Ref ref, ProjectId projectId) async {
   await ref.watch(projectRepositoryProvider).delete(projectId);
 }
 
-@Riverpod(dependencies: [project, projectAssetStore])
-Future<ProjectAsset> importProjectAsset(Ref ref, File file) async {
+@Riverpod(dependencies: [project])
+Future<void> renameProjectAsset(
+  Ref ref, {
+  required AssetId assetId,
+  required String name,
+}) async {
+  final repository = ref.read(projectRepositoryProvider);
   final project = await ref.watch(projectProvider.future);
-  final store = ref.watch(projectAssetStoreProvider);
-  final repository = ref.watch(projectRepositoryProvider);
-  final asset = await store.save(file);
+  final current = project.assets.findById(assetId);
+  if (current == null || current.name == name) {
+    return;
+  }
 
-  try {
-    project.assets.add(asset);
+  final previousName = current.name;
+  project.assets.rename(assetId, name);
     try {
       await repository.save(project);
     } catch (_) {
-      project.assets.remove(asset.id);
+    project.assets.rename(assetId, previousName);
       rethrow;
     }
+}
     return asset;
   } catch (error, stackTrace) {
     try {
