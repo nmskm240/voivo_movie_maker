@@ -9,12 +9,15 @@ import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/infra/asset_store.dart';
 import 'package:voivo_movie_maker/infra/project_directory.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/assets/asset_panel.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/export/export_button.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/inspector/clip_inspector.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/playback_button.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/project_preview.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/voice_generation/voice_editor.dart';
 
 class EditorScreen extends ConsumerStatefulWidget {
   const EditorScreen({super.key, required this.projectId});
@@ -69,7 +72,28 @@ class _EditorScreenBody extends ConsumerWidget {
               flex: 3,
               child: Column(
                 children: [
-                  Expanded(flex: 3, child: Container(color: const Color.fromARGB(255, 50, 50, 50), child: ProjectPreview())),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      color: const Color.fromARGB(255, 50, 50, 50),
+                      child: ProjectPreview(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: VoiceEditor(
+                      onCreated: (asset) {
+                        final trackIndex =
+                            ref
+                                .read(timelineSelectionStateProvider)
+                                .trackIndex ??
+                            0;
+                        return ref
+                            .read(timelineViewModelProvider.notifier)
+                            .addAudioClip(trackIndex, asset);
+                      },
+                    ),
+                  ),
                   Expanded(flex: 2, child: TimelineView()),
                 ],
               ),

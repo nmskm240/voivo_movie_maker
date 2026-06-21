@@ -1,5 +1,5 @@
 // Dart imports:
-import 'dart:typed_data';
+import 'dart:async';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
@@ -12,20 +12,53 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/application/dtos/speaker_style.dart';
+import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/voice_generator.dart';
+import 'package:voivo_movie_maker/application/usecases.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/voice_generation/voice_generation_progress_dialog.dart';
 
-class VoiceEditor extends ConsumerWidget {
-  VoiceEditor({required this.onCreated, super.key});
+class VoiceEditor extends ConsumerStatefulWidget {
+  const VoiceEditor({required this.onCreated, super.key});
 
   static const _textFieldName = 'text';
   static const _speakerFieldName = 'speaker';
 
-  final Future<void> Function(Uint8List selection) onCreated;
+  final Future<void> Function(ProjectAsset asset) onCreated;
+  @override
+  ConsumerState<VoiceEditor> createState() => _VoiceEditorState();
+}
+
+class _VoiceEditorState extends ConsumerState<VoiceEditor> {
   final _formKey = GlobalKey<FormBuilderState>();
+  var _generating = false;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final voiceGenerator = ref.watch(voiceGeneratorProvider);
+    if (voiceGenerator.hasError) {
+      return SizedBox(
+        height: 56,
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'VOICEVOX is unavailable: ${voiceGenerator.error}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            IconButton(
+              onPressed: () => ref.invalidate(voiceGeneratorProvider),
+              tooltip: 'Retry VOICEVOX',
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
+      );
+    }
     final styles = voiceGenerator.maybeWhen(
       data: (generator) => generator.speakerStyles,
       orElse: () => const <SpeakerStyle>[],
@@ -79,10 +112,15 @@ class VoiceEditor extends ConsumerWidget {
                 ),
               ),
               FilledButton.icon(
-                onPressed: voiceGenerator.hasValue
-                    ? () => _onSubmit(voiceGenerator.requireValue)
+                onPressed: voiceGenerator.hasValue && !_generating
+                    ? _onSubmit
                     : null,
-                icon: const Icon(Icons.graphic_eq),
+                icon: _generating
+                    ? const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.graphic_eq),
                 label: const Text('Generate'),
               ),
             ],
@@ -92,16 +130,49 @@ class VoiceEditor extends ConsumerWidget {
     );
   }
 
-  Future<void> _onSubmit(IVoiceGenerator voiceGenerator) async {
+  Future<void> _onSubmit() async {
     final state = _formKey.currentState!;
     if (!state.saveAndValidate()) {
       return;
     }
 
-    final audioBytes = await voiceGenerator.synthesize(
-      text: state.value[VoiceEditor._textFieldName],
-      speakerId: state.value[VoiceEditor._speakerFieldName],
-    );
-    await onCreated(audioBytes);
+    setState(() => _generating = true);
+    var dialogIsOpen = false;
+    try {
+      dialogIsOpen = true;
+      unawaited(
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const VoiceGenerationProgressDialog(),
+        ),
+      );
+      final dialogue = state.value[VoiceEditor._textFieldName] as String;
+      final speakerId = state.value[VoiceEditor._speakerFieldName] as int;
+      final asset = await ref.read(
+        createVoiceAssetProvider(
+          dialogue: dialogue,
+          speakerId: speakerId,
+        ).future,
+      );
+      if (!mounted) {
+        return;
+      }
+      ref.invalidate(projectProvider);
+      await widget.onCreated(asset);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Voice generation failed: $error')),
+        );
+      }
+    } finally {
+      if (dialogIsOpen && mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      if (mounted) {
+        setState(() => _generating = false);
+      }
+    }
   }
 }
