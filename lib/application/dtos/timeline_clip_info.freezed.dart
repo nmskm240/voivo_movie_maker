@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TimelineClipInfo {
 
- TimelineClipId get id; int get startFrame; int get durationFrames; bool get hasAudio;
+ TimelineClipId get id; int get startFrame; int get durationFrames; bool get hasAudio; AssetId? get audioAssetId;
 /// Create a copy of TimelineClipInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TimelineClipInfoCopyWith<TimelineClipInfo> get copyWith => _$TimelineClipInfoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineClipInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.startFrame, startFrame) || other.startFrame == startFrame)&&(identical(other.durationFrames, durationFrames) || other.durationFrames == durationFrames)&&(identical(other.hasAudio, hasAudio) || other.hasAudio == hasAudio));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TimelineClipInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.startFrame, startFrame) || other.startFrame == startFrame)&&(identical(other.durationFrames, durationFrames) || other.durationFrames == durationFrames)&&(identical(other.hasAudio, hasAudio) || other.hasAudio == hasAudio)&&(identical(other.audioAssetId, audioAssetId) || other.audioAssetId == audioAssetId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,startFrame,durationFrames,hasAudio);
+int get hashCode => Object.hash(runtimeType,id,startFrame,durationFrames,hasAudio,audioAssetId);
 
 @override
 String toString() {
-  return 'TimelineClipInfo(id: $id, startFrame: $startFrame, durationFrames: $durationFrames, hasAudio: $hasAudio)';
+  return 'TimelineClipInfo(id: $id, startFrame: $startFrame, durationFrames: $durationFrames, hasAudio: $hasAudio, audioAssetId: $audioAssetId)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TimelineClipInfoCopyWith<$Res>  {
   factory $TimelineClipInfoCopyWith(TimelineClipInfo value, $Res Function(TimelineClipInfo) _then) = _$TimelineClipInfoCopyWithImpl;
 @useResult
 $Res call({
- TimelineClipId id, int startFrame, int durationFrames, bool hasAudio
+ TimelineClipId id, int startFrame, int durationFrames, bool hasAudio, AssetId? audioAssetId
 });
 
 
@@ -62,13 +62,14 @@ class _$TimelineClipInfoCopyWithImpl<$Res>
 
 /// Create a copy of TimelineClipInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,Object? hasAudio = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,Object? hasAudio = null,Object? audioAssetId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as TimelineClipId,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
 as int,durationFrames: null == durationFrames ? _self.durationFrames : durationFrames // ignore: cast_nullable_to_non_nullable
 as int,hasAudio: null == hasAudio ? _self.hasAudio : hasAudio // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,audioAssetId: freezed == audioAssetId ? _self.audioAssetId : audioAssetId // ignore: cast_nullable_to_non_nullable
+as AssetId?,
   ));
 }
 
@@ -150,10 +151,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TimelineClipId id,  int startFrame,  int durationFrames,  bool hasAudio)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TimelineClipId id,  int startFrame,  int durationFrames,  bool hasAudio,  AssetId? audioAssetId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TimelineClipInfo() when $default != null:
-return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio);case _:
+return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio,_that.audioAssetId);case _:
   return orElse();
 
 }
@@ -171,10 +172,10 @@ return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio);c
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TimelineClipId id,  int startFrame,  int durationFrames,  bool hasAudio)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TimelineClipId id,  int startFrame,  int durationFrames,  bool hasAudio,  AssetId? audioAssetId)  $default,) {final _that = this;
 switch (_that) {
 case _TimelineClipInfo():
-return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio);}
+return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio,_that.audioAssetId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -188,10 +189,10 @@ return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TimelineClipId id,  int startFrame,  int durationFrames,  bool hasAudio)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TimelineClipId id,  int startFrame,  int durationFrames,  bool hasAudio,  AssetId? audioAssetId)?  $default,) {final _that = this;
 switch (_that) {
 case _TimelineClipInfo() when $default != null:
-return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio);case _:
+return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio,_that.audioAssetId);case _:
   return null;
 
 }
@@ -203,13 +204,14 @@ return $default(_that.id,_that.startFrame,_that.durationFrames,_that.hasAudio);c
 
 
 class _TimelineClipInfo implements TimelineClipInfo {
-  const _TimelineClipInfo({required this.id, required this.startFrame, required this.durationFrames, this.hasAudio = false});
+  const _TimelineClipInfo({required this.id, required this.startFrame, required this.durationFrames, this.hasAudio = false, this.audioAssetId});
   
 
 @override final  TimelineClipId id;
 @override final  int startFrame;
 @override final  int durationFrames;
 @override@JsonKey() final  bool hasAudio;
+@override final  AssetId? audioAssetId;
 
 /// Create a copy of TimelineClipInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -221,16 +223,16 @@ _$TimelineClipInfoCopyWith<_TimelineClipInfo> get copyWith => __$TimelineClipInf
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineClipInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.startFrame, startFrame) || other.startFrame == startFrame)&&(identical(other.durationFrames, durationFrames) || other.durationFrames == durationFrames)&&(identical(other.hasAudio, hasAudio) || other.hasAudio == hasAudio));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TimelineClipInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.startFrame, startFrame) || other.startFrame == startFrame)&&(identical(other.durationFrames, durationFrames) || other.durationFrames == durationFrames)&&(identical(other.hasAudio, hasAudio) || other.hasAudio == hasAudio)&&(identical(other.audioAssetId, audioAssetId) || other.audioAssetId == audioAssetId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,startFrame,durationFrames,hasAudio);
+int get hashCode => Object.hash(runtimeType,id,startFrame,durationFrames,hasAudio,audioAssetId);
 
 @override
 String toString() {
-  return 'TimelineClipInfo(id: $id, startFrame: $startFrame, durationFrames: $durationFrames, hasAudio: $hasAudio)';
+  return 'TimelineClipInfo(id: $id, startFrame: $startFrame, durationFrames: $durationFrames, hasAudio: $hasAudio, audioAssetId: $audioAssetId)';
 }
 
 
@@ -241,7 +243,7 @@ abstract mixin class _$TimelineClipInfoCopyWith<$Res> implements $TimelineClipIn
   factory _$TimelineClipInfoCopyWith(_TimelineClipInfo value, $Res Function(_TimelineClipInfo) _then) = __$TimelineClipInfoCopyWithImpl;
 @override @useResult
 $Res call({
- TimelineClipId id, int startFrame, int durationFrames, bool hasAudio
+ TimelineClipId id, int startFrame, int durationFrames, bool hasAudio, AssetId? audioAssetId
 });
 
 
@@ -258,13 +260,14 @@ class __$TimelineClipInfoCopyWithImpl<$Res>
 
 /// Create a copy of TimelineClipInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,Object? hasAudio = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? startFrame = null,Object? durationFrames = null,Object? hasAudio = null,Object? audioAssetId = freezed,}) {
   return _then(_TimelineClipInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as TimelineClipId,startFrame: null == startFrame ? _self.startFrame : startFrame // ignore: cast_nullable_to_non_nullable
 as int,durationFrames: null == durationFrames ? _self.durationFrames : durationFrames // ignore: cast_nullable_to_non_nullable
 as int,hasAudio: null == hasAudio ? _self.hasAudio : hasAudio // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,audioAssetId: freezed == audioAssetId ? _self.audioAssetId : audioAssetId // ignore: cast_nullable_to_non_nullable
+as AssetId?,
   ));
 }
 

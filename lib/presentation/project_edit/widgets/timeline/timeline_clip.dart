@@ -9,10 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_clip_info.dart';
-import 'package:voivo_movie_maker/presentation/project_edit/states/timeline_select_state.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/audio_waveform_provider.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_auto_scroll.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_clip_view_model.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_drag_data.dart';
-import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
 class TimelineClipView extends ConsumerStatefulWidget {
   const TimelineClipView({
@@ -39,9 +39,7 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
   @override
   Widget build(BuildContext context) {
     final isSelected = ref.watch(
-      timelineSelectionStateProvider.select(
-        (state) => state.clipId == widget.clip.id,
-      ),
+      timelineClipIsSelectedProvider(widget.clip.id),
     );
 
     return LayoutBuilder(
@@ -56,8 +54,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               data: TimelineClipDragData(widget.clip.id),
               maxSimultaneousDrags: 1,
               onDragStarted: () => ref
-                  .read(timelineSelectionStateProvider.notifier)
-                  .selectClip(widget.clip.id),
+                  .read(timelineClipViewModelProvider.notifier)
+                  .select(widget.clip.id),
               onDragUpdate: (details) {
                 TimelineAutoScrollUpdate(
                   details.globalPosition,
@@ -77,8 +75,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
               childWhenDragging: Opacity(opacity: 0.25, child: clipBody),
               child: GestureDetector(
                 onTap: () => ref
-                    .read(timelineSelectionStateProvider.notifier)
-                    .selectClip(widget.clip.id),
+                    .read(timelineClipViewModelProvider.notifier)
+                    .select(widget.clip.id),
                 onLongPress: () => _confirmRemoveClip(context),
                 child: MouseRegion(
                   cursor: SystemMouseCursors.grab,
@@ -120,9 +118,7 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
     _resizeGlobalX = details.globalPosition.dx;
     _resizeStartFrame = widget.clip.startFrame;
     _resizeDurationFrames = widget.clip.durationFrames;
-    ref
-        .read(timelineSelectionStateProvider.notifier)
-        .selectClip(widget.clip.id);
+    ref.read(timelineClipViewModelProvider.notifier).select(widget.clip.id);
   }
 
   void _resizeStart(DragUpdateDetails details) {
@@ -146,8 +142,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
     final endFrame = startFrame + durationFrames;
     final nextStartFrame = (startFrame + deltaFrames).clamp(0, endFrame - 1);
     ref
-        .read(timelineViewModelProvider.notifier)
-        .resizeClip(
+        .read(timelineClipViewModelProvider.notifier)
+        .resize(
           widget.clip.id,
           startFrame: nextStartFrame,
           durationFrames: endFrame - nextStartFrame,
@@ -177,8 +173,8 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
       0x7fffffff,
     );
     ref
-        .read(timelineViewModelProvider.notifier)
-        .resizeClip(
+        .read(timelineClipViewModelProvider.notifier)
+        .resize(
           widget.clip.id,
           startFrame: startFrame,
           durationFrames: nextDurationFrames,
@@ -235,7 +231,9 @@ class _TimelineClipViewState extends ConsumerState<TimelineClipView> {
       ),
     );
     if (confirmed == true) {
-      ref.read(timelineViewModelProvider.notifier).removeClip(widget.clip.id);
+      await ref
+          .read(timelineClipViewModelProvider.notifier)
+          .remove(widget.clip.id);
     }
   }
 }
@@ -295,18 +293,27 @@ class _ResizeHandle extends StatelessWidget {
   }
 }
 
-class _ClipBody extends StatelessWidget {
+class _ClipBody extends ConsumerWidget {
   const _ClipBody({required this.clip, required this.isSelected});
 
   final TimelineClipInfo clip;
   final bool isSelected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final color = clip.hasAudio ? const Color(0xff79d7ff) : Colors.greenAccent;
     final textColor = clip.hasAudio
         ? const Color(0xff082332)
         : const Color(0xff10210c);
+    final audioAssetId = clip.audioAssetId;
+    final waveform = audioAssetId == null
+        ? const <double>[]
+        : ref
+              .watch(audioWaveformProvider(audioAssetId))
+              .maybeWhen(
+                data: (peaks) => peaks,
+                orElse: () => const <double>[],
+              );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -325,7 +332,8 @@ class _ClipBody extends StatelessWidget {
             if (clip.hasAudio)
               CustomPaint(
                 painter: _AudioWaveformPainter(
-                  color: textColor.withValues(alpha: 0.2),
+                  color: textColor.withValues(alpha: 0.36),
+                  peaks: waveform,
                 ),
               ),
             Padding(
@@ -352,9 +360,10 @@ class _ClipBody extends StatelessWidget {
 }
 
 class _AudioWaveformPainter extends CustomPainter {
-  const _AudioWaveformPainter({required this.color});
+  const _AudioWaveformPainter({required this.color, required this.peaks});
 
   final Color color;
+  final List<double> peaks;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -365,16 +374,20 @@ class _AudioWaveformPainter extends CustomPainter {
       ..color = color
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2;
-    const spacing = 6.0;
+    final values = peaks.isEmpty ? const <double>[0.08] : peaks;
+    final drawableWidth = math.max(0.0, size.width - 16);
+    final spacing = values.length <= 1
+        ? drawableWidth
+        : drawableWidth / (values.length - 1);
     final centerY = size.height / 2;
     final maxAmplitude = size.height * 0.34;
-    for (var x = 8.0; x < size.width - 8; x += spacing) {
-      final progress = x / size.width;
-      final wave =
-          0.35 +
-          0.45 * (0.5 + 0.5 * math.sin(progress * 18.8495559215)) +
-          0.20 * (0.5 + 0.5 * math.sin(progress * 43.9822971503));
-      final amplitude = (wave.clamp(0.18, 1.0)) * maxAmplitude;
+    for (var index = 0; index < values.length; index++) {
+      final x = 8.0 + spacing * index;
+      if (x > size.width - 8) {
+        break;
+      }
+      final peak = values[index].clamp(0.04, 1.0).toDouble();
+      final amplitude = peak * maxAmplitude;
       canvas.drawLine(
         Offset(x, centerY - amplitude),
         Offset(x, centerY + amplitude),
@@ -385,6 +398,6 @@ class _AudioWaveformPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _AudioWaveformPainter oldDelegate) {
-    return oldDelegate.color != color;
+    return oldDelegate.color != color || oldDelegate.peaks != peaks;
   }
 }
