@@ -5,11 +5,16 @@ import 'dart:ui';
 import 'package:voivo_movie_maker/application/services/rendering/project_frame.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 class ProjectFrameBuilder {
-  const ProjectFrameBuilder({this.imageAssets = const {}});
+  const ProjectFrameBuilder({
+    this.imageAssets = const {},
+    this.videoFrames = const {},
+  });
 
   final Map<AssetId, Image> imageAssets;
+  final Map<TimelineClipId, Image> videoFrames;
 
   ProjectFrame build(Project project, int frameNumber) {
     return ProjectFrame(
@@ -17,6 +22,7 @@ class ProjectFrameBuilder {
       frameNumber: frameNumber,
       clips: project.timeline.getActiveClipsAt(frameNumber),
       imageAssets: imageAssets,
+      videoFrames: videoFrames,
     );
   }
 }

@@ -11,6 +11,7 @@ import 'package:voivo_movie_maker/application/services/rendering/project_frame.d
 import 'package:voivo_movie_maker/application/services/rendering/project_paint_context.dart';
 import 'package:voivo_movie_maker/application/services/rendering/shape_clip_painter.dart';
 import 'package:voivo_movie_maker/application/services/rendering/text_clip_painter.dart';
+import 'package:voivo_movie_maker/application/services/rendering/video_clip_painter.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 
 class ProjectFrameRenderer {
@@ -19,6 +20,7 @@ class ProjectFrameRenderer {
       ShapeComponent: ShapeClipPainter(),
       TextComponent: TextClipPainter(),
       ImageComponent: ImageClipPainter(),
+      VideoComponent: VideoClipPainter(),
     },
   });
 
@@ -34,6 +36,7 @@ class ProjectFrameRenderer {
     final context = ProjectPaintContext(
       projectSize: frame.projectSize,
       imageAssets: frame.imageAssets,
+      videoFrames: frame.videoFrames,
     );
     canvas.save();
     canvas.scale(

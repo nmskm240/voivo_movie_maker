@@ -1,5 +1,6 @@
 // Dart imports:
 import 'dart:async';
+import 'dart:ui' as ui;
 
 // Flutter imports:
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/playback_controller.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_frame_builder.dart';
 import 'package:voivo_movie_maker/application/services/timeline_audio_player.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/project_preview_painter.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
@@ -51,6 +53,10 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
         .value;
     final imageCache = ref.watch(projectImageCacheProvider);
     final audioCache = ref.watch(projectAudioCacheProvider);
+    final videoFrameCacheRevision = ref
+        .watch(projectVideoFrameCacheRevisionProvider)
+        .value;
+    final videoFrameCache = ref.watch(projectVideoFrameCacheProvider);
 
     return projectSnapshot.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -88,8 +94,44 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
             );
           }
         }
+        final videoFrames = <TimelineClipId, ui.Image>{};
+        for (final clip in project.timeline.getActiveClipsAt(currentFrame)) {
+          final videoComponent = clip.component<VideoComponent>();
+          if (videoComponent == null) {
+            continue;
+          }
+          final asset = project.assets.findById(videoComponent.assetId);
+          if (asset == null || asset.kind != ProjectAssetKind.video) {
+            continue;
+          }
+          final localFrame = currentFrame - clip.startFrame;
+          final image = videoFrameCache.find(asset, localFrame);
+          if (image != null) {
+            videoFrames[clip.id] = image;
+            continue;
+          }
+          unawaited(
+            videoFrameCache
+                .load(
+                  asset,
+                  frameNumber: localFrame,
+                  position: Duration(
+                    microseconds: (localFrame / project.fps * 1000000).round(),
+                  ),
+                )
+                .then<void>(
+                  (_) {},
+                  onError: (Object error, StackTrace stackTrace) {
+                    debugPrint(
+                      'Could not decode video frame ${asset.name}: $error',
+                    );
+                  },
+                ),
+          );
+        }
         final frame = ProjectFrameBuilder(
           imageAssets: imageCache.values,
+          videoFrames: videoFrames,
         ).build(project, currentFrame);
         return Center(
           child: AspectRatio(
@@ -103,6 +145,7 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
                       painter: ProjectPreviewPainter(frame, (
                         timeline: revision,
                         images: imageCacheRevision,
+                        videos: videoFrameCacheRevision,
                       )),
                       child: const SizedBox.expand(),
                     ),

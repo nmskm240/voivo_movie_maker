@@ -308,6 +308,7 @@ final class ImportProjectAssetProvider
           projectImageCacheProvider,
           projectAudioCacheProvider,
           projectVideoCacheProvider,
+          projectVideoFrameCacheProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
           ImportProjectAssetProvider.$allTransitiveDependencies0,
@@ -317,6 +318,7 @@ final class ImportProjectAssetProvider
           ImportProjectAssetProvider.$allTransitiveDependencies4,
           ImportProjectAssetProvider.$allTransitiveDependencies5,
           ImportProjectAssetProvider.$allTransitiveDependencies6,
+          ImportProjectAssetProvider.$allTransitiveDependencies7,
         },
       );
 
@@ -329,6 +331,7 @@ final class ImportProjectAssetProvider
   static final $allTransitiveDependencies4 = projectImageCacheProvider;
   static final $allTransitiveDependencies5 = projectAudioCacheProvider;
   static final $allTransitiveDependencies6 = projectVideoCacheProvider;
+  static final $allTransitiveDependencies7 = projectVideoFrameCacheProvider;
 
   @override
   String debugGetCreateSourceHash() => _$importProjectAssetHash();
@@ -346,7 +349,7 @@ final class ImportProjectAssetProvider
 }
 
 String _$importProjectAssetHash() =>
-    r'81f96a800d4ac33069d8d8a6b013a70bb3cfa7f1';
+    r'a037a9d88319a4e57f338892be75c439f39a89fb';
 
 @ProviderFor(createVoiceAsset)
 final createVoiceAssetProvider = CreateVoiceAssetFamily._();
