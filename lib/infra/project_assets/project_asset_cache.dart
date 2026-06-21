@@ -3,8 +3,8 @@ import 'dart:async';
 import 'dart:ui';
 
 // Project imports:
-import 'package:voivo_movie_maker/application/services/rendering/project_image_decoder.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
+import 'package:voivo_movie_maker/infra/project_assets/project_image_decoder.dart';
 
 class ProjectImageResources {
   ProjectImageResources(this._store);

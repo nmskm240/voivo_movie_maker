@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
-import 'package:voivo_movie_maker/application/services/rendering/project_image_resources.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline.dart';
+import 'package:voivo_movie_maker/infra/project_assets/project_asset_cache.dart';
 
 part "providers.g.dart";
 

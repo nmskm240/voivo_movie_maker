@@ -1,8 +1,10 @@
-// Dart imports:
 import 'dart:io';
 import 'dart:ui' show Size;
 
 // Package imports:
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
@@ -13,9 +15,12 @@ import 'package:voivo_movie_maker/application/services/export/export_result.dart
 import 'package:voivo_movie_maker/application/services/export/project_exporter.dart';
 import 'package:voivo_movie_maker/application/services/export/ffmpeg_project_encoder.dart';
 import 'package:voivo_movie_maker/application/services/export/project_frame_stream_writer.dart';
+import 'package:voivo_movie_maker/application/services/project_asset_importer.dart';
 import 'package:voivo_movie_maker/application/services/rendering/project_frame_builder.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/commands/add_clip_command.dart';
 import 'package:voivo_movie_maker/application/services/timeline_editor/timeline_editor.dart';
+import 'package:voivo_movie_maker/application/services/asset_name_formatter.dart';
+import 'package:voivo_movie_maker/application/services/voice_generator.dart';
 import 'package:voivo_movie_maker/domain/project.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
@@ -57,21 +62,79 @@ Future<void> renameProjectAsset(
 
   final previousName = current.name;
   project.assets.rename(assetId, name);
+  try {
+    await repository.save(project);
+  } catch (_) {
+    project.assets.rename(assetId, previousName);
+    rethrow;
+  }
+}
+
+@Riverpod(dependencies: [project, projectAssetImporter])
+Future<ProjectAsset?> importProjectAsset(Ref ref) async {
+  final importer = ref.read(projectAssetImporterProvider);
+  final repository = ref.read(projectRepositoryProvider);
+  final projectFuture = ref.watch(projectProvider.future);
+  final picked = await FilePicker.pickFiles(
+    type: FileType.custom,
+    allowedExtensions: const ['jpg', 'jpeg', 'png', 'mp3', 'wav'],
+  );
+  final path = picked?.files.single.path;
+  if (path == null) {
+    return null;
+  }
+
+  final project = await projectFuture;
+  final file = File(path);
+  final result = await importer.importFile(project, file);
+  try {
+    await repository.save(project);
+    return result.asset;
+  } catch (_) {
+    await result.rollback();
+    rethrow;
+  }
+}
+
+@Riverpod(dependencies: [project, projectAssetImporter])
+Future<ProjectAsset> createVoiceAsset(
+  Ref ref, {
+  required String dialogue,
+  required int speakerId,
+  Directory? temporaryDirectory,
+}) async {
+  final importer = ref.read(projectAssetImporterProvider);
+  final repository = ref.read(projectRepositoryProvider);
+  final voiceGenerator = await ref.watch(voiceGeneratorProvider.future);
+  final project = await ref.watch(projectProvider.future);
+  final speakerStyle = voiceGenerator.speakerStyles.firstWhere(
+    (style) => style.id == speakerId,
+  );
+  final audioBytes = await voiceGenerator.synthesize(
+    text: dialogue,
+    speakerId: speakerId,
+  );
+  final fileName = AssetNameFormatter.voice(
+    speakerName: speakerStyle.speakerName,
+    dialogue: dialogue,
+  );
+  final directory = temporaryDirectory ?? await getTemporaryDirectory();
+  final file = File(p.join(directory.path, p.basename(fileName)));
+  await file.writeAsBytes(audioBytes);
+
+  try {
+    final result = await importer.importFile(project, file);
     try {
       await repository.save(project);
+      return result.asset;
     } catch (_) {
-    project.assets.rename(assetId, previousName);
+      await result.rollback();
       rethrow;
     }
-}
-    return asset;
-  } catch (error, stackTrace) {
-    try {
-      await store.delete(asset);
-    } catch (_) {
-      // Preserve the original import failure.
+  } finally {
+    if (await file.exists()) {
+      await file.delete();
     }
-    Error.throwWithStackTrace(error, stackTrace);
   }
 }
 
@@ -82,14 +145,14 @@ Future<TimelineClip?> addImageClipToTimeline(
   required ProjectAsset asset,
   required int startFrame,
 }) async {
+  final imageResources = ref.watch(projectImageResourcesProvider);
+  final timelineEditor = ref.read(timelineEditorProvider);
   final project = await ref.watch(projectProvider.future);
   if (asset.kind != ProjectAssetKind.image ||
       project.assets.findById(asset.id) == null) {
     return null;
   }
 
-  final imageResources = ref.watch(projectImageResourcesProvider);
-  final timelineEditor = ref.read(timelineEditorProvider);
   final image = await imageResources.load(asset);
   final clip = TimelineClip(
     id: TimelineClipId.create(),
@@ -112,10 +175,39 @@ Future<TimelineClip?> addImageClipToTimeline(
   return clip;
 }
 
+@Riverpod(dependencies: [project, timelineEditor])
+Future<TimelineClip?> addAudioClipToTimeline(
+  Ref ref, {
+  required int trackIndex,
+  required ProjectAsset asset,
+  required int startFrame,
+}) async {
+  final timelineEditor = ref.read(timelineEditorProvider);
+  final project = await ref.watch(projectProvider.future);
+  if (asset.kind != ProjectAssetKind.audio ||
+      project.assets.findById(asset.id) == null) {
+    return null;
+  }
+
+  final clip = TimelineClip(
+    id: TimelineClipId.create(),
+    startFrame: startFrame,
+    durationFrames: 90,
+    components: [AudioComponent(assetId: asset.id)],
+  );
+  final command = AddClipCommand(targetTrackIndex: trackIndex, clip: clip);
+  if (!command.canExecute(project.timeline)) {
+    return null;
+  }
+
+  await timelineEditor.execute(project, command);
+  return clip;
+}
+
 @Riverpod(dependencies: [project, projectImageResources])
 Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
-  final project = await ref.watch(projectProvider.future);
   final imageResources = ref.read(projectImageResourcesProvider);
+  final project = await ref.watch(projectProvider.future);
   await imageResources.loadAll(
     project.assets.assets.where(
       (asset) => asset.kind == ProjectAssetKind.image,

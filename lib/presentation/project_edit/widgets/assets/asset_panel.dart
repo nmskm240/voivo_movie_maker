@@ -1,11 +1,6 @@
-// Dart imports:
-import 'dart:io';
-
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Project imports:
@@ -61,8 +56,8 @@ class _AssetPanelState extends ConsumerState<AssetPanel> {
           right: 16,
           bottom: 16,
           child: FloatingActionButton.small(
-            onPressed: _importing ? null : _importImage,
-            tooltip: 'Import image',
+            onPressed: _importing ? null : _importAsset,
+            tooltip: 'Import asset',
             child: _importing
                 ? const SizedBox.square(
                     dimension: 18,
@@ -75,17 +70,13 @@ class _AssetPanelState extends ConsumerState<AssetPanel> {
     );
   }
 
-  Future<void> _importImage() async {
-    final result = await FilePicker.pickFiles(type: FileType.image);
-    final path = result?.files.single.path;
-    if (path == null || !mounted) {
-      return;
-    }
-
+  Future<void> _importAsset() async {
     setState(() => _importing = true);
     try {
-      await ref.read(importProjectAssetProvider(File(path)).future);
-      setState(() {});
+      final asset = await ref.read(importProjectAssetProvider.future);
+      if (asset != null && mounted) {
+        setState(() {});
+      }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -112,7 +103,7 @@ class _AssetListTile extends StatelessWidget {
       title: Text(asset.name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(asset.kind.name),
     );
-    if (asset.kind != ProjectAssetKind.image) {
+    if (asset.kind == ProjectAssetKind.video) {
       return tile;
     }
 

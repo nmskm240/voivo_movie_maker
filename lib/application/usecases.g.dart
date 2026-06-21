@@ -285,9 +285,64 @@ final class RenameProjectAssetFamily extends $Family
 }
 
 @ProviderFor(importProjectAsset)
-final importProjectAssetProvider = ImportProjectAssetFamily._();
+final importProjectAssetProvider = ImportProjectAssetProvider._();
 
 final class ImportProjectAssetProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProjectAsset?>,
+          ProjectAsset?,
+          FutureOr<ProjectAsset?>
+        >
+    with $FutureModifier<ProjectAsset?>, $FutureProvider<ProjectAsset?> {
+  ImportProjectAssetProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'importProjectAssetProvider',
+        isAutoDispose: true,
+        dependencies: <ProviderOrFamily>[
+          projectProvider,
+          projectAssetImporterProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
+          ImportProjectAssetProvider.$allTransitiveDependencies0,
+          ImportProjectAssetProvider.$allTransitiveDependencies1,
+          ImportProjectAssetProvider.$allTransitiveDependencies2,
+          ImportProjectAssetProvider.$allTransitiveDependencies3,
+        },
+      );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies2 = projectAssetImporterProvider;
+  static final $allTransitiveDependencies3 =
+      ProjectAssetImporterProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$importProjectAssetHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<ProjectAsset?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProjectAsset?> create(Ref ref) {
+    return importProjectAsset(ref);
+  }
+}
+
+String _$importProjectAssetHash() =>
+    r'2eda3c695aea4493939db3c2eaf772a3a8283f06';
+
+@ProviderFor(createVoiceAsset)
+final createVoiceAssetProvider = CreateVoiceAssetFamily._();
+
+final class CreateVoiceAssetProvider
     extends
         $FunctionalProvider<
           AsyncValue<ProjectAsset>,
@@ -295,12 +350,13 @@ final class ImportProjectAssetProvider
           FutureOr<ProjectAsset>
         >
     with $FutureModifier<ProjectAsset>, $FutureProvider<ProjectAsset> {
-  ImportProjectAssetProvider._({
-    required ImportProjectAssetFamily super.from,
-    required File super.argument,
+  CreateVoiceAssetProvider._({
+    required CreateVoiceAssetFamily super.from,
+    required ({String dialogue, int speakerId, Directory? temporaryDirectory})
+    super.argument,
   }) : super(
          retry: null,
-         name: r'importProjectAssetProvider',
+         name: r'createVoiceAssetProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
@@ -309,16 +365,18 @@ final class ImportProjectAssetProvider
   static final $allTransitiveDependencies0 = projectProvider;
   static final $allTransitiveDependencies1 =
       ProjectProvider.$allTransitiveDependencies0;
-  static final $allTransitiveDependencies2 = projectAssetStoreProvider;
+  static final $allTransitiveDependencies2 = projectAssetImporterProvider;
+  static final $allTransitiveDependencies3 =
+      ProjectAssetImporterProvider.$allTransitiveDependencies0;
 
   @override
-  String debugGetCreateSourceHash() => _$importProjectAssetHash();
+  String debugGetCreateSourceHash() => _$createVoiceAssetHash();
 
   @override
   String toString() {
-    return r'importProjectAssetProvider'
+    return r'createVoiceAssetProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -329,13 +387,24 @@ final class ImportProjectAssetProvider
 
   @override
   FutureOr<ProjectAsset> create(Ref ref) {
-    final argument = this.argument as File;
-    return importProjectAsset(ref, argument);
+    final argument =
+        this.argument
+            as ({
+              String dialogue,
+              int speakerId,
+              Directory? temporaryDirectory,
+            });
+    return createVoiceAsset(
+      ref,
+      dialogue: argument.dialogue,
+      speakerId: argument.speakerId,
+      temporaryDirectory: argument.temporaryDirectory,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ImportProjectAssetProvider && other.argument == argument;
+    return other is CreateVoiceAssetProvider && other.argument == argument;
   }
 
   @override
@@ -344,32 +413,46 @@ final class ImportProjectAssetProvider
   }
 }
 
-String _$importProjectAssetHash() =>
-    r'9111c1cfd3c0276de21a95609ccecec64aee06c0';
+String _$createVoiceAssetHash() => r'658fda49b2b2bb16c505abe3e61e7907c259d653';
 
-final class ImportProjectAssetFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProjectAsset>, File> {
-  ImportProjectAssetFamily._()
+final class CreateVoiceAssetFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProjectAsset>,
+          ({String dialogue, int speakerId, Directory? temporaryDirectory})
+        > {
+  CreateVoiceAssetFamily._()
     : super(
         retry: null,
-        name: r'importProjectAssetProvider',
+        name: r'createVoiceAssetProvider',
         dependencies: <ProviderOrFamily>[
           projectProvider,
-          projectAssetStoreProvider,
+          projectAssetImporterProvider,
         ],
-        $allTransitiveDependencies: <ProviderOrFamily>[
-          ImportProjectAssetProvider.$allTransitiveDependencies0,
-          ImportProjectAssetProvider.$allTransitiveDependencies1,
-          ImportProjectAssetProvider.$allTransitiveDependencies2,
-        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
+          CreateVoiceAssetProvider.$allTransitiveDependencies0,
+          CreateVoiceAssetProvider.$allTransitiveDependencies1,
+          CreateVoiceAssetProvider.$allTransitiveDependencies2,
+          CreateVoiceAssetProvider.$allTransitiveDependencies3,
+        },
         isAutoDispose: true,
       );
 
-  ImportProjectAssetProvider call(File file) =>
-      ImportProjectAssetProvider._(argument: file, from: this);
+  CreateVoiceAssetProvider call({
+    required String dialogue,
+    required int speakerId,
+    Directory? temporaryDirectory,
+  }) => CreateVoiceAssetProvider._(
+    argument: (
+      dialogue: dialogue,
+      speakerId: speakerId,
+      temporaryDirectory: temporaryDirectory,
+    ),
+    from: this,
+  );
 
   @override
-  String toString() => r'importProjectAssetProvider';
+  String toString() => r'createVoiceAssetProvider';
 }
 
 @ProviderFor(addImageClipToTimeline)
@@ -446,7 +529,7 @@ final class AddImageClipToTimelineProvider
 }
 
 String _$addImageClipToTimelineHash() =>
-    r'ea9d713b1a56f0f5c30eec98600798f19d518af5';
+    r'be72fab301b6249cb65a874c221799bb6b507460';
 
 final class AddImageClipToTimelineFamily extends $Family
     with
@@ -485,6 +568,115 @@ final class AddImageClipToTimelineFamily extends $Family
 
   @override
   String toString() => r'addImageClipToTimelineProvider';
+}
+
+@ProviderFor(addAudioClipToTimeline)
+final addAudioClipToTimelineProvider = AddAudioClipToTimelineFamily._();
+
+final class AddAudioClipToTimelineProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TimelineClip?>,
+          TimelineClip?,
+          FutureOr<TimelineClip?>
+        >
+    with $FutureModifier<TimelineClip?>, $FutureProvider<TimelineClip?> {
+  AddAudioClipToTimelineProvider._({
+    required AddAudioClipToTimelineFamily super.from,
+    required ({int trackIndex, ProjectAsset asset, int startFrame})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'addAudioClipToTimelineProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies2 = timelineEditorProvider;
+  static final $allTransitiveDependencies3 =
+      TimelineEditorProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$addAudioClipToTimelineHash();
+
+  @override
+  String toString() {
+    return r'addAudioClipToTimelineProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<TimelineClip?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TimelineClip?> create(Ref ref) {
+    final argument =
+        this.argument as ({int trackIndex, ProjectAsset asset, int startFrame});
+    return addAudioClipToTimeline(
+      ref,
+      trackIndex: argument.trackIndex,
+      asset: argument.asset,
+      startFrame: argument.startFrame,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AddAudioClipToTimelineProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$addAudioClipToTimelineHash() =>
+    r'ea5e3f3c6e6784398dce5c7605e18af589e9d10e';
+
+final class AddAudioClipToTimelineFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<TimelineClip?>,
+          ({int trackIndex, ProjectAsset asset, int startFrame})
+        > {
+  AddAudioClipToTimelineFamily._()
+    : super(
+        retry: null,
+        name: r'addAudioClipToTimelineProvider',
+        dependencies: <ProviderOrFamily>[
+          projectProvider,
+          timelineEditorProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
+          AddAudioClipToTimelineProvider.$allTransitiveDependencies0,
+          AddAudioClipToTimelineProvider.$allTransitiveDependencies1,
+          AddAudioClipToTimelineProvider.$allTransitiveDependencies2,
+          AddAudioClipToTimelineProvider.$allTransitiveDependencies3,
+        },
+        isAutoDispose: true,
+      );
+
+  AddAudioClipToTimelineProvider call({
+    required int trackIndex,
+    required ProjectAsset asset,
+    required int startFrame,
+  }) => AddAudioClipToTimelineProvider._(
+    argument: (trackIndex: trackIndex, asset: asset, startFrame: startFrame),
+    from: this,
+  );
+
+  @override
+  String toString() => r'addAudioClipToTimelineProvider';
 }
 
 @ProviderFor(exportProject)
@@ -549,7 +741,7 @@ final class ExportProjectProvider
   }
 }
 
-String _$exportProjectHash() => r'92715a7492f2bed6167d783462059518d1148eec';
+String _$exportProjectHash() => r'9d79f575eb4b2bd9d35bd958372e0f391f15a754';
 
 final class ExportProjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ExportResult?>, ExportOperation> {

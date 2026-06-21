@@ -20,6 +20,9 @@ void main() {
     project.assets.add(
       ProjectAsset(name: 'image.png', kind: ProjectAssetKind.image),
     );
+    project.assets.add(
+      ProjectAsset(name: 'voice.wav', kind: ProjectAssetKind.audio),
+    );
     final container = ProviderContainer(
       overrides: [
         projectRepositoryProvider.overrideWithValue(
@@ -38,8 +41,9 @@ void main() {
     await tester.pump();
 
     expect(find.text('image.png'), findsOneWidget);
-    expect(find.byType(Draggable<TimelineDragData>), findsOneWidget);
-    expect(find.byTooltip('Import image'), findsOneWidget);
+    expect(find.text('voice.wav'), findsOneWidget);
+    expect(find.byType(Draggable<TimelineDragData>), findsNWidgets(2));
+    expect(find.byTooltip('Import asset'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox());
     await tester.pump();
