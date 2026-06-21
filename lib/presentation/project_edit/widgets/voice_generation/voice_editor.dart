@@ -12,11 +12,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/application/dtos/speaker_style.dart';
-import 'package:voivo_movie_maker/application/providers.dart';
 import 'package:voivo_movie_maker/application/services/voice_generator.dart';
-import 'package:voivo_movie_maker/application/usecases.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/voice_generation/voice_generation_progress_dialog.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/voice_generation/voice_editor_view_model.dart';
 
 class VoiceEditor extends ConsumerStatefulWidget {
   const VoiceEditor({required this.onCreated, super.key});
@@ -31,11 +30,12 @@ class VoiceEditor extends ConsumerStatefulWidget {
 
 class _VoiceEditorState extends ConsumerState<VoiceEditor> {
   final _formKey = GlobalKey<FormBuilderState>();
-  var _generating = false;
 
   @override
   Widget build(BuildContext context) {
     final voiceGenerator = ref.watch(voiceGeneratorProvider);
+    final generation = ref.watch(voiceEditorViewModelProvider);
+    final generating = generation.isLoading;
     if (voiceGenerator.hasError) {
       return SizedBox(
         height: 56,
@@ -112,10 +112,10 @@ class _VoiceEditorState extends ConsumerState<VoiceEditor> {
                 ),
               ),
               FilledButton.icon(
-                onPressed: voiceGenerator.hasValue && !_generating
+                onPressed: voiceGenerator.hasValue && !generating
                     ? _onSubmit
                     : null,
-                icon: _generating
+                icon: generating
                     ? const SizedBox.square(
                         dimension: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
@@ -136,7 +136,6 @@ class _VoiceEditorState extends ConsumerState<VoiceEditor> {
       return;
     }
 
-    setState(() => _generating = true);
     var dialogIsOpen = false;
     try {
       dialogIsOpen = true;
@@ -149,16 +148,12 @@ class _VoiceEditorState extends ConsumerState<VoiceEditor> {
       );
       final dialogue = state.value[VoiceEditor._textFieldName] as String;
       final speakerId = state.value[VoiceEditor._speakerFieldName] as int;
-      final asset = await ref.read(
-        createVoiceAssetProvider(
-          dialogue: dialogue,
-          speakerId: speakerId,
-        ).future,
-      );
+      final asset = await ref
+          .read(voiceEditorViewModelProvider.notifier)
+          .generate(dialogue: dialogue, speakerId: speakerId);
       if (!mounted) {
         return;
       }
-      ref.invalidate(projectProvider);
       await widget.onCreated(asset);
     } catch (error) {
       if (mounted) {
@@ -169,9 +164,6 @@ class _VoiceEditorState extends ConsumerState<VoiceEditor> {
     } finally {
       if (dialogIsOpen && mounted) {
         Navigator.of(context, rootNavigator: true).pop();
-      }
-      if (mounted) {
-        setState(() => _generating = false);
       }
     }
   }
