@@ -125,7 +125,11 @@ package domain {
     +Size size
   }
 
-  class AudioComponent
+  class AudioComponent {
+    +AssetId assetId
+    +double volume
+    +bool muted
+  }
   enum ShapeType
 
   Project *-- ProjectId
@@ -145,6 +149,7 @@ package domain {
   ClipComponent <|-- ImageComponent
   ClipComponent <|-- AudioComponent
   ImageComponent --> AssetId
+  AudioComponent --> AssetId
   ShapeComponent --> ShapeType
 }
 
@@ -158,6 +163,7 @@ package "application.providers / usecases" {
   class DeleteProject <<UseCase>>
   class ImportProjectAsset <<UseCase>>
   class AddImageClipToTimeline <<UseCase>>
+  class AddAudioClipToTimeline <<UseCase>>
   class ExportProject <<UseCase>>
 
   class ProjectSummary <<DTO>>
@@ -213,6 +219,7 @@ package "application.timeline_editor" {
   class UpdateShapeComponentCommand
   class UpdateTextClipCommand
   class UpdateImageComponentCommand
+  class UpdateAudioComponentCommand
 
   TimelineEditor --> IProjectRepository : saves after command
   TimelineEditor --> TimelineEditorCommand
@@ -229,6 +236,7 @@ package "application.timeline_editor" {
   TimelineEditorCommand <|.. UpdateShapeComponentCommand
   TimelineEditorCommand <|.. UpdateTextClipCommand
   TimelineEditorCommand <|.. UpdateImageComponentCommand
+  TimelineEditorCommand <|.. UpdateAudioComponentCommand
 
   AddClipCommand --> TimelineClip
   AddClipComponentCommand --> ClipComponent
@@ -323,12 +331,10 @@ package "application.playback / voice" {
   class PlaybackController <<Provider>>
   class PlaybackInfo <<DTO>>
   interface IVoiceGenerator
-  class VoicevoxCoreSpeechService
   class SpeakerStyle <<DTO>>
 
   PlaybackController --> ProjectProvider
   PlaybackController --> PlaybackInfo
-  IVoiceGenerator <|.. VoicevoxCoreSpeechService
   IVoiceGenerator ..> SpeakerStyle
 }
 
@@ -342,9 +348,11 @@ package infra {
   class ProjectRepository
   class DirectoryAssetStore
   class ProjectAssetFactory
+  class VoicevoxCore <<Android / iOS FFI>>
 
   IProjectRepository <|.. ProjectRepository
   IProjectAssetStore <|.. DirectoryAssetStore
+  IVoiceGenerator <|.. VoicevoxCore
   ProjectRepository --> ProjectDirectory
   ProjectRepository --> Project
   DirectoryAssetStore --> ProjectAssetFactory
