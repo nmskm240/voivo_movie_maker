@@ -39,6 +39,7 @@ sealed class TimelineViewState with _$TimelineViewState {
     project,
     addAudioClipToTimeline,
     addImageClipToTimeline,
+    addVideoClipToTimeline,
   ],
 )
 class TimelineViewModel extends _$TimelineViewModel {
@@ -136,6 +137,28 @@ class TimelineViewModel extends _$TimelineViewModel {
   }) async {
     final clip = await ref.read(
       addAudioClipToTimelineProvider(
+        trackIndex: trackIndex,
+        asset: asset,
+        startFrame:
+            startFrame ?? ref.read(playbackControllerProvider).currentFrame,
+      ).future,
+    );
+    if (clip == null) {
+      return false;
+    }
+
+    _refreshTimelineState();
+    _selectClip(trackIndex, clip.id);
+    return true;
+  }
+
+  Future<bool> addVideoClip(
+    int trackIndex,
+    ProjectAsset asset, {
+    int? startFrame,
+  }) async {
+    final clip = await ref.read(
+      addVideoClipToTimelineProvider(
         trackIndex: trackIndex,
         asset: asset,
         startFrame:

@@ -173,6 +173,40 @@ void main() {
     expect(container.read(timelineSelectionStateProvider).clipId, clip.id);
     expect(repository.saveCount, 1);
   });
+
+  test('adds an imported video asset', () async {
+    final project = Project.empty();
+    final asset = ProjectAsset(name: 'movie.mp4', kind: ProjectAssetKind.video);
+    project.assets.add(asset);
+    final repository = _ProjectRepository(project);
+    final container = ProviderContainer(
+      overrides: [
+        projectRepositoryProvider.overrideWithValue(repository),
+        projectIdProvider.overrideWithValue(project.id),
+        projectAssetStoreProvider.overrideWithValue(
+          _ProjectAssetStore(asset, Uint8List.fromList([1, 2, 3])),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final subscription = container.listen(timelineViewModelProvider, (_, _) {});
+    addTearDown(subscription.close);
+    await container.read(timelineViewModelProvider.future);
+
+    final added = await container
+        .read(timelineViewModelProvider.notifier)
+        .addVideoClip(0, asset, startFrame: 42);
+
+    final clip = project.timeline.tracks.first.clips.single;
+    expect(added, isTrue);
+    expect(clip.component<VideoComponent>()?.assetId, asset.id);
+    expect(clip.hasComponent<TransformComponent>(), isTrue);
+    expect(clip.startFrame, 42);
+    expect(container.read(timelineSelectionStateProvider).trackIndex, 0);
+    expect(container.read(timelineSelectionStateProvider).clipId, clip.id);
+    expect(repository.saveCount, 1);
+  });
 }
 
 Future<Uint8List> _pngBytes(int width, int height) async {

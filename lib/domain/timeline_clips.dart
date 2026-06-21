@@ -5,3 +5,4 @@ export 'timeline_clips/components/image.dart';
 export 'timeline_clips/components/shape.dart';
 export 'timeline_clips/components/text.dart';
 export 'timeline_clips/components/transform.dart';
+export 'timeline_clips/components/video.dart';

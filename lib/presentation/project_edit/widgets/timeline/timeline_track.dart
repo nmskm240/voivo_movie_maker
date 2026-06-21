@@ -67,7 +67,11 @@ class TimelineTrackView extends ConsumerWidget {
                   startFrame: startFrame,
                 );
               case ProjectAssetKind.video:
-                break;
+                viewModel.addVideoClip(
+                  trackIndex,
+                  asset,
+                  startFrame: startFrame,
+                );
             }
         }
       },

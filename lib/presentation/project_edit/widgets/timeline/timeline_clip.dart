@@ -301,10 +301,16 @@ class _ClipBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final color = clip.hasAudio ? const Color(0xff79d7ff) : Colors.greenAccent;
-    final textColor = clip.hasAudio
-        ? const Color(0xff082332)
-        : const Color(0xff10210c);
+    final color = switch ((clip.hasVideo, clip.hasAudio)) {
+      (true, _) => const Color(0xffffc36a),
+      (false, true) => const Color(0xff79d7ff),
+      (false, false) => Colors.greenAccent,
+    };
+    final textColor = switch ((clip.hasVideo, clip.hasAudio)) {
+      (true, _) => const Color(0xff2b1902),
+      (false, true) => const Color(0xff082332),
+      (false, false) => const Color(0xff10210c),
+    };
     final audioAssetId = clip.audioAssetId;
     final waveform = audioAssetId == null
         ? const <double>[]

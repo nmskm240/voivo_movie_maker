@@ -239,6 +239,38 @@ Future<TimelineClip?> addAudioClipToTimeline(
   return clip;
 }
 
+@Riverpod(dependencies: [project, timelineEditor])
+Future<TimelineClip?> addVideoClipToTimeline(
+  Ref ref, {
+  required int trackIndex,
+  required ProjectAsset asset,
+  required int startFrame,
+}) async {
+  final timelineEditor = ref.read(timelineEditorProvider);
+  final project = await ref.watch(projectProvider.future);
+  if (asset.kind != ProjectAssetKind.video ||
+      project.assets.findById(asset.id) == null) {
+    return null;
+  }
+
+  final clip = TimelineClip(
+    id: TimelineClipId.create(),
+    startFrame: startFrame,
+    durationFrames: 90,
+    components: [
+      TransformComponent(),
+      VideoComponent(assetId: asset.id),
+    ],
+  );
+  final command = AddClipCommand(targetTrackIndex: trackIndex, clip: clip);
+  if (!command.canExecute(project.timeline)) {
+    return null;
+  }
+
+  await timelineEditor.execute(project, command);
+  return clip;
+}
+
 @Riverpod(dependencies: [project, projectImageCache, projectAudioCache])
 Future<ExportResult?> exportProject(Ref ref, ExportOperation operation) async {
   final imageCache = ref.read(projectImageCacheProvider);

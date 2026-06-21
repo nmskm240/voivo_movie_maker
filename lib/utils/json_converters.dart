@@ -12,6 +12,7 @@ import 'package:voivo_movie_maker/domain/timeline_clips/components/image.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/shape.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/text.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips/components/transform.dart';
+import 'package:voivo_movie_maker/domain/timeline_clips/components/video.dart';
 
 class ClipComponentJsonConverter
     implements JsonConverter<ClipComponent, Map<String, Object?>> {
@@ -25,6 +26,7 @@ class ClipComponentJsonConverter
       'shape' => ShapeComponent.fromJson(json),
       'text' => TextComponent.fromJson(json),
       'transform' => TransformComponent.fromJson(json),
+      'video' => VideoComponent.fromJson(json),
       final type => throw FormatException('Unknown clip component type: $type'),
     };
   }
@@ -37,6 +39,7 @@ class ClipComponentJsonConverter
       ShapeComponent() => ('shape', component.toJson()),
       TextComponent() => ('text', component.toJson()),
       TransformComponent() => ('transform', component.toJson()),
+      VideoComponent() => ('video', component.toJson()),
       _ => throw UnsupportedError(
         'Unsupported component type: ${component.runtimeType}',
       ),

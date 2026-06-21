@@ -103,10 +103,6 @@ class _AssetListTile extends StatelessWidget {
       title: Text(asset.name, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text(asset.kind.name),
     );
-    if (asset.kind == ProjectAssetKind.video) {
-      return tile;
-    }
-
     return Draggable<TimelineDragData>(
       data: TimelineAssetDragData(asset),
       feedback: Material(

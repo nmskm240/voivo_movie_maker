@@ -694,6 +694,115 @@ final class AddAudioClipToTimelineFamily extends $Family
   String toString() => r'addAudioClipToTimelineProvider';
 }
 
+@ProviderFor(addVideoClipToTimeline)
+final addVideoClipToTimelineProvider = AddVideoClipToTimelineFamily._();
+
+final class AddVideoClipToTimelineProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TimelineClip?>,
+          TimelineClip?,
+          FutureOr<TimelineClip?>
+        >
+    with $FutureModifier<TimelineClip?>, $FutureProvider<TimelineClip?> {
+  AddVideoClipToTimelineProvider._({
+    required AddVideoClipToTimelineFamily super.from,
+    required ({int trackIndex, ProjectAsset asset, int startFrame})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'addVideoClipToTimelineProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  static final $allTransitiveDependencies0 = projectProvider;
+  static final $allTransitiveDependencies1 =
+      ProjectProvider.$allTransitiveDependencies0;
+  static final $allTransitiveDependencies2 = timelineEditorProvider;
+  static final $allTransitiveDependencies3 =
+      TimelineEditorProvider.$allTransitiveDependencies0;
+
+  @override
+  String debugGetCreateSourceHash() => _$addVideoClipToTimelineHash();
+
+  @override
+  String toString() {
+    return r'addVideoClipToTimelineProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<TimelineClip?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TimelineClip?> create(Ref ref) {
+    final argument =
+        this.argument as ({int trackIndex, ProjectAsset asset, int startFrame});
+    return addVideoClipToTimeline(
+      ref,
+      trackIndex: argument.trackIndex,
+      asset: argument.asset,
+      startFrame: argument.startFrame,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AddVideoClipToTimelineProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$addVideoClipToTimelineHash() =>
+    r'f40665eb17d6b2428f3895e8a911c2c66d4f8cf2';
+
+final class AddVideoClipToTimelineFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<TimelineClip?>,
+          ({int trackIndex, ProjectAsset asset, int startFrame})
+        > {
+  AddVideoClipToTimelineFamily._()
+    : super(
+        retry: null,
+        name: r'addVideoClipToTimelineProvider',
+        dependencies: <ProviderOrFamily>[
+          projectProvider,
+          timelineEditorProvider,
+        ],
+        $allTransitiveDependencies: <ProviderOrFamily>{
+          AddVideoClipToTimelineProvider.$allTransitiveDependencies0,
+          AddVideoClipToTimelineProvider.$allTransitiveDependencies1,
+          AddVideoClipToTimelineProvider.$allTransitiveDependencies2,
+          AddVideoClipToTimelineProvider.$allTransitiveDependencies3,
+        },
+        isAutoDispose: true,
+      );
+
+  AddVideoClipToTimelineProvider call({
+    required int trackIndex,
+    required ProjectAsset asset,
+    required int startFrame,
+  }) => AddVideoClipToTimelineProvider._(
+    argument: (trackIndex: trackIndex, asset: asset, startFrame: startFrame),
+    from: this,
+  );
+
+  @override
+  String toString() => r'addVideoClipToTimelineProvider';
+}
+
 @ProviderFor(exportProject)
 final exportProjectProvider = ExportProjectFamily._();
 

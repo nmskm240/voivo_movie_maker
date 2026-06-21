@@ -122,6 +122,7 @@ final class TimelineClipViewModelProvider
           TimelineClipViewModelProvider.$allTransitiveDependencies10,
           TimelineClipViewModelProvider.$allTransitiveDependencies11,
           TimelineClipViewModelProvider.$allTransitiveDependencies12,
+          TimelineClipViewModelProvider.$allTransitiveDependencies13,
         },
       );
 
@@ -150,6 +151,8 @@ final class TimelineClipViewModelProvider
       TimelineViewModelProvider.$allTransitiveDependencies10;
   static final $allTransitiveDependencies12 =
       TimelineViewModelProvider.$allTransitiveDependencies11;
+  static final $allTransitiveDependencies13 =
+      TimelineViewModelProvider.$allTransitiveDependencies12;
 
   @override
   String debugGetCreateSourceHash() => _$timelineClipViewModelHash();

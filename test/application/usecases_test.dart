@@ -436,6 +436,67 @@ void main() {
       expect(repository.saveCount, 0);
     });
   });
+
+  group('addVideoClipToTimeline', () {
+    test('adds a video clip referencing the video asset', () async {
+      final project = Project.empty();
+      final asset = ProjectAsset(
+        name: 'movie.mp4',
+        kind: ProjectAssetKind.video,
+      );
+      project.assets.add(asset);
+      final repository = _ProjectRepository(project);
+      final container = _container(
+        project,
+        _ProjectAssetStore(asset),
+        repository,
+      );
+      addTearDown(container.dispose);
+
+      final clip = await container.read(
+        addVideoClipToTimelineProvider(
+          trackIndex: 0,
+          asset: asset,
+          startFrame: 42,
+        ).future,
+      );
+
+      expect(project.timeline.tracks.first.clips.single, same(clip));
+      expect(clip?.startFrame, 42);
+      expect(clip?.durationFrames, 90);
+      expect(clip?.component<VideoComponent>()?.assetId, asset.id);
+      expect(clip?.hasComponent<TransformComponent>(), isTrue);
+      expect(repository.saveCount, 1);
+    });
+
+    test('rejects a non-video asset', () async {
+      final project = Project.empty();
+      final asset = ProjectAsset(
+        name: 'voice.wav',
+        kind: ProjectAssetKind.audio,
+      );
+      project.assets.add(asset);
+      final repository = _ProjectRepository(project);
+      final container = _container(
+        project,
+        _ProjectAssetStore(asset),
+        repository,
+      );
+      addTearDown(container.dispose);
+
+      final clip = await container.read(
+        addVideoClipToTimelineProvider(
+          trackIndex: 0,
+          asset: asset,
+          startFrame: 0,
+        ).future,
+      );
+
+      expect(clip, isNull);
+      expect(project.timeline.tracks.first.clips, isEmpty);
+      expect(repository.saveCount, 0);
+    });
+  });
 }
 
 ProviderContainer _container(
