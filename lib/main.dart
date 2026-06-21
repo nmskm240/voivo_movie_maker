@@ -13,7 +13,9 @@ import 'package:path_provider/path_provider.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/application/providers.dart';
+import 'package:voivo_movie_maker/application/services/voice_generator.dart';
 import 'package:voivo_movie_maker/infra/project_repository.dart';
+import 'package:voivo_movie_maker/infra/voicevox_core/voicevox_core.dart';
 import 'package:voivo_movie_maker/presentation/router.dart';
 
 void main() async {
@@ -35,6 +37,11 @@ void main() async {
           ProjectRepository(projectsDirectory),
         ),
         projectsDirectoryProvider.overrideWithValue(projectsDirectory),
+        voiceGeneratorProvider.overrideWith((ref) async {
+          final generator = await VoicevoxCore.create();
+          ref.onDispose(generator.dispose);
+          return generator;
+        }),
       ],
       child: const VoivoMovieMakerApp(),
     ),

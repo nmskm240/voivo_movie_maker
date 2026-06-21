@@ -30,3 +30,9 @@ Thumbs.db
 
 # Local VOICEVOX runtime payloads are large and are downloaded separately.
 /voicevox/
+/android/app/src/main/jniLibs/
+/ios/Frameworks/
+/assets/voicevox/dict/*
+!/assets/voicevox/dict/.gitkeep
+/assets/voicevox/models/*
+!/assets/voicevox/models/.gitkeep
