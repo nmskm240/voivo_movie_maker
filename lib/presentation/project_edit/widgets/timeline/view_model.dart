@@ -37,6 +37,7 @@ sealed class TimelineViewState with _$TimelineViewState {
     PlaybackController,
     TimelineSelectionState,
     project,
+    addAudioClipToTimeline,
     addImageClipToTimeline,
   ],
 )
@@ -89,8 +90,7 @@ class TimelineViewModel extends _$TimelineViewModel {
       return;
     }
 
-    ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
-    ref.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
+    _selectClip(trackIndex, clip.id);
   }
 
   Future<bool> addTrack() async {
@@ -125,8 +125,29 @@ class TimelineViewModel extends _$TimelineViewModel {
     }
 
     _refreshTimelineState();
-    ref.read(timelineSelectionStateProvider.notifier).selectTrack(trackIndex);
-    ref.read(timelineSelectionStateProvider.notifier).selectClip(clip.id);
+    _selectClip(trackIndex, clip.id);
+    return true;
+  }
+
+  Future<bool> addAudioClip(
+    int trackIndex,
+    ProjectAsset asset, {
+    int? startFrame,
+  }) async {
+    final clip = await ref.read(
+      addAudioClipToTimelineProvider(
+        trackIndex: trackIndex,
+        asset: asset,
+        startFrame:
+            startFrame ?? ref.read(playbackControllerProvider).currentFrame,
+      ).future,
+    );
+    if (clip == null) {
+      return false;
+    }
+
+    _refreshTimelineState();
+    _selectClip(trackIndex, clip.id);
     return true;
   }
 
@@ -209,5 +230,11 @@ class TimelineViewModel extends _$TimelineViewModel {
         revision: current.revision + 1,
       ),
     );
+  }
+
+  void _selectClip(int trackIndex, TimelineClipId clipId) {
+    final selection = ref.read(timelineSelectionStateProvider.notifier);
+    selection.selectTrack(trackIndex);
+    selection.selectClip(clipId);
   }
 }

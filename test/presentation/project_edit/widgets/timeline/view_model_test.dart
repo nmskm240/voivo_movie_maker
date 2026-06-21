@@ -140,6 +140,39 @@ void main() {
     expect(container.read(timelineSelectionStateProvider).clipId, clip.id);
     expect(repository.saveCount, 1);
   });
+
+  test('adds an imported audio asset', () async {
+    final project = Project.empty();
+    final asset = ProjectAsset(name: 'voice.wav', kind: ProjectAssetKind.audio);
+    project.assets.add(asset);
+    final repository = _ProjectRepository(project);
+    final container = ProviderContainer(
+      overrides: [
+        projectRepositoryProvider.overrideWithValue(repository),
+        projectIdProvider.overrideWithValue(project.id),
+        projectAssetStoreProvider.overrideWithValue(
+          _ProjectAssetStore(asset, Uint8List.fromList([1, 2, 3])),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final subscription = container.listen(timelineViewModelProvider, (_, _) {});
+    addTearDown(subscription.close);
+    await container.read(timelineViewModelProvider.future);
+
+    final added = await container
+        .read(timelineViewModelProvider.notifier)
+        .addAudioClip(0, asset, startFrame: 42);
+
+    final clip = project.timeline.tracks.first.clips.single;
+    expect(added, isTrue);
+    expect(clip.component<AudioComponent>()?.assetId, asset.id);
+    expect(clip.startFrame, 42);
+    expect(container.read(timelineSelectionStateProvider).trackIndex, 0);
+    expect(container.read(timelineSelectionStateProvider).clipId, clip.id);
+    expect(repository.saveCount, 1);
+  });
 }
 
 Future<Uint8List> _pngBytes(int width, int height) async {
@@ -156,8 +189,8 @@ Future<Uint8List> _pngBytes(int width, int height) async {
   return data!.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 }
 
-class _ProjectAssetStore implements IProjectAssetStore {
-  const _ProjectAssetStore(this.asset, this.bytes);
+class _ProjectAssetStore extends IProjectAssetStore {
+  _ProjectAssetStore(this.asset, this.bytes);
 
   final ProjectAsset asset;
   final Uint8List bytes;
@@ -170,6 +203,9 @@ class _ProjectAssetStore implements IProjectAssetStore {
 
   @override
   Future<ProjectAsset> save(File file) async => asset;
+
+  @override
+  Future<void> replace(ProjectAsset asset, File file) async {}
 }
 
 class _ProjectRepository implements IProjectRepository {

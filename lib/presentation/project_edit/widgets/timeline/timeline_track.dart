@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Project imports:
 import 'package:voivo_movie_maker/application/dtos/timeline_track_info.dart';
+import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_clip.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/timeline_drag_data.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
@@ -52,7 +53,22 @@ class TimelineTrackView extends ConsumerWidget {
               startFrame: startFrame,
             );
           case TimelineAssetDragData(:final asset):
-            viewModel.addImageClip(trackIndex, asset, startFrame: startFrame);
+            switch (asset.kind) {
+              case ProjectAssetKind.image:
+                viewModel.addImageClip(
+                  trackIndex,
+                  asset,
+                  startFrame: startFrame,
+                );
+              case ProjectAssetKind.audio:
+                viewModel.addAudioClip(
+                  trackIndex,
+                  asset,
+                  startFrame: startFrame,
+                );
+              case ProjectAssetKind.video:
+                break;
+            }
         }
       },
       builder: (context, candidateData, rejectedData) {

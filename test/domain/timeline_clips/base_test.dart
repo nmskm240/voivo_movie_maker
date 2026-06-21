@@ -10,6 +10,20 @@ import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/utils/json_converters.dart';
 
 void main() {
+  test('serializes and restores audio components', () {
+    final asset = ProjectAsset(name: 'voice.wav', kind: ProjectAssetKind.audio);
+    final clip = _clip(
+      components: [AudioComponent(assetId: asset.id, volume: 0.5, muted: true)],
+    );
+
+    final restored = TimelineClip.fromJson(clip.toJson());
+    final audio = restored.component<AudioComponent>();
+
+    expect(audio?.assetId, asset.id);
+    expect(audio?.volume, 0.5);
+    expect(audio?.muted, isTrue);
+  });
+
   group('TimelineClip components', () {
     test('rejects another component of the same type', () {
       final clip = _clip(components: [TextComponent()]);

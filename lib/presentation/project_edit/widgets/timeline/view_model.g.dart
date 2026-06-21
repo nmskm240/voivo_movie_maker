@@ -27,6 +27,7 @@ final class TimelineViewModelProvider
           playbackControllerProvider,
           timelineSelectionStateProvider,
           projectProvider,
+          addAudioClipToTimelineProvider,
           addImageClipToTimelineProvider,
         ],
         $allTransitiveDependencies: <ProviderOrFamily>{
@@ -40,6 +41,7 @@ final class TimelineViewModelProvider
           TimelineViewModelProvider.$allTransitiveDependencies7,
           TimelineViewModelProvider.$allTransitiveDependencies8,
           TimelineViewModelProvider.$allTransitiveDependencies9,
+          TimelineViewModelProvider.$allTransitiveDependencies10,
         },
       );
 
@@ -53,10 +55,11 @@ final class TimelineViewModelProvider
       TimelineEditorProvider.$allTransitiveDependencies0;
   static final $allTransitiveDependencies5 = playbackControllerProvider;
   static final $allTransitiveDependencies6 = timelineSelectionStateProvider;
-  static final $allTransitiveDependencies7 = addImageClipToTimelineProvider;
-  static final $allTransitiveDependencies8 =
-      AddImageClipToTimelineProvider.$allTransitiveDependencies2;
+  static final $allTransitiveDependencies7 = addAudioClipToTimelineProvider;
+  static final $allTransitiveDependencies8 = addImageClipToTimelineProvider;
   static final $allTransitiveDependencies9 =
+      AddImageClipToTimelineProvider.$allTransitiveDependencies2;
+  static final $allTransitiveDependencies10 =
       AddImageClipToTimelineProvider.$allTransitiveDependencies3;
 
   @override
@@ -67,7 +70,7 @@ final class TimelineViewModelProvider
   TimelineViewModel create() => TimelineViewModel();
 }
 
-String _$timelineViewModelHash() => r'6e7feac29c06d7dd029294e0d1399fefd51211ea';
+String _$timelineViewModelHash() => r'bd73f5d00fba34c3257d390d4583501c71bcff9d';
 
 abstract class _$TimelineViewModel extends $AsyncNotifier<TimelineViewState> {
   FutureOr<TimelineViewState> build();
