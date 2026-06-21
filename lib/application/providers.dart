@@ -16,7 +16,6 @@ import 'package:voivo_movie_maker/domain/timeline.dart';
 import 'package:voivo_movie_maker/infra/project_assets/project_asset_bytes_loader.dart';
 import 'package:voivo_movie_maker/infra/project_assets/project_asset_cache.dart';
 import 'package:voivo_movie_maker/infra/project_assets/project_image_decoder.dart';
-import 'package:voivo_movie_maker/infra/project_assets/project_video_frame_cache.dart';
 
 part "providers.g.dart";
 
@@ -98,20 +97,6 @@ ProjectAssetCache<Uint8List> projectVideoCache(Ref ref) {
 @Riverpod(dependencies: [projectVideoCache])
 Stream<int> projectVideoCacheRevision(Ref ref) {
   return ref.watch(projectVideoCacheProvider).revisions;
-}
-
-@Riverpod(keepAlive: true, dependencies: [projectVideoCache])
-ProjectVideoFrameCache projectVideoFrameCache(Ref ref) {
-  final cache = ProjectVideoFrameCache(
-    loadVideo: ref.watch(projectVideoCacheProvider).load,
-  );
-  ref.onDispose(cache.dispose);
-  return cache;
-}
-
-@Riverpod(dependencies: [projectVideoFrameCache])
-Stream<int> projectVideoFrameCacheRevision(Ref ref) {
-  return ref.watch(projectVideoFrameCacheProvider).revisions;
 }
 
 @Riverpod(dependencies: [project])

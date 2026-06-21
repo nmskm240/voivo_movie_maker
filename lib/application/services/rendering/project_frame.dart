@@ -11,12 +11,10 @@ class ProjectFrame {
     required this.frameNumber,
     required Iterable<TimelineClip> clips,
     this.imageAssets = const {},
-    this.videoFrames = const {},
   }) : clips = List.unmodifiable(clips);
 
   final Size projectSize;
   final int frameNumber;
   final List<TimelineClip> clips;
   final Map<AssetId, Image> imageAssets;
-  final Map<TimelineClipId, Image> videoFrames;
 }

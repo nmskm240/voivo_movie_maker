@@ -1,6 +1,5 @@
 // Dart imports:
 import 'dart:async';
-import 'dart:ui' as ui;
 
 // Flutter imports:
 import 'package:flutter/material.dart';
@@ -15,8 +14,8 @@ import 'package:voivo_movie_maker/application/services/rendering/project_frame_b
 import 'package:voivo_movie_maker/application/services/timeline_audio_player.dart';
 import 'package:voivo_movie_maker/domain/project_assets.dart';
 import 'package:voivo_movie_maker/domain/timeline_clips.dart';
-import 'package:voivo_movie_maker/infra/project_assets/project_video_frame_cache.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/painters/project_preview_painter.dart';
+import 'package:voivo_movie_maker/presentation/project_edit/widgets/preview/timeline_video_preview.dart';
 import 'package:voivo_movie_maker/presentation/project_edit/widgets/timeline/view_model.dart';
 
 class ProjectPreview extends ConsumerStatefulWidget {
@@ -27,9 +26,6 @@ class ProjectPreview extends ConsumerStatefulWidget {
 }
 
 class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
-  static const _videoPreviewAheadFrames = 8;
-  static const _videoPreviewFallbackFrames = 3;
-
   late final TimelineAudioPlayer _timelineAudioPlayer;
 
   @override
@@ -57,10 +53,7 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
         .value;
     final imageCache = ref.watch(projectImageCacheProvider);
     final audioCache = ref.watch(projectAudioCacheProvider);
-    final videoFrameCacheRevision = ref
-        .watch(projectVideoFrameCacheRevisionProvider)
-        .value;
-    final videoFrameCache = ref.watch(projectVideoFrameCacheProvider);
+    final videoCache = ref.watch(projectVideoCacheProvider);
 
     return projectSnapshot.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -98,8 +91,9 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
             );
           }
         }
-        final videoFrames = <TimelineClipId, ui.Image>{};
-        for (final clip in project.timeline.getActiveClipsAt(currentFrame)) {
+        final activeVideos = <_ActiveVideo>[];
+        final activeClips = project.timeline.getActiveClipsAt(currentFrame);
+        for (final clip in activeClips) {
           final videoComponent = clip.component<VideoComponent>();
           if (videoComponent == null) {
             continue;
@@ -108,29 +102,14 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
           if (asset == null || asset.kind != ProjectAssetKind.video) {
             continue;
           }
-          final localFrame = currentFrame - clip.startFrame;
-          final image =
-              videoFrameCache.find(asset, localFrame) ??
-              videoFrameCache.findNearest(
-                asset,
-                localFrame,
-                maxDistance: _videoPreviewFallbackFrames,
-              );
-          if (image != null) {
-            videoFrames[clip.id] = image;
-          }
-          _preloadVideoFrames(
-            videoFrameCache,
+          activeVideos.add((
+            clip: clip,
+            component: videoComponent,
             asset: asset,
-            localFrame: localFrame,
-            fps: project.fps,
-            durationFrames: clip.durationFrames,
-            isPlaying: playback.isPlaying,
-          );
+          ));
         }
         final frame = ProjectFrameBuilder(
           imageAssets: imageCache.values,
-          videoFrames: videoFrames,
         ).build(project, currentFrame);
         return Center(
           child: AspectRatio(
@@ -140,13 +119,30 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
                 builder: (context, constraints) {
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    child: CustomPaint(
-                      painter: ProjectPreviewPainter(frame, (
-                        timeline: revision,
-                        images: imageCacheRevision,
-                        videos: videoFrameCacheRevision,
-                      )),
-                      child: const SizedBox.expand(),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CustomPaint(
+                          painter: ProjectPreviewPainter(frame, (
+                            timeline: revision,
+                            images: imageCacheRevision,
+                          )),
+                          child: const SizedBox.expand(),
+                        ),
+                        for (final video in activeVideos)
+                          Positioned.fill(
+                            child: TimelineVideoPreview(
+                              key: ValueKey(video.clip.id),
+                              project: project,
+                              clip: video.clip,
+                              component: video.component,
+                              asset: video.asset,
+                              currentFrame: currentFrame,
+                              isPlaying: playback.isPlaying,
+                              loadVideo: videoCache.load,
+                            ),
+                          ),
+                      ],
                     ),
                   );
                 },
@@ -157,45 +153,10 @@ class _ProjectPreviewState extends ConsumerState<ProjectPreview> {
       },
     );
   }
-
-  void _preloadVideoFrames(
-    ProjectVideoFrameCache videoFrameCache, {
-    required ProjectAsset asset,
-    required int localFrame,
-    required int fps,
-    required int durationFrames,
-    required bool isPlaying,
-  }) {
-    if (fps <= 0) {
-      return;
-    }
-    final aheadFrames = isPlaying ? _videoPreviewAheadFrames : 0;
-    for (var offset = 0; offset <= aheadFrames; offset++) {
-      final frameNumber = localFrame + offset;
-      if (frameNumber < 0 || frameNumber >= durationFrames) {
-        continue;
-      }
-      if (videoFrameCache.find(asset, frameNumber) != null) {
-        continue;
-      }
-      unawaited(
-        videoFrameCache
-            .load(
-              asset,
-              frameNumber: frameNumber,
-              position: Duration(
-                microseconds: (frameNumber / fps * 1000000).round(),
-              ),
-            )
-            .then<void>(
-              (_) {},
-              onError: (Object error, StackTrace stackTrace) {
-                debugPrint(
-                  'Could not decode video frame ${asset.name}: $error',
-                );
-              },
-            ),
-      );
-    }
-  }
 }
+
+typedef _ActiveVideo = ({
+  TimelineClip clip,
+  VideoComponent component,
+  ProjectAsset asset,
+});

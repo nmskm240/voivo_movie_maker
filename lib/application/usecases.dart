@@ -77,7 +77,6 @@ Future<void> renameProjectAsset(
     projectImageCache,
     projectAudioCache,
     projectVideoCache,
-    projectVideoFrameCache,
   ],
 )
 Future<ProjectAsset?> importProjectAsset(Ref ref) async {
@@ -88,7 +87,6 @@ Future<ProjectAsset?> importProjectAsset(Ref ref) async {
     evictImageCache: ref.read(projectImageCacheProvider).evict,
     evictAudioCache: ref.read(projectAudioCacheProvider).evict,
     evictVideoCache: ref.read(projectVideoCacheProvider).evict,
-    evictVideoFrameCache: ref.read(projectVideoFrameCacheProvider).evict,
   );
   final picked = await FilePicker.pickFiles(
     type: FileType.custom,
@@ -161,7 +159,6 @@ void Function(ProjectAsset asset) _assetCacheEvictor({
   required void Function(AssetId assetId) evictImageCache,
   required void Function(AssetId assetId) evictAudioCache,
   required void Function(AssetId assetId) evictVideoCache,
-  required void Function(AssetId assetId) evictVideoFrameCache,
 }) {
   return (asset) {
     switch (asset.kind) {
@@ -173,7 +170,6 @@ void Function(ProjectAsset asset) _assetCacheEvictor({
         break;
       case ProjectAssetKind.video:
         evictVideoCache(asset.id);
-        evictVideoFrameCache(asset.id);
         break;
     }
   };
